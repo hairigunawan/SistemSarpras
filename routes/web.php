@@ -49,7 +49,6 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 | Rute KHUSUS ADMIN
 |--------------------------------------------------------------------------
-| Hanya pengguna dengan peran 'Admin' yang bisa mengakses ini.
 */
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -61,7 +60,6 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
 |--------------------------------------------------------------------------
 | Rute untuk MANAJEMEN (Admin & Staff)
 |--------------------------------------------------------------------------
-| Hanya 'Admin' dan 'Staff' yang bisa mengakses ini.
 */
 Route::middleware(['auth', 'role:Admin,Staff'])->group(function () {
     // Mengelola semua data sarpras
@@ -80,7 +78,6 @@ Route::middleware(['auth', 'role:Admin,Staff'])->group(function () {
 |--------------------------------------------------------------------------
 | Rute untuk PEMINJAM (Dosen & Mahasiswa)
 |--------------------------------------------------------------------------
-| Hanya 'Dosen' dan 'Mahasiswa' yang bisa mengakses ini.
 */
 Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
     // Form untuk mengajukan peminjaman
