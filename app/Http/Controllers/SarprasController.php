@@ -31,6 +31,10 @@ class SarprasController extends Controller
             $query->where('jenis_sarpras', $request->jenis);
         }
 
+        if ($request->has('search') && $request->search) {
+            $query->where('nama_sarpras', 'like', '%' . $request->search . '%');
+        }
+
         $sarpras = $query->latest()->paginate(9);
         return view('admin.sarpras.index', compact('sarpras'));
     }
@@ -142,7 +146,7 @@ class SarprasController extends Controller
 
         $sarpra->update($validated);
 
-        return redirect()->route('sarpras.index')->with('success', 'Sarpras berhasil diperbarui.');
+        return redirect()->route('sarpras.show')->with('success', 'Sarpras berhasil diperbarui.');
     }
 
     /**
@@ -150,6 +154,16 @@ class SarprasController extends Controller
      */
     public function destroy(Sarpras $sarpra)
     {
+        // Cek apakah sarpras sedang dipinjam
+        if ($sarpra->status === 'Dipinjam') {
+            return redirect()->route('sarpras.index')->with('error', 'Sarpras tidak dapat dihapus karena sedang dipinjam.');
+        }
+
+        // Cek apakah sarpras memiliki riwayat peminjaman
+        if ($sarpra->peminjamans()->exists()) {
+            return redirect()->route('sarpras.index')->with('error', 'Sarpras tidak dapat dihapus karena memiliki riwayat peminjaman.');
+        }
+
         // Hapus gambar dari storage jika ada
         if ($sarpra->gambar) {
             Storage::delete('public/' . $sarpra->gambar);

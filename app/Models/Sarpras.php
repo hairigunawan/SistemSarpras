@@ -26,9 +26,13 @@ class Sarpras extends Model
         'kode_ruangan',
         'kode_proyektor',
         'gambar',
-        'merk', // <-- TAMBAHKAN INI
-        'keterangan_lain', // <-- TAMBAHKAN INI
+        'merk',
     ];
+
+    public function peminjamans()
+    {
+        return $this->hasMany(Peminjaman::class, 'id_sarpras', 'id_sarpras');
+    }
 
     // ... sisa kode model
 }

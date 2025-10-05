@@ -44,24 +44,14 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 });
 
-
-/*
-|--------------------------------------------------------------------------
-| Rute KHUSUS ADMIN
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::resource('/akun', AkunController::class)->names('admin.akun');
-});
-
-
 /*
 |--------------------------------------------------------------------------
 | Rute untuk MANAJEMEN (Admin & Staff)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:Admin,Staff'])->group(function () {
+Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard.index');
+    Route::resource('/akun', AkunController::class)->names('admin.akun');
     // Mengelola semua data sarpras
     Route::resource('/sarpras', SarprasController::class);
     // Melihat SEMUA peminjaman untuk approval
@@ -71,6 +61,7 @@ Route::middleware(['auth', 'role:Admin,Staff'])->group(function () {
     Route::get('/peminjaman/{id}', [PeminjamanController::class, 'show'])->name('peminjaman.show');
     Route::patch('/peminjaman/{id}/approve', [PeminjamanController::class, 'approve'])->name('peminjaman.approve');
     Route::patch('/peminjaman/{id}/reject', [PeminjamanController::class, 'reject'])->name('peminjaman.reject');
+    Route::patch('/peminjaman/{id}/complete', [PeminjamanController::class, 'complete'])->name('peminjaman.complete');
 });
 
 
@@ -85,5 +76,5 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
     // Proses pengiriman form
     Route::post('/peminjaman', [PeminjamanController::class, 'store'])->name('peminjaman.store');
     // Melihat riwayat peminjaman PRIBADI
-    // Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('peminjaman.riwayat');
+    Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('peminjaman.riwayat');
 });

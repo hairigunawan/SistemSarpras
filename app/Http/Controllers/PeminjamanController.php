@@ -20,18 +20,17 @@ class PeminjamanController extends Controller
             $query->where('status', $status);
         }
 
+        if ($request->has(['nama', 'jenis']) && $request->nama != '') {
+            $query->where('nama_peminjam', $request->nama);
+        }
+
+        if ($request->has('search') && $request->search) {
+            $query->where('nama_sarpras', 'like', '%' . $request->search . '%');
+        }
+
         $peminjaman = $query->latest()->get();
 
         return view('admin.peminjaman.index', compact('peminjaman', 'status'));
-    }
-    /**
-     * Menampilkan form untuk mengajukan peminjaman.
-     */
-    public function create()
-    {
-        // Ambil sarpras yang statusnya 'Tersedia' untuk dipilih
-        $sarprasTersedia = Sarpras::where('status', 'Tersedia')->get();
-        return view('peminjaman.create', compact('sarprasTersedia'));
     }
 
     /**
@@ -76,6 +75,9 @@ class PeminjamanController extends Controller
         $peminjaman = Peminjaman::findOrFail($id);
         $peminjaman->update(['status' => 'Disetujui']);
 
+        // Update status sarpras menjadi 'Dipinjam'
+        $peminjaman->sarpras->update(['status' => 'Dipinjam']);
+
         return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil disetujui.');
     }
 
@@ -87,10 +89,21 @@ class PeminjamanController extends Controller
         return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil ditolak.');
     }
 
+    public function complete($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+        $peminjaman->update(['status' => 'Selesai']);
+
+        // Update status sarpras kembali ke 'Tersedia'
+        $peminjaman->sarpras->update(['status' => 'Tersedia']);
+
+        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil diselesaikan.');
+    }
+
     // Tambahan: Anda perlu membuat method dan route untuk riwayat peminjaman
-    // public function riwayat()
-    // {
-    //     $peminjaman = Peminjaman::where('id_akun', Auth::id())->latest()->get();
-    //     return view('peminjaman.riwayat', compact('peminjaman'));
-    // }
+    public function riwayat()
+    {
+        $peminjaman = Peminjaman::where('id_akun', Auth::id())->latest()->get();
+        return view('public.peminjaman.riwayat', compact('peminjaman'));
+    }
 }

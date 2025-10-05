@@ -17,7 +17,6 @@ class AdminSeeder extends Seeder
     {
         // 1. Buat Roles terlebih dahulu
         $adminRole = Role::firstOrCreate(['nama_role' => 'Admin']);
-        Role::firstOrCreate(['nama_role' => 'Staff']);
         Role::firstOrCreate(['nama_role' => 'Dosen']);
         Role::firstOrCreate(['nama_role' => 'Mahasiswa']);
 
