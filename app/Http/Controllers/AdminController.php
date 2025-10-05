@@ -20,6 +20,16 @@ class AdminController extends Controller
         $peminjaman_menunggu = Peminjaman::where('status', 'Menunggu')->count();
         $peminjaman_disetujui = Peminjaman::where('status', 'Disetujui')->count();
 
+        // Statistik ruangan
+        $ruanganTersedia = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Tersedia')->count();
+        $ruanganTerpakai = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Dipinjam')->count();
+        $ruanganPerbaikan = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Perbaikan')->count();
+
+        // Statistik proyektor
+        $proyektorTersedia = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Tersedia')->count();
+        $proyektorTerpakai = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Dipinjam')->count();
+        $proyektorPerbaikan = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Perbaikan')->count();
+
         // Mengambil data peminjaman terbaru untuk ditampilkan di tabel
         $peminjaman_terbaru = Peminjaman::with(['user', 'sarpras'])->latest()->take(5)->get();
 
@@ -28,6 +38,12 @@ class AdminController extends Controller
             'jumlah_sarpras',
             'peminjaman_menunggu',
             'peminjaman_disetujui',
+            'ruanganTersedia',
+            'ruanganTerpakai',
+            'ruanganPerbaikan',
+            'proyektorTersedia',
+            'proyektorTerpakai',
+            'proyektorPerbaikan',
             'peminjaman_terbaru'
         ));
     }

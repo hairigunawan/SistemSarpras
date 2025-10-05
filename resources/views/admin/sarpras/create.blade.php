@@ -6,7 +6,7 @@
 <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl mx-auto" x-data="{ jenis: '{{ old('jenis_sarpras', 'Ruangan') }}' }">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">Tambah Sarpras Baru</h2>
-        <a href="{{ route('sarpras.index') }}" class="text-gray-600 hover:text-gray-800">&larr; Kembali</a>
+        <a href="{{ route('sarpras.index') }}" class="flex text-gray-600 hover:text-gray-800"><span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m0 0l6 6m-6-6l6-6"/></svg></span>Kembali</a>
     </div>
 
     <form action="{{ route('sarpras.store') }}" method="POST" enctype="multipart/form-data">
@@ -57,6 +57,16 @@
             <div>
                 <label for="lokasi" class="block text-sm font-medium text-gray-700">Lokasi</label>
                 <input type="text" name="lokasi" id="lokasi" value="{{ old('lokasi') }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div>
+                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                <select name="status" id="status" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    <option value="Tersedia" {{ old('status', 'Tersedia') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                    <option value="Dipinjam" {{ old('status') == 'Dipinjam' ? 'selected' : '' }}>Dipinjam</option>
+                    <option value="Penuh" {{ old('status') == 'Penuh' ? 'selected' : '' }}>Penuh</option>
+                    <option value="Perbaikan" {{ old('status') == 'Perbaikan' ? 'selected' : '' }}>Perbaikan</option>
+                </select>
+                @error('status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
             <div>
                 <label for="gambar" class="block text-sm font-medium text-gray-700">Gambar</label>

@@ -9,6 +9,48 @@ use Illuminate\Http\Request;
 class PublicController extends Controller
 {
     /**
+     * Menampilkan halaman landing publik dengan statistik.
+     */
+    public function landing()
+    {
+        // Hitung statistik ruangan
+        $RuanganTersedia = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Tersedia')->count();
+        $RuanganTerpakai = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Dipinjam')->count();
+        $RuanganPerbaikan = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Perbaikan')->count();
+
+        // Hitung statistik proyektor
+        $ProyektorTersedia = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Tersedia')->count();
+        $ProyektorTerpakai = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Dipinjam')->count();
+        $ProyektorPerbaikan = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Perbaikan')->count();
+
+        // Ambil data laboratorium terpakai (peminjaman yang sedang berlangsung)
+        $labs = Peminjaman::with(['sarpras'])
+            ->where('status', 'Disetujui')
+            ->whereHas('sarpras', function($query) {
+                $query->where('jenis_sarpras', 'Ruangan');
+            })
+            ->get()
+            ->map(function($peminjaman) {
+                return [
+                    'nama' => $peminjaman->sarpras->nama_sarpras,
+                    'kelas' => $peminjaman->nama_peminjam ?? 'N/A',
+                    'matkul' => $peminjaman->keterangan ?? 'N/A',
+                    'waktu' => $peminjaman->jam_mulai . ' - ' . $peminjaman->jam_selesai,
+                ];
+            })->take(3)->toArray();
+
+        return view('public.landing', compact(
+            'RuanganTersedia',
+            'RuanganTerpakai',
+            'RuanganPerbaikan',
+            'ProyektorTersedia',
+            'ProyektorTerpakai',
+            'ProyektorPerbaikan',
+            'labs'
+        ));
+    }
+
+    /**
      * Menampilkan form untuk mengajukan peminjaman publik.
      */
     public function createPeminjaman()

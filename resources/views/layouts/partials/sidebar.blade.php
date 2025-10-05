@@ -1,7 +1,9 @@
 <aside class="w-64 bg-white p-6 flex flex-col justify-between">
     <div>
-        <div class="flex mb-10">
-            <h1 class="flex items-center gap-2 justify-between text-2xl font-bold text-gray-800"><span class="block bg-gray-900 w-5 h-5"></span>SIMPERSITE.</h1>
+        <div class="flex mb-10 gap-1">
+            <p class="rotate-6"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 14l-9 6l-9-6m18-4l-9 6l-9-6l9-6z"/></svg>
+            </p>
+            <h1 class="flex items-center gap-2 justify-between text-xl font-bold text-gray-800">SIMPERSITE.</h1>
         </div>
         <nav>
             <ul>

@@ -14,10 +14,7 @@ use App\Http\Controllers\PublicController; // Asumsi ada controller untuk halama
 | Siapa pun bisa mengakses rute ini.
 */
 
-Route::get('/', function () {
-    // Arahkan ke halaman landing, BUKAN dashboard admin
-    return view('public.landing');
-})->name('landing');
+Route::get('/', [PublicController::class, 'landing'])->name('landing');
 
 // Rute untuk form peminjaman publik
 Route::get('/peminjaman-public', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create');
