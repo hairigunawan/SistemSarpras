@@ -9,52 +9,79 @@
             <h2 class="text-xl font-bold">{{ $sarpra->nama_sarpras }}</h2>
             <p class="text-gray-500">{{ $sarpra->jenis_sarpras }}</p>
         </div>
-        <a href="{{ route('sarpras.index') }}" class="text-gray-600 hover:text-gray-800">&larr; Kembali ke Daftar</a>
+        <a href="{{ route('sarpras.index') }}" class="flex gap-1.5 text-gray-600 hover:text-gray-800"><span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m0 0l6 6m-6-6l6-6"/></svg></span>Kembali ke Daftar</a>
     </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="flex gap-5">
         <div class="md:col-span-1">
             @if($sarpra->gambar)
-                <img src="{{ asset('storage/' . $sarpra->gambar) }}" alt="{{ $sarpra->nama_sarpras }}" class="w-full h-auto rounded-lg shadow-md">
+                <img
+                    src="{{ asset('storage/' . $sarpra->gambar) }}"
+                    alt="{{ $sarpra->nama_sarpras }}"
+                    class="w-full h-80 object-cover rounded-lg border"
+                >
             @else
-                <div class="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                <div class="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center">
                     <span class="text-gray-500">Tidak ada gambar</span>
                 </div>
             @endif
         </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="md:col-span-2 space-y-4">
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-500">Status</h4>
+                    <p class="text-lg font-normal">{{ $sarpra->status }}</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-500">Lokasi</h4>
+                    <p class="text-lg font-normal">{{ $sarpra->lokasi ?? '-' }}</p>
+                </div>
 
-        <div class="md:col-span-2 space-y-4">
-            <div>
-                <h4 class="text-sm font-semibold text-gray-500 uppercase">Status</h4>
-                <p class="text-lg font-medium">{{ $sarpra->status }}</p>
-            </div>
-             <div>
-                <h4 class="text-sm font-semibold text-gray-500 uppercase">Lokasi</h4>
-                <p class="text-lg font-medium">{{ $sarpra->lokasi ?? '-' }}</p>
-            </div>
+                @if($sarpra->jenis_sarpras == 'Ruangan')
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-500">Kapasitas</h4>
+                    <p class="text-lg font-normal">{{ $sarpra->kapasitas }} Orang</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-500">Kode Ruangan</h4>
+                    <p class="text-lg font-normal">{{ $sarpra->kode_ruangan }}</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-500 mb-1">Status</h4>
+                    <span class="text-xs font-normal inline-block py-1 px-4 uppercase rounded-[5px] {{ $sarpra->status == 'Tersedia' ? 'text-green-600 bg-green-200' : 'text-yellow-600 bg-yellow-200' }}">
+                    {{ $sarpra->status }}
+                    </span>
+                </div>
+                @endif
 
-            @if($sarpra->jenis_sarpras == 'Ruangan')
-            <div>
-                <h4 class="text-sm font-semibold text-gray-500 uppercase">Kapasitas</h4>
-                <p class="text-lg font-medium">{{ $sarpra->kapasitas }} Orang</p>
-            </div>
-            @endif
+                @if($sarpra->jenis_sarpras == 'Proyektor')
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-500">Merk</h4>
+                    <p class="text-lg font-normal">{{ $sarpra->merk ?? '-' }}</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-500">kode proyektor</h4>
+                    <p class="text-lg font-normal">{{ $sarpra->kode_proyektor}}</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-500 mb-1">Status</h4>
+                    <span class="text-xs font-normal inline-block py-1 px-4 uppercase rounded-[5px] {{ $sarpra->status == 'Tersedia' ? 'text-green-600 bg-green-200' : 'text-yellow-600 bg-yellow-200' }}">
+                    {{ $sarpra->status }}
+                    </span>
+                </div>
+                @endif
 
-            @if($sarpra->jenis_sarpras == 'Proyektor')
-            <div>
-                <h4 class="text-sm font-semibold text-gray-500 uppercase">Merk</h4>
-                <p class="text-lg font-medium">{{ $sarpra->merk ?? '-' }}</p>
-            </div>
-            <div>
-                <h4 class="text-sm font-semibold text-gray-500 uppercase">Keterangan Lain</h4>
-                <p class="text-lg font-medium">{{ $sarpra->keterangan_lain ?? '-' }}</p>
-            </div>
-            @endif
-
-            <div class="pt-4 border-t">
-                 <a href="{{ route('sarpras.edit', $sarpra->id_sarpras) }}" class="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold text-sm hover:bg-blue-600 transition-colors">
-                    Edit Data
-                </a>
+                <div class="pt-4 border-t flex gap-2">
+                    <a href="{{ route('sarpras.edit', $sarpra->id_sarpras) }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-600 transition-colors">
+                    Edit
+                    </a>
+                    <form action="{{ route('sarpras.destroy', $sarpra->id_sarpras) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus sarpras ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="bg-red-500 text-white px-6 py-2 rounded-lg font-semibold text-sm hover:bg-red-600 transition-colors">
+                            Hapus
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

@@ -21,7 +21,7 @@
                     <div class="flex items-center space-x-4">
                         <a href="{{ route('landing') }}" class="text-gray-600 hover:text-gray-900">Beranda</a>
                         @auth
-                            <a href="{{ route('admin.dashboard') }}" class="font-semibold text-gray-600 hover:text-gray-900">Dashboard</a>
+                            <a href="{{ route('dashboard.index') }}" class="font-semibold text-gray-600 hover:text-gray-900">Dashboard</a>
                         @else
                             <a href="{{ route('login') }}" class="font-semibold text-gray-600 hover:text-gray-900">Login</a>
                             @if (Route::has('register'))

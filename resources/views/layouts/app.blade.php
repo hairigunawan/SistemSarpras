@@ -16,7 +16,7 @@
         @include('layouts.partials.sidebar')
 
         <div class="flex-1 flex flex-col">
-            <header class="bg-white p-6 flex justify-end items-center">
+            <header class="bg-white pr-10 p-6 flex justify-end items-center">
                 <div class="flex items-center space-x-3">
                     <div class="text-right">
                         <p class="font-semibold text-sm">{{ Auth::user()->nama ?? 'Admin' }}</p>

@@ -9,9 +9,12 @@
             <h2 class="text-xl text-gray-700 font-semibold mb-1">Peminjaman</h2>
             <p class="text-gray-500 mb-6">Kelola data peminjaman sarpras</p>
         </div>
-        <div>
-            <input type="text" placeholder="Cari peminjam..." class="w-full md:w-64 px-4 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-        </div>
+        <form method="GET" action="{{ route('peminjaman.index') }}" class="flex items-center space-x-2">
+                @if(request('jenis'))
+                    <input type="hidden" name="nama" value="{{ request('nama') }}">
+                @endif
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari sarpras..." class="w-full md:w-64 px-4 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300">
+            </form>
     </div>
 
     <div class="flex justify-between">
@@ -19,7 +22,8 @@
             <a href="{{ route('peminjaman.index', ['status' => 'all']) }}" class="py-2 text-sm px-3 ml-1 rounded-[7px] {{ $status == 'all' ? 'border border-green-500 font-semibold text-green-600' : 'text-gray-500 hover:text-green-600' }}">Semua</a>
             <a href="{{ route('peminjaman.index', ['status' => 'Menunggu']) }}" class="py-2 text-sm px-3 rounded-[7px] {{ $status == 'Menunggu' ? 'border border-green-500 font-semibold text-green-600' : 'text-gray-500 hover:text-green-600' }}">Menunggu</a>
             <a href="{{ route('peminjaman.index', ['status' => 'Disetujui']) }}" class="py-2 text-sm px-3 rounded-[7px] {{ $status == 'Disetujui' ? 'border border-green-500 font-semibold text-green-600' : 'text-gray-500 hover:text-green-600' }}">Disetujui</a>
-            <a href="{{ route('peminjaman.index', ['status' => 'Ditolak']) }}" class="py-2 text-sm px-3 mr-1 rounded-[7px] {{ $status == 'Ditolak' ? 'border border-green-500 font-semibold text-green-600' : 'text-gray-500 hover:text-green-600' }}">Ditolak</a>
+            <a href="{{ route('peminjaman.index', ['status' => 'Ditolak']) }}" class="py-2 text-sm px-3 rounded-[7px] {{ $status == 'Ditolak' ? 'border border-green-500 font-semibold text-green-600' : 'text-gray-500 hover:text-green-600' }}">Ditolak</a>
+            <a href="{{ route('peminjaman.index', ['status' => 'Selesai']) }}" class="py-2 text-sm px-3 mr-1 rounded-[7px] {{ $status == 'Selesai' ? 'border border-green-500 font-semibold text-green-600' : 'text-gray-500 hover:text-green-600' }}">Selesai</a>
         </div>
     </div>
 
@@ -42,17 +46,19 @@
                     <td class="py-4 px-2">{{ $item->sarpras->nama_sarpras ?? 'N/A' }}</td>
                     <td class="py-4 px-2">
                         @if($item->status == 'Menunggu')
-                            <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-1 rounded-full">Menunggu</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-3 py-1.5 rounded">Menunggu</span>
                         @elseif($item->status == 'Disetujui')
-                            <span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-1 rounded-full">Disetujui</span>
+                            <span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-3 py-1.5 rounded">Disetujui</span>
                         @elseif($item->status == 'Ditolak')
-                            <span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-1 rounded-full">Ditolak</span>
+                            <span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-3 py-1.5 rounded">Ditolak</span>
+                        @elseif($item->status == 'Selesai')
+                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-3 py-1.5 rounded">Selesai</span>
                         @else
-                            <span class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-1 rounded-full">{{ $item->status }}</span>
+                            <span class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-3 py-1.5 rounded">{{ $item->status }}</span>
                         @endif
                     </td>
                     <td class="py-4 px-2">
-                        <a href="{{ route('peminjaman.show', $item->id_peminjaman) }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold">View Details</a>
+                        <a href="{{ route('peminjaman.show', $item->id_peminjaman) }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm font-semibold">View Details</a>
                     </td>
                 </tr>
                 @empty

@@ -70,6 +70,8 @@
                         <span class="bg-green-100 text-green-800 text-sm font-semibold mr-2 px-2.5 py-1 rounded-full">Disetujui</span>
                     @elseif($peminjaman->status == 'Ditolak')
                         <span class="bg-red-100 text-red-800 text-sm font-semibold mr-2 px-2.5 py-1 rounded-full">Ditolak</span>
+                    @elseif($peminjaman->status == 'Selesai')
+                        <span class="bg-blue-100 text-blue-800 text-sm font-semibold mr-2 px-2.5 py-1 rounded-full">Selesai</span>
                     @else
                         <span class="bg-gray-100 text-gray-800 text-sm font-semibold mr-2 px-2.5 py-1 rounded-full">{{ $peminjaman->status }}</span>
                     @endif
@@ -98,6 +100,16 @@
             @method('PATCH')
             <button type="submit" class="bg-red-500 text-white px-6 py-2 rounded-lg font-semibold text-sm hover:bg-red-600 transition-colors">
                 Tolak Peminjaman
+            </button>
+        </form>
+    </div>
+    @elseif($peminjaman->status == 'Disetujui')
+    <div class="pt-6 border-t mt-6 flex space-x-4">
+        <form action="{{ route('peminjaman.complete', $peminjaman->id_peminjaman) }}" method="POST" class="inline">
+            @csrf
+            @method('PATCH')
+            <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold text-sm hover:bg-blue-600 transition-colors">
+                Selesaikan Peminjaman
             </button>
         </form>
     </div>

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sarpras', function (Blueprint $table) {
-            $table->string('merk')->nullable()->after('kapasitas');
+            $table->enum('status', ['Tersedia', 'Dipinjam', 'Penuh', 'Perbaikan'])->default('Tersedia')->change();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('sarpras', function (Blueprint $table) {
-            $table->dropColumn('merk');
+            $table->enum('status', ['Tersedia', 'Dipinjam', 'Penuh'])->default('Tersedia')->change();
         });
     }
 };

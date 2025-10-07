@@ -14,10 +14,7 @@ use App\Http\Controllers\PublicController; // Asumsi ada controller untuk halama
 | Siapa pun bisa mengakses rute ini.
 */
 
-Route::get('/', function () {
-    // Arahkan ke halaman landing, BUKAN dashboard admin
-    return view('public.landing');
-})->name('landing');
+Route::get('/', [PublicController::class, 'landing'])->name('landing');
 
 // Rute untuk form peminjaman publik
 Route::get('/peminjaman-public', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create');
@@ -44,26 +41,14 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 });
 
-
-/*
-|--------------------------------------------------------------------------
-| Rute KHUSUS ADMIN
-|--------------------------------------------------------------------------
-| Hanya pengguna dengan peran 'Admin' yang bisa mengakses ini.
-*/
-Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::resource('/akun', AkunController::class)->names('admin.akun');
-});
-
-
 /*
 |--------------------------------------------------------------------------
 | Rute untuk MANAJEMEN (Admin & Staff)
 |--------------------------------------------------------------------------
-| Hanya 'Admin' dan 'Staff' yang bisa mengakses ini.
 */
-Route::middleware(['auth', 'role:Admin,Staff'])->group(function () {
+Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard.index');
+    Route::resource('/akun', AkunController::class)->names('admin.akun');
     // Mengelola semua data sarpras
     Route::resource('/sarpras', SarprasController::class);
     // Melihat SEMUA peminjaman untuk approval
@@ -73,6 +58,7 @@ Route::middleware(['auth', 'role:Admin,Staff'])->group(function () {
     Route::get('/peminjaman/{id}', [PeminjamanController::class, 'show'])->name('peminjaman.show');
     Route::patch('/peminjaman/{id}/approve', [PeminjamanController::class, 'approve'])->name('peminjaman.approve');
     Route::patch('/peminjaman/{id}/reject', [PeminjamanController::class, 'reject'])->name('peminjaman.reject');
+    Route::patch('/peminjaman/{id}/complete', [PeminjamanController::class, 'complete'])->name('peminjaman.complete');
 });
 
 
@@ -80,7 +66,6 @@ Route::middleware(['auth', 'role:Admin,Staff'])->group(function () {
 |--------------------------------------------------------------------------
 | Rute untuk PEMINJAM (Dosen & Mahasiswa)
 |--------------------------------------------------------------------------
-| Hanya 'Dosen' dan 'Mahasiswa' yang bisa mengakses ini.
 */
 Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
     // Form untuk mengajukan peminjaman
@@ -88,5 +73,5 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
     // Proses pengiriman form
     Route::post('/peminjaman', [PeminjamanController::class, 'store'])->name('peminjaman.store');
     // Melihat riwayat peminjaman PRIBADI
-    // Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('peminjaman.riwayat');
+    Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('peminjaman.riwayat');
 });

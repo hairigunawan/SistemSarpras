@@ -31,6 +31,10 @@ class SarprasController extends Controller
             $query->where('jenis_sarpras', $request->jenis);
         }
 
+        if ($request->has('search') && $request->search) {
+            $query->where('nama_sarpras', 'like', '%' . $request->search . '%');
+        }
+
         $sarpras = $query->latest()->paginate(9);
         return view('admin.sarpras.index', compact('sarpras'));
     }
@@ -52,22 +56,23 @@ class SarprasController extends Controller
         $validated = $request->validate([
             'nama_sarpras' => 'required|string|max:255',
             'jenis_sarpras' => 'required|string',
+            'status' => 'required|string|in:Tersedia,Dipinjam,Penuh,Perbaikan',
             'kode_ruangan' => [
                 'required_if:jenis_sarpras,Ruangan',
                 'nullable',
                 'string',
                 'max:50',
-                Rule::unique('sarpras')->where(fn($query) => $query->where('jenis_sarpras', 'Ruangan')),
+                Rule::unique(Sarpras::class, 'kode_ruangan')->where(fn($query) => $query->where('jenis_sarpras', 'Ruangan')),
             ],
             'kode_proyektor' => [
                 'required_if:jenis_sarpras,Proyektor',
                 'nullable',
                 'string',
                 'max:50',
-                Rule::unique('sarpras')->where(fn($query) => $query->where('jenis_sarpras', 'Proyektor')),
+                Rule::unique(Sarpras::class, 'kode_proyektor')->where(fn($query) => $query->where('jenis_sarpras', 'Proyektor')),
             ],
             'lokasi' => 'nullable|string',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'kapasitas' => 'required_if:jenis_sarpras,Ruangan|nullable|integer|min:1',
             'merk' => 'required_if:jenis_sarpras,Proyektor|nullable|string|max:255',
         ]);
@@ -111,22 +116,25 @@ class SarprasController extends Controller
         $validated = $request->validate([
             'nama_sarpras' => 'required|string|max:255',
             'jenis_sarpras' => 'required|string',
+            'status' => 'required|string|in:Tersedia,Dipinjam,Penuh,Perbaikan',
             'kode_ruangan' => [
                 'required_if:jenis_sarpras,Ruangan',
                 'nullable',
                 'string',
                 'max:50',
-                Rule::unique('sarpras')->ignore($sarpra->id_sarpras)->where(fn($query) => $query->where('jenis_sarpras', 'Ruangan')),
+                Rule::unique(Sarpras::class, 'kode_ruangan')
+                    ->ignore($sarpra)
+                    ->where(fn($query) => $query->where('jenis_sarpras', 'Ruangan'))
             ],
             'kode_proyektor' => [
                 'required_if:jenis_sarpras,Proyektor',
                 'nullable',
                 'string',
                 'max:50',
-                Rule::unique('sarpras')->ignore($sarpra->id_sarpras)->where(fn($query) => $query->where('jenis_sarpras', 'Proyektor')),
+                Rule::unique(Sarpras::class, 'kode_proyektor')->ignore($sarpra)->where(fn($query) => $query->where('jenis_sarpras', 'Proyektor')),
             ],
             'lokasi' => 'nullable|string',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'kapasitas' => 'required_if:jenis_sarpras,Ruangan|nullable|integer|min:1',
             'merk' => 'required_if:jenis_sarpras,Proyektor|nullable|string|max:255',
         ]);
@@ -140,9 +148,12 @@ class SarprasController extends Controller
             $validated['gambar'] = str_replace('public/', '', $path);
         }
 
-        $sarpra->update($validated);
-
-        return redirect()->route('sarpras.index')->with('success', 'Sarpras berhasil diperbarui.');
+        try {
+            $sarpra->update($validated);
+            return redirect()->route('sarpras.show', $sarpra)->with('success', 'Sarpras berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal memperbarui sarpras: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
@@ -150,6 +161,16 @@ class SarprasController extends Controller
      */
     public function destroy(Sarpras $sarpra)
     {
+        // Cek apakah sarpras sedang dipinjam
+        if ($sarpra->status === 'Dipinjam') {
+            return redirect()->route('sarpras.index')->with('error', 'Sarpras tidak dapat dihapus karena sedang dipinjam.');
+        }
+
+        // Cek apakah sarpras memiliki riwayat peminjaman
+        if ($sarpra->peminjamans()->exists()) {
+            return redirect()->route('sarpras.index')->with('error', 'Sarpras tidak dapat dihapus karena memiliki riwayat peminjaman.');
+        }
+
         // Hapus gambar dari storage jika ada
         if ($sarpra->gambar) {
             Storage::delete('public/' . $sarpra->gambar);
