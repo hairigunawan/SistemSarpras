@@ -6,6 +6,8 @@ use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AkunController;
 use App\Http\Controllers\PublicController; // Asumsi ada controller untuk halaman publik
+use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +21,15 @@ Route::get('/', [PublicController::class, 'landing'])->name('landing');
 // Rute untuk form peminjaman publik
 Route::get('/peminjaman-public', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create');
 Route::post('/peminjaman-public', [PublicController::class, 'storePeminjaman'])->name('public.peminjaman.store');
+
+// Rute untuk autentikasi sosial
+Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
+
+// Rute untuk autentikasi login
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
 /*

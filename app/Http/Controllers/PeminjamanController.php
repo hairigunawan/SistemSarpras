@@ -6,6 +6,7 @@ use App\Models\Peminjaman;
 use App\Models\Sarpras;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class PeminjamanController extends Controller
 {
@@ -25,7 +26,9 @@ class PeminjamanController extends Controller
         }
 
         if ($request->has('search') && $request->search) {
-            $query->where('nama_sarpras', 'like', '%' . $request->search . '%');
+            $query->whereHas('sarpras', function($q) use ($request) {
+                $q->where('nama_sarpras', 'like', '%' . $request->search . '%');
+            });
         }
 
         $peminjaman = $query->latest()->get();
@@ -73,6 +76,31 @@ class PeminjamanController extends Controller
     public function approve($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
+
+        // Create start and end datetime for the current peminjaman
+        $start1 = Carbon::parse($peminjaman->tanggal_pinjam . ' ' . $peminjaman->jam_mulai);
+        $end1 = Carbon::parse($peminjaman->tanggal_kembali . ' ' . $peminjaman->jam_selesai);
+
+        // Find conflicting peminjaman by the same user with overlapping time
+        $conflicting = Peminjaman::where('id_akun', $peminjaman->id_akun)
+            ->where('status', 'Menunggu')
+            ->where('id_peminjaman', '!=', $id)
+            ->get()
+            ->filter(function($p) use ($start1, $end1) {
+                $start2 = Carbon::parse($p->tanggal_pinjam . ' ' . $p->jam_mulai);
+                $end2 = Carbon::parse($p->tanggal_kembali . ' ' . $p->jam_selesai);
+                return $start1->lt($end2) && $start2->lt($end1);
+            });
+
+        // Reject conflicting peminjaman with reason
+        foreach ($conflicting as $conflict) {
+            $conflict->update([
+                'status' => 'Ditolak',
+                'alasan_penolakan' => 'Peminjaman ditolak karena bentrok dengan peminjaman yang disetujui pada waktu yang sama.',
+            ]);
+        }
+
+        // Approve the current peminjaman
         $peminjaman->update(['status' => 'Disetujui']);
 
         // Update status sarpras menjadi 'Dipinjam'
@@ -81,10 +109,17 @@ class PeminjamanController extends Controller
         return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil disetujui.');
     }
 
-    public function reject($id)
+    public function reject(Request $request, $id)
     {
+        $request->validate([
+            'alasan_penolakan' => 'required|string|max:500',
+        ]);
+
         $peminjaman = Peminjaman::findOrFail($id);
-        $peminjaman->update(['status' => 'Ditolak']);
+        $peminjaman->update([
+            'status' => 'Ditolak',
+            'alasan_penolakan' => $request->alasan_penolakan,
+        ]);
 
         return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil ditolak.');
     }
