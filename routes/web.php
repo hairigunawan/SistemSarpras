@@ -6,6 +6,7 @@ use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AkunController;
 use App\Http\Controllers\PublicController; // Asumsi ada controller untuk halaman publik
+use App\Http\Controllers\DashboardPeminjamanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,8 +18,21 @@ use App\Http\Controllers\PublicController; // Asumsi ada controller untuk halama
 Route::get('/', [PublicController::class, 'landing'])->name('landing');
 
 // Rute untuk form peminjaman publik
-Route::get('/peminjaman-public', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create');
-Route::post('/peminjaman-public', [PublicController::class, 'storePeminjaman'])->name('public.peminjaman.store');
+// Formulir peminjaman publik
+Route::get('/peminjaman-public/create', [PublicController::class, 'createPeminjaman'])
+    ->name('public.peminjaman.create');
+
+// Proses penyimpanan data peminjaman publik
+Route::post('/peminjaman-public', [PublicController::class, 'storePeminjaman'])
+    ->name('public.peminjaman.store');
+
+Route::get('/peminjaman-public/daftar', [PublicController::class, 'daftarPeminjaman'])
+    ->name('public.peminjaman.daftarpeminjaman');    
+
+
+Route::get('/sarana-prasarana', [PublicController::class, 'saranaPrasarana'])
+    ->name('user.sarpras');
+        
 
 
 /*

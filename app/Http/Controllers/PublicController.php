@@ -93,7 +93,26 @@ class PublicController extends Controller
             'status' => 'Menunggu', // Status default saat pengajuan
         ]);
 
-        // Redirect ke halaman sukses atau landing
-        return redirect()->route('landing')->with('success', 'Pengajuan peminjaman berhasil dikirim. Mohon tunggu konfirmasi via email.');
+        return redirect()->route('public.peminjaman.daftarpeminjaman')
+    ->with('success', 'Peminjaman berhasil dikirim dan sedang diproses.');
     }
+
+    public function daftarpeminjaman()
+{
+    // Misalnya ambil semua data peminjaman dari model Peminjaman
+    $peminjaman = \App\Models\Peminjaman::latest()->get();
+
+    // Tampilkan view publik
+    return view('public.peminjaman.daftarpeminjaman', compact('peminjaman'));
+}
+
+public function sarpras()
+{
+    $sarpras = \App\Models\Sarpras::latest()->get();
+
+    // Tampilkan view publik
+    return view('user.sarpras', compact('sarpras'));
+
+}
+
 }

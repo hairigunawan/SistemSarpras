@@ -106,4 +106,26 @@ class PeminjamanController extends Controller
         $peminjaman = Peminjaman::where('id_akun', Auth::id())->latest()->get();
         return view('public.peminjaman.riwayat', compact('peminjaman'));
     }
+    public function daftareminjaman()
+    {
+        $user = Auth::user();
+
+        // Hitung total ruangan & proyektor yang pernah dipinjam
+        $totalRuangan = Peminjaman::where('id_akun', $user->id_akun ?? null)
+            ->whereHas('sarpras', function ($q) {
+                $q->where('jenis', 'ruangan');
+            })->count();
+
+        $totalProyektor = Peminjaman::where('id_akun', $user->id_akun ?? null)
+            ->whereHas('sarpras', function ($q) {
+                $q->where('jenis', 'proyektor');
+            })->count();
+
+        // Daftar peminjaman aktif user
+        $peminjamanAktif = Peminjaman::where('id_akun', $user->id_akun ?? null)
+            ->orderBy('tanggal_pinjam', 'desc')
+            ->get();
+
+        return view('peminjaman.peminjaman.daftarpeminjaman', compact('totalRuangan', 'totalProyektor', 'peminjamanAktif'));
+    }
 }
