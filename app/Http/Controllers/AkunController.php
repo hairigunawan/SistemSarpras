@@ -37,7 +37,6 @@ class AkunController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'nomor_whatsapp' => 'nullable|string|max:15',
             'role_id' => 'required|exists:roles,id_role',
         ]);
 
@@ -45,7 +44,6 @@ class AkunController extends Controller
             'nama' => $request->nama,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'nomor_whatsapp' => $request->nomor_whatsapp,
             'role_id' => $request->role_id,
         ]);
 
@@ -69,14 +67,12 @@ class AkunController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($akun->id_akun, 'id_akun')],
-            'nomor_whatsapp' => 'nullable|string|max:15',
             'role_id' => 'required|exists:roles,id_role',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
         $akun->nama = $request->nama;
         $akun->email = $request->email;
-        $akun->nomor_whatsapp = $request->nomor_whatsapp;
         $akun->role_id = $request->role_id;
 
         if ($request->filled('password')) {

@@ -142,9 +142,9 @@
         </div>
     </section>
 
-    <!-- Laboratorium Terpakai -->
+    <!-- Jadwal kelas dipakai -->
     <section class="container mx-auto px-6 mb-10">
-        <h3 class="text-xl text-gray-700 font-semibold mb-4">Laboratorium Terpakai</h3>
+        <h3 class="text-xl text-gray-700 font-semibold mb-4">Ruangan Terpakai</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach($labs ?? [] as $lab)
                 <div class="bg-white rounded-xl p-5 border border-gray-200">

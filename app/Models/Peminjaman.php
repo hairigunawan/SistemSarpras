@@ -22,6 +22,7 @@ class Peminjaman extends Model
         'nama_peminjam',
         'email_peminjam',
         'telepon_peminjam',
+        'alasan_penolakan',
     ];
 
     public function user()

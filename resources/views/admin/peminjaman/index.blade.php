@@ -19,11 +19,11 @@
 
     <div class="flex justify-between">
         <div class="border w-70 py-2 rounded-[7px] mb-4">
-            <a href="{{ route('peminjaman.index', ['status' => 'all']) }}" class="py-2 text-sm px-3 ml-1 rounded-[7px] {{ $status == 'all' ? 'border border-green-500 font-semibold text-green-600' : 'text-gray-500 hover:text-green-600' }}">Semua</a>
-            <a href="{{ route('peminjaman.index', ['status' => 'Menunggu']) }}" class="py-2 text-sm px-3 rounded-[7px] {{ $status == 'Menunggu' ? 'border border-green-500 font-semibold text-green-600' : 'text-gray-500 hover:text-green-600' }}">Menunggu</a>
-            <a href="{{ route('peminjaman.index', ['status' => 'Disetujui']) }}" class="py-2 text-sm px-3 rounded-[7px] {{ $status == 'Disetujui' ? 'border border-green-500 font-semibold text-green-600' : 'text-gray-500 hover:text-green-600' }}">Disetujui</a>
-            <a href="{{ route('peminjaman.index', ['status' => 'Ditolak']) }}" class="py-2 text-sm px-3 rounded-[7px] {{ $status == 'Ditolak' ? 'border border-green-500 font-semibold text-green-600' : 'text-gray-500 hover:text-green-600' }}">Ditolak</a>
-            <a href="{{ route('peminjaman.index', ['status' => 'Selesai']) }}" class="py-2 text-sm px-3 mr-1 rounded-[7px] {{ $status == 'Selesai' ? 'border border-green-500 font-semibold text-green-600' : 'text-gray-500 hover:text-green-600' }}">Selesai</a>
+            <a href="{{ route('peminjaman.index', ['status' => 'all']) }}" class="py-2 text-sm px-3 ml-1 rounded-[7px] {{ $status == 'all' ? 'border border-blue-500 font-semibold text-blue-600' : 'text-gray-500 hover:text-blue-600' }}">Semua</a>
+            <a href="{{ route('peminjaman.index', ['status' => 'Menunggu']) }}" class="py-2 text-sm px-3 rounded-[7px] {{ $status == 'Menunggu' ? 'border border-blue-500 font-semibold text-blue-600' : 'text-gray-500 hover:text-blue-600' }}">Menunggu</a>
+            <a href="{{ route('peminjaman.index', ['status' => 'Disetujui']) }}" class="py-2 text-sm px-3 rounded-[7px] {{ $status == 'Disetujui' ? 'border border-blue-500 font-semibold text-blue-600' : 'text-gray-500 hover:text-blue-600' }}">Disetujui</a>
+            <a href="{{ route('peminjaman.index', ['status' => 'Ditolak']) }}" class="py-2 text-sm px-3 rounded-[7px] {{ $status == 'Ditolak' ? 'border border-blue-500 font-semibold text-blue-600' : 'text-gray-500 hover:text-blue-600' }}">Ditolak</a>
+            <a href="{{ route('peminjaman.index', ['status' => 'Selesai']) }}" class="py-2 text-sm px-3 mr-1 rounded-[7px] {{ $status == 'Selesai' ? 'border border-blue-500 font-semibold text-blue-600' : 'text-gray-500 hover:text-blue-600' }}">Selesai</a>
         </div>
     </div>
 
@@ -35,14 +35,14 @@
                     <th class="py-3 px-2 font-medium">Peminjam</th>
                     <th class="py-3 px-2 font-medium">Nama Sarpras</th>
                     <th class="py-3 px-2 font-medium">Status</th>
-                    <th class="py-3 px-2 font-medium">Aksi</th>
+                    <th class="flex justify-center py-3 px-2 font-medium">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($peminjaman as $item)
                 <tr class="border-t">
                     <td class="py-4 px-2">{{ $item->id_sarpras }}</td>
-                    <td class="py-4 px-2 font-semibold">{{ $item->user->name ?? 'N/A' }}</td>
+                    <td class="py-4 px-2 font-semibold">{{ $item->nama_peminjam ?? $item->user->name ?? 'N/A' }}</td>
                     <td class="py-4 px-2">{{ $item->sarpras->nama_sarpras ?? 'N/A' }}</td>
                     <td class="py-4 px-2">
                         @if($item->status == 'Menunggu')
@@ -57,7 +57,7 @@
                             <span class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-3 py-1.5 rounded">{{ $item->status }}</span>
                         @endif
                     </td>
-                    <td class="py-4 px-2">
+                    <td class="flex justify-center py-4 px-2">
                         <a href="{{ route('peminjaman.show', $item->id_peminjaman) }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm font-semibold">View Details</a>
                     </td>
                 </tr>
