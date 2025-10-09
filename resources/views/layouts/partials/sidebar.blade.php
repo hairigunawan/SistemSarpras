@@ -1,9 +1,9 @@
-<aside class="w-64 bg-white p-6 flex flex-col justify-between">
+<aside class="flex flex-col justify-between w-64 p-6 bg-white">
     <div>
-        <div class="flex mb-10 gap-1">
+        <div class="flex gap-1 mb-10">
             <p class="rotate-6"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 14l-9 6l-9-6m18-4l-9 6l-9-6l9-6z"/></svg>
             </p>
-            <h1 class="flex items-center gap-2 justify-between text-xl font-bold text-gray-800">SIMPERSITE.</h1>
+            <h1 class="flex items-center justify-between gap-2 text-xl font-bold text-gray-800">SIMPERSITE.</h1>
         </div>
         <nav>
             <ul>
@@ -26,7 +26,7 @@
                     </a>
                 </li>
                 <li class="mb-2">
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-lg font-medium text-sm {{ request()->is('laporan*') ? 'pl-7 bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <a href="{{ Route('laporan.index') }}" class="flex items-center gap-2 p-3 rounded-lg font-medium text-sm {{ request()->is('laporan*') ? 'pl-7 bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7 14h2a1 1 0 0 0 0-2H7a1 1 0 0 0 0 2m6 2H7a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2m6-14H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3m-5 2v3.29l-1.51-.84a1 1 0 0 0-1 0L10 7.29V4Zm6 15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3v5a1 1 0 0 0 .5.86a1 1 0 0 0 1 0L12 8.47l2.51 1.4A1 1 0 0 0 15 10a1 1 0 0 0 1-1V4h3a1 1 0 0 1 1 1Z"/></svg>
                         Laporan
                     </a>

@@ -8,6 +8,7 @@ use App\Http\Controllers\AkunController;
 use App\Http\Controllers\PublicController; // Asumsi ada controller untuk halaman publik
 use App\Http\Controllers\DashboardPeminjamanController;
 use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
 
 /*
@@ -29,12 +30,12 @@ Route::post('/peminjaman-public', [PublicController::class, 'storePeminjaman'])
     ->name('public.peminjaman.store');
 
 Route::get('/peminjaman-public/daftar', [PublicController::class, 'daftarPeminjaman'])
-    ->name('public.peminjaman.daftarpeminjaman');    
+    ->name('public.peminjaman.daftarpeminjaman');
 
 
 Route::get('/sarana-prasarana', [PublicController::class, 'saranaPrasarana'])
     ->name('user.sarpras');
-        
+
 
 // Rute untuk autentikasi sosial
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
@@ -44,6 +45,19 @@ Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleC
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+//Laporan
+Route::get('/laporan', [App\Http\Controllers\LaporanController::class, 'index'])->name('laporan.index');
+Route::get('/laporan/export/pdf', [App\Http\Controllers\LaporanController::class, 'exportPdf'])->name('laporan.pdf');
+Route::get('/laporan/export/excel', [App\Http\Controllers\LaporanController::class, 'exportExcel'])->name('laporan.excel');
+
+
+Route::prefix('laporan')->name('laporan.')->group(function () {
+    Route::get('/', [LaporanController::class, 'index'])->name('index');
+    Route::get('/pdf', [LaporanController::class, 'exportPdf'])->name('Pdf');
+    Route::get('/excel', [LaporanController::class, 'exportExcel'])->name('xlsx');
+});
+
 
 
 /*

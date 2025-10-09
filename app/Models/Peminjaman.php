@@ -34,4 +34,8 @@ class Peminjaman extends Model
     {
         return $this->belongsTo(Sarpras::class, 'id_sarpras', 'id_sarpras');
     }
+    public function laporan()
+    {
+        return $this->belongsTo(Laporan::class, 'id_laporan', 'id_laporan');
+    }
 }

@@ -33,6 +33,7 @@ class Sarpras extends Model
     {
         return $this->hasMany(Peminjaman::class, 'id_sarpras', 'id_sarpras');
     }
+    
 
     // ... sisa kode model
 }
