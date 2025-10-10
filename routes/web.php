@@ -133,3 +133,11 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
 });
 
     Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('public.peminjaman.riwayat');
+
+
+use App\Http\Controllers\JadwalController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('jadwal', JadwalController::class);
+});
+    

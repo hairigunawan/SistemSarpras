@@ -93,13 +93,8 @@ class PublicController extends Controller
             'status' => 'Menunggu', // Status default saat pengajuan
         ]);
 
-<<<<<<< HEAD
-        return redirect()->route('public.peminjaman.daftarpeminjaman')
+return redirect()->route('public.peminjaman.daftarpeminjaman')
     ->with('success', 'Peminjaman berhasil dikirim dan sedang diproses.');
-=======
-        // Redirect ke halaman sukses atau landing
-        return redirect()->route('public.beranda.index')->with('success', 'Pengajuan peminjaman berhasil dikirim. Mohon tunggu konfirmasi via email.');
->>>>>>> 1adb02f (Validasi input sarpras)
     }
 
     public function daftarpeminjaman()
@@ -121,3 +116,4 @@ public function sarpras()
 }
 
 }
+    
