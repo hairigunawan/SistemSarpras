@@ -15,6 +15,11 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -48,7 +53,8 @@ class LoginController extends Controller
         // Login admin
         Auth::login($user);
 
-        return redirect()->intended('/dashboard');
+        // Arahkan langsung ke dashboard admin
+        return redirect()->route('dashboard.index');
     }
 
     public function logout(Request $request)
@@ -58,5 +64,36 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'role' => 'required|in:Dosen,Mahasiswa',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $role = Role::where('nama_role', $validated['role'])->first();
+
+        if (! $role) {
+            return back()->withErrors(['role' => 'Role tidak ditemukan.'])->withInput();
+        }
+
+        $user = User::create([
+            'nama' => $validated['nama'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role_id' => $role->id_role,
+        ]);
+
+        Auth::login($user);
+
+        if (in_array($role->nama_role, ['Dosen', 'Mahasiswa'])) {
+            return redirect()->route('public.beranda.index');
+        }
+
+        return redirect()->route('landing');
     }
 }

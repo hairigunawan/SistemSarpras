@@ -11,7 +11,7 @@ class PublicController extends Controller
     /**
      * Menampilkan halaman landing publik dengan statistik.
      */
-    public function landing()
+    public function index()
     {
         // Hitung statistik ruangan
         $RuanganTersedia = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Tersedia')->count();
@@ -39,7 +39,7 @@ class PublicController extends Controller
                 ];
             })->take(3)->toArray();
 
-        return view('public.landing', compact(
+        return view('public.beranda.index', compact(
             'RuanganTersedia',
             'RuanganTerpakai',
             'RuanganPerbaikan',
@@ -93,8 +93,13 @@ class PublicController extends Controller
             'status' => 'Menunggu', // Status default saat pengajuan
         ]);
 
+<<<<<<< HEAD
         return redirect()->route('public.peminjaman.daftarpeminjaman')
     ->with('success', 'Peminjaman berhasil dikirim dan sedang diproses.');
+=======
+        // Redirect ke halaman sukses atau landing
+        return redirect()->route('public.beranda.index')->with('success', 'Pengajuan peminjaman berhasil dikirim. Mohon tunggu konfirmasi via email.');
+>>>>>>> 1adb02f (Validasi input sarpras)
     }
 
     public function daftarpeminjaman()

@@ -29,7 +29,6 @@ class AdminSeeder extends Seeder
             [
                 'nama' => 'Admin',
                 'password' => Hash::make('password'), // Ganti dengan password yang aman
-                'nomor_whatsapp' => '081234567890',
                 'role_id' => $adminRole->id_role, // Assign role admin
             ]
         );

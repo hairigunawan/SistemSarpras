@@ -1,4 +1,3 @@
-{{-- Menggunakan layout dasar jika ada, atau bisa berdiri sendiri --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,75 +6,93 @@
     <title>Login - SIMPERSITE</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+<body class="min-h-screen flex bg-white">
 
-    <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold text-center mb-6">SIMPERSITE | Login</h1>
+    {{-- Bagian kiri (Form Login) --}}
+    <div class="flex-1 flex flex-col justify-center px-10 lg:px-5">
+        <div class="max-w-[320px] w-full mx-auto">
+            <h1 class="text-3xl font-bold mb-2">Login</h1>
+            <p class="text-gray-500 mb-8">See your growth and get consulting support!</p>
 
-        <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4 text-sm">
-            <strong>Informasi Login:</strong><br>
-            • Admin: Gunakan email dan password<br>
-            • Dosen/Mahasiswa: Gunakan login Google
-        </div>
+            {{-- Tombol Google --}}
+            <a href="{{ route('auth.google') }}"
+               class="w-full flex justify-center items-center gap-2 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-600 hover:bg-gray-50">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5">
+                Sign in with Google
+            </a>
 
-        @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                <strong class="font-bold">Oops!</strong>
-                <span class="block sm:inline">{{ $errors->first() }}</span>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                <strong class="font-bold">Error!</strong>
-                <span class="block sm:inline">{{ session('error') }}</span>
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-
-            <div class="mb-4">
-                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Alamat Email</label>
-                <input type="email" name="email" id="email" required autofocus
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            {{-- Divider --}}
+            <div class="flex items-center my-6">
+                <div class="flex-grow border-t border-gray-300"></div>
+                <span class="mx-3 text-gray-400 text-sm">or sign in with Email</span>
+                <div class="flex-grow border-t border-gray-300"></div>
             </div>
 
-            <div class="mb-6">
-                <label for="password" class="block text-gray-700 text-sm font-light mb-2">Password</label>
-                <input type="password" name="password" id="password" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
+            {{-- Form Login --}}
+            <form method="POST" action="{{ route('login') }}" class="space-y-4">
+                @csrf
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email*</label>
+                    <input id="email" name="email" type="email" required
+                        class="w-full border rounded-md py-2 px-3 mt-1 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                </div>
 
-            <div class="flex items-center justify-between">
-                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
-                    Log In
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password*</label>
+                    <input id="password" name="password" type="password" required
+                        class="w-full border rounded-md py-2 px-3 mt-1 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center text-sm text-gray-600">
+                        <input type="checkbox" class="mr-2 rounded border-gray-300">
+                        Remember me
+                    </label>
+                    <a href="#" class="text-sm text-blue-600 hover:underline">Forgot password?</a>
+                </div>
+
+                <button type="submit"
+                        class="w-full bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition">
+                    Login
                 </button>
-            </div>
-        </form>
 
-        <div class="mt-6">
-            <div class="relative">
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-300"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-white text-gray-500">Atau</span>
-                </div>
-            </div>
+                <p class="text-center text-sm text-gray-500 mt-4">
+                    Not registered yet?
+                    <a href="{{ route('register') }}" class="text-blue-600 font-medium hover:underline">Create an Account</a>
+                </p>
+            </form>
+        </div>
+    </div>
 
-            <div class="mt-6">
-                <a href="{{ route('auth.google') }}" class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                    </svg>
-                    Login dengan Google
-                </a>
+    {{-- Bagian kanan (Ilustrasi & Background) --}}
+    <div class="hidden lg:flex flex-1 bg-gradient-to-br from-blue-500 to-blue-500 items-center justify-center relative overflow-hidden">
+        <div class="text-white text-center px-8">
+            <h2 class="text-3xl font-semibold mb-4">Turn your ideas into reality.</h2>
+            <p class="text-indigo-100 mb-8">Consistent quality and experience across all platforms and devices.</p>
+
+            {{-- Elemen dekoratif (grafik & kartu) --}}
+            <div class="flex flex-col items-center gap-6">
+                <div class="bg-white text-gray-800 rounded-xl shadow-lg p-4 w-64">
+                    <h3 class="text-sm font-semibold mb-2">Rewards</h3>
+                    <div class="flex items-center gap-4">
+                        <img src="https://via.placeholder.com/50" alt="user" class="rounded-full">
+                        <div>
+                            <p class="text-lg font-bold">172,832</p>
+                            <span class="text-sm text-gray-500">Points</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-4 w-64">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2">$162,751</h3>
+                    <p class="text-xs text-gray-500 mb-1">+ $23,827 August</p>
+                    <div class="h-16 w-full bg-gradient-to-r from-blue-300 to-purple-400 rounded-md opacity-50"></div>
+                </div>
             </div>
         </div>
+
+        {{-- Ornamen latar belakang --}}
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
     </div>
 
 </body>
