@@ -2,6 +2,11 @@
 
 @section('title', 'Inventory')
 
+{{-- Tombol tambah hanya untuk admin --}}
+@if(Auth::user()->role == 'admin')
+<a href="{{ route('inventory.create') }}" class="btn btn-primary mb-3">+ Tambah Barang</a>
+@endif
+
 @section('content')
 <div class="bg-white p-6 rounded-lg shadow-md">
     <h2 class="text-2xl font-semibold mb-1">Inventory</h2>

@@ -106,12 +106,12 @@ class PublicController extends Controller
     return view('public.peminjaman.daftarpeminjaman', compact('peminjaman'));
 }
 
-public function sarpras()
+public function saranaPrasarana()
 {
-    $sarpras = \App\Models\Sarpras::latest()->get();
+    $halamansarpras = \App\Models\Halamansarpras::latest()->get();
 
     // Tampilkan view publik
-    return view('user.sarpras', compact('sarpras'));
+    return view('public.user.halamansarpras', compact('halamansarpras'));
 
 }
 

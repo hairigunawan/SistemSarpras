@@ -5,6 +5,7 @@ use App\Http\Controllers\SarprasController;
 use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AkunController;
+use App\Http\Controllers\UserInventoryController;
 use App\Http\Controllers\PublicController; // Asumsi ada controller untuk halaman publik
 use App\Http\Controllers\DashboardPeminjamanController;
 use App\Http\Controllers\SocialAuthController;
@@ -31,10 +32,13 @@ Route::post('/peminjaman-public', [PublicController::class, 'storePeminjaman'])
 Route::get('/peminjaman-public/daftar', [PublicController::class, 'daftarPeminjaman'])
     ->name('public.peminjaman.daftarpeminjaman');    
 
+// Route untuk pengguna biasa (read only)
+Route::get('/sarana-prasarana', [UserInventoryController::class, 'index'])
+    ->name('public.user.halamansarpras');
+Route::get('/sarana-prasarana/{id}', [UserInventoryController::class, 'show'])
+    ->name('public.user.halamansarpras.show');
 
-Route::get('/sarana-prasarana', [PublicController::class, 'saranaPrasarana'])
-    ->name('user.sarpras');
-        
+
 
 // Rute untuk autentikasi sosial
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
@@ -44,6 +48,7 @@ Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleC
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
 
 
 /*
