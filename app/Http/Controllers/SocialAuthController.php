@@ -55,8 +55,15 @@ class SocialAuthController extends Controller
             // Login user
             Auth::login($user);
 
-            // Redirect ke dashboard
-            return redirect()->intended('/dashboard');
+            // Redirect sesuai peran:
+            // - Non-admin: ke halaman landing
+            // - Admin via SSO tidak diperbolehkan (fallback proteksi)
+            if ($user->role && $user->role->nama_role === 'Admin') {
+                Auth::logout();
+                return redirect('/login')->with('error', 'Admin harus login menggunakan email dan password.');
+            }
+
+            return redirect()->route('landing');
 
         } catch (\Exception $e) {
             return redirect('/login')->with('error', 'Gagal login dengan Google. Silakan coba lagi.');

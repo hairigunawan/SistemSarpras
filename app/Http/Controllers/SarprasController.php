@@ -12,13 +12,6 @@ class SarprasController extends Controller
     /**
      * Menampilkan halaman utama inventory dengan kategori.
      */
-    public function inventory()
-    {
-        $jumlahRuangan = Sarpras::where('jenis_sarpras', 'Ruangan')->count();
-        $jumlahProyektor = Sarpras::where('jenis_sarpras', 'Proyektor')->count();
-
-        return view('admin.sarpras.inventory', compact('jumlahRuangan', 'jumlahProyektor'));
-    }
 
     /**
      * Menampilkan daftar semua sarpras.
@@ -42,9 +35,9 @@ class SarprasController extends Controller
     /**
      * Menampilkan form untuk menambah sarpras baru.
      */
-    public function create()
+    public function tambah_sarpras()
     {
-        return view('admin.sarpras.create');
+        return view('admin.sarpras.tambah_sarpras');
     }
 
     /**
@@ -88,24 +81,24 @@ class SarprasController extends Controller
 
         Sarpras::create($validated);
 
-        return redirect()->route('sarpras.index')
+        return redirect()->route('admin.sarpras.index')
             ->with('success', 'Sarpras berhasil ditambahkan.');
     }
 
     /**
      * Menampilkan detail satu sarpras.
      */
-    public function show(Sarpras $sarpra)
+    public function lihat_sarpras(Sarpras $sarpra)
     {
-        return view('admin.sarpras.show', compact('sarpra'));
+        return view('admin.sarpras.lihat_sarpras', compact('sarpra'));
     }
 
     /**
      * Menampilkan form untuk mengedit sarpras.
      */
-    public function edit(Sarpras $sarpra)
+    public function edit_sarpras(Sarpras $sarpra)
     {
-        return view('admin.sarpras.edit', compact('sarpra'));
+        return view('admin.sarpras.edit_sarpras', compact('sarpra'));
     }
 
     /**

@@ -44,4 +44,5 @@ class User extends Authenticatable
     {
         return $this->hasMany(Peminjaman::class, 'id_akun', 'id_akun');
     }
+    
 }

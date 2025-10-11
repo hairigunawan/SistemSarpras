@@ -32,9 +32,20 @@
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}" class="ml-4 border py-1 px-4 rounded-full border-gray-300 font-semibold text-gray-600 hover:text-gray-300">Register</a>
                         @endif
+
                     @else
                         <a href="{{ route('dashboard.index') }}" class="font-semibold text-gray-700 hover:text-gray-300">Dashboard</a>
                     @endguest
+
+                    
+                    @auth
+                        @if (auth()->user()->role && auth()->user()->role->nama_role === 'Admin')
+                            <a href="{{ route('dashboard.index') }}" class="font-semibold text-gray-700 hover:text-gray-300">Dashboard</a>
+                        @else
+                            <a href="{{ route('logout') }}" class="font-semibold text-gray-700 hover:text-gray-300">Logout</a>
+                        @endif
+                    @endauth
+
                 </div>
             </div>
         </div>

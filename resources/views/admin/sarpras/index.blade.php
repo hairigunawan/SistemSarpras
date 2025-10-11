@@ -7,13 +7,13 @@
     <div class="flex flex-col md:flex-row justify-between items-center mb-6">
         <h2 class="text-xl text-gray-700 font-semibold mb-4 md:mb-0">Daftar {{ request('jenis', 'Semua Sarpras') }}</h2>
         <div class="flex items-center space-x-4 w-full md:w-auto">
-            <form method="GET" action="{{ route('sarpras.index') }}" class="flex items-center space-x-2">
+            <form method="GET" action="{{ route('admin.sarpras.index') }}" class="flex items-center space-x-2">
                 @if(request('jenis'))
                     <input type="hidden" name="jenis" value="{{ request('jenis') }}">
                 @endif
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari sarpras..." class="w-full md:w-64 px-4 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300">
             </form>
-            <a href="{{ route('sarpras.create') }}" class="bg-[#179ACE] text-white px-4 py-1.5 rounded font-semibold text-sm hover:bg-[#0F6A8F] transition-colors whitespace-nowrap">
+            <a href="{{ route('admin.sarpras.tambah_sarpras') }}" class="bg-[#179ACE] text-white px-4 py-1.5 rounded font-semibold text-sm hover:bg-[#0F6A8F] transition-colors whitespace-nowrap">
                 + Tambah Sarpras
             </a>
         </div>
