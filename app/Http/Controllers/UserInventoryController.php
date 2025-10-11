@@ -12,7 +12,7 @@ class UserInventoryController extends Controller
         $inventories = Inventory::all();
 
         // Kirim ke view user.halamansarpras
-        return view('user.halamansarpras', compact('inventories'));
+        return view('public.user.halamansarpras', compact('inventories'));
     }
 
     public function show($id)

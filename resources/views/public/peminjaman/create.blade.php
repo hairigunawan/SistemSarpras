@@ -124,7 +124,7 @@
 
             <!-- Submit Button -->
             <div class="flex justify-end space-x-3">
-                <a href="{{ route('landing') }}"
+                <a href="{{ route('public.beranda.index') }}"
                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md font-medium transition duration-200">
                     Batal
                 </a>

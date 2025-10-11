@@ -18,6 +18,7 @@
 
     .hero h2 {
       font-weight: bold;
+      color: #2563eb !important; /* Biru elegan */
     }
 
     .card-header {
@@ -62,7 +63,7 @@
       </div>
       <div class="flex justify-end px-6 py-3 gap-10 items-center">
         <ul class="flex space-x-6">
-          <li><a href="/" class="hover:text-blue-500 font-normal">Beranda</a></li>
+          <li><a href="{{ route('public.beranda.index') }}" class="hover:text-blue-500 font-normal">Beranda</a></li>
           <li><a href="{{ route('public.peminjaman.daftarpeminjaman') }}" class="hover:text-blue-500 font-normal">Peminjaman</a></li>
           <li><a href="{{ route('public.user.halamansarpras') }}" class="hover:text-blue-500 font-normal text-blue-600">Sarana & Prasarana</a></li>
         </ul>
@@ -82,10 +83,10 @@
   </nav>
 
   <!-- Hero Section -->
-  <section class="hero text-center py-5 bg-light mb-4">
-    <h2 class="text-success">Daftar Sarana & Prasarana</h2>
-    <p class="text-muted">Lihat fasilitas yang tersedia untuk digunakan.</p>
-  </section>
+<section class="hero text-center py-5 bg-light mb-4">
+  <h2 class="text-4xl font-extrabold text-blue-600 mb-2">Daftar Sarana & Prasarana</h2>
+  <p class="text-muted">Lihat fasilitas yang tersedia untuk digunakan.</p>
+</section>
 
   <!-- Konten Sarana & Prasarana -->
   <div class="container">

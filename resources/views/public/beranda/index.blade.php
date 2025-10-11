@@ -21,7 +21,7 @@
             </div>
             <div class="flex justify-end px-6 py-3 gap-10 items-center">
                 <ul class="flex space-x-6">
-                    <li><a href="#" class="hover:text-blue-500 font-normal text-blue-600">Beranda</a></li>
+                    <li><a href="{{ route('public.beranda.index') }}" class="hover:text-blue-500 font-normal text-blue-600">Beranda</a></li>
                     <li><a href="{{ route('public.peminjaman.daftarpeminjaman') }}" class="hover:text-blue-500 font-normal">Peminjaman</a></li>
                     <li><a href="{{ route('public.user.halamansarpras') }}" class="hover:text-blue-500 font-normal">Sarana & Prasarana</a></li>
                 </ul>
