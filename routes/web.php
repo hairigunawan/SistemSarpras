@@ -41,7 +41,6 @@ Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleC
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Register manual
 Route::get('/register', [LoginController::class, 'showRegisterForm'])->name('register');
@@ -56,13 +55,25 @@ Route::prefix('laporan')->name('laporan.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| Rute untuk Semua User yang Sudah Login
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
+    // PEMINDAHAN ROUTE LOGOUT KE SINI
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    Route::resource('jadwal', JadwalController::class);
+});
+
+
+/*
+|--------------------------------------------------------------------------
 | Rute untuk Admin
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:Admin'])->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard.index');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard.index');
     Route::resource('/akun', AkunController::class)->names('admin.akun');
-
     Route::get('/sarpras', [SarprasController::class, 'index'])->name('admin.sarpras.index');
     Route::get('/sarpras/tambah_sarpras', [SarprasController::class, 'tambah_sarpras'])->name('admin.sarpras.tambah_sarpras');
     Route::post('/sarpras', [SarprasController::class, 'store'])->name('admin.sarpras.store');
@@ -89,16 +100,12 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
         ->name('public.beranda.index.auth');
 
     // Form peminjaman
-    Route::get('/peminjaman/create', [PeminjamanController::class, 'create'])->name('public.peminjaman.create');
-    Route::post('/peminjaman', [PeminjamanController::class, 'store'])->name('public.peminjaman.store');
+    Route::get('/peminjaman/create', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create.auth');
+    Route::post('/peminjaman', [PeminjamanController::class, 'store'])->name('public.peminjaman.store.auth');
 
     // Riwayat peminjaman pribadi
     Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('peminjaman.riwayat');
 });
 
+// Catatan: Route di bawah ini duplikat dengan yang di atas, mungkin bisa dihapus jika tidak diperlukan.
 Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('public.peminjaman.riwayat');
-
-// Jadwal
-Route::middleware(['auth'])->group(function () {
-    Route::resource('jadwal', JadwalController::class);
-});

@@ -37,7 +37,7 @@ class LoginController extends Controller
         }
 
         // Cek apakah user adalah admin
-        if ($user->role->nama_role !== 'Admin') {
+        if ($user->userRole->nama_role !== 'Admin') {
             return back()->withErrors([
                 'email' => 'Hanya admin yang dapat login dengan email dan password. Gunakan login Google untuk user lainnya.',
             ]);
@@ -54,7 +54,7 @@ class LoginController extends Controller
         Auth::login($user);
 
         // Arahkan langsung ke dashboard admin
-        return redirect()->route('dashboard.index');
+        return redirect()->route('admin.dashboard.index');
     }
 
     public function logout(Request $request)
@@ -63,7 +63,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('public.beranda.index');
     }
 
     public function register(Request $request)
@@ -94,6 +94,6 @@ class LoginController extends Controller
             return redirect()->route('public.beranda.index');
         }
 
-        return redirect()->route('landing');
+        return redirect()->route('public.beranda.index');
     }
 }

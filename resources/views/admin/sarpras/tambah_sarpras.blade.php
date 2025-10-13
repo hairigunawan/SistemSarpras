@@ -44,12 +44,12 @@
                 </div>
                 <div>
                     <label for="status_ruangan" class="block text-sm font-medium text-gray-700">Status</label>
-                    <select name="status_sarpras" id="status_ruangan" x-bind:disabled="jenis !== 'Ruangan'" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                        <option value="Tersedia" {{ old('status_sarpras', 'Tersedia') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
-                        <option value="Dipinjam" {{ old('status_sarpras') == 'Dipinjam' ? 'selected' : '' }}>Dipinjam</option>
-                        <option value="Perbaikan" {{ old('status_sarpras') == 'Perbaikan' ? 'selected' : '' }}>Perbaikan</option>
+                    <select name="status" id="status_ruangan" x-bind:disabled="jenis !== 'Ruangan'" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <option value="Tersedia" {{ old('status', 'Tersedia') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                        <option value="Dipinjam" {{ old('status') == 'Dipinjam' ? 'selected' : '' }}>Dipinjam</option>
+                        <option value="Perbaikan" {{ old('status') == 'Perbaikan' ? 'selected' : '' }}>Perbaikan</option>
                     </select>
-                    @error('status_sarpras') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    @error('status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label for="gambar_ruangan" class="block text-sm font-medium text-gray-700">Gambar</label>
@@ -81,12 +81,12 @@
                 </div>
                 <div>
                     <label for="status_proyektor" class="block text-sm font-medium text-gray-700">Status</label>
-                    <select name="status_sarpras" id="status_proyektor" x-bind:disabled="jenis !== 'Proyektor'" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                        <option value="Tersedia" {{ old('status_sarpras', 'Tersedia') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
-                        <option value="Dipinjam" {{ old('status_sarpras') == 'Dipinjam' ? 'selected' : '' }}>Dipinjam</option>
-                        <option value="Perbaikan" {{ old('status_sarpras') == 'Perbaikan' ? 'selected' : '' }}>Perbaikan</option>
+                    <select name="status" id="status_proyektor" x-bind:disabled="jenis !== 'Proyektor'" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <option value="Tersedia" {{ old('status', 'Tersedia') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                        <option value="Dipinjam" {{ old('status') == 'Dipinjam' ? 'selected' : '' }}>Dipinjam</option>
+                        <option value="Perbaikan" {{ old('status') == 'Perbaikan' ? 'selected' : '' }}>Perbaikan</option>
                     </select>
-                    @error('status_sarpras') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    @error('status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label for="gambar_proyektor" class="block text-sm font-medium text-gray-700">Gambar</label>
@@ -108,12 +108,12 @@
                 </div>
                 <div>
                     <label for="status_lainnya" class="block text-sm font-medium text-gray-700">Status</label>
-                    <select name="status_sarpras" id="status_lainnya" x-bind:disabled="jenis !== 'Lainnya'" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                        <option value="Tersedia" {{ old('status_sarpras', 'Tersedia') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
-                        <option value="Dipinjam" {{ old('status_sarpras') == 'Dipinjam' ? 'selected' : '' }}>Dipinjam</option>
-                        <option value="Perbaikan" {{ old('status_sarpras') == 'Perbaikan' ? 'selected' : '' }}>Perbaikan</option>
+                    <select name="status" id="status_lainnya" x-bind:disabled="jenis !== 'Lainnya'" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <option value="Tersedia" {{ old('status', 'Tersedia') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                        <option value="Dipinjam" {{ old('status') == 'Dipinjam' ? 'selected' : '' }}>Dipinjam</option>
+                        <option value="Perbaikan" {{ old('statuss') == 'Perbaikan' ? 'selected' : '' }}>Perbaikan</option>
                     </select>
-                    @error('status_sarpras') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    @error('status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label for="gambar_lainnya" class="block text-sm font-medium text-gray-700">Gambar</label>

@@ -20,7 +20,7 @@ class Sarpras extends Model
     protected $fillable = [
         'nama_sarpras',
         'jenis_sarpras',
-        'kapasitas',
+        'kapasitas_ruangan',
         'lokasi',
         'status',
         'kode_ruangan',
@@ -33,7 +33,7 @@ class Sarpras extends Model
     {
         return $this->hasMany(Peminjaman::class, 'id_sarpras', 'id_sarpras');
     }
-    
+
 
     // ... sisa kode model
 }

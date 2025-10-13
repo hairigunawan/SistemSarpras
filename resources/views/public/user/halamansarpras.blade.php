@@ -75,7 +75,7 @@
               <a href="{{ route('register') }}" class="ml-4 border py-1 px-4 rounded-full border-gray-300 font-semibold text-gray-600 hover:text-gray-300">Register</a>
             @endif
           @else
-            <a href="{{ route('dashboard.index') }}" class="font-semibold text-gray-700 hover:text-gray-300">Dashboard</a>
+            <a href="{{ route('admin.dashboard.index') }}" class="font-semibold text-gray-700 hover:text-gray-300">Dashboard</a>
           @endguest
         </div>
       </div>
