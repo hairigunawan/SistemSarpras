@@ -6,6 +6,7 @@ use App\Models\Peminjaman;
 use App\Models\Sarpras;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\CarbonPeriod;
 
 class PublicController extends Controller
 {
@@ -14,24 +15,21 @@ class PublicController extends Controller
      */
     public function index()
     {
-        // Hitung statistik ruangan
         $RuanganTersedia = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Tersedia')->count();
         $RuanganTerpakai = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Dipinjam')->count();
         $RuanganPerbaikan = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Perbaikan')->count();
 
-        // Hitung statistik proyektor
         $ProyektorTersedia = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Tersedia')->count();
         $ProyektorTerpakai = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Dipinjam')->count();
         $ProyektorPerbaikan = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Perbaikan')->count();
 
-
-
-        // Ambil data laboratorium terpakai (peminjaman yang sedang berlangsung)
         $labs = Peminjaman::with(['sarpras'])
             ->where('status', 'Disetujui')
             ->whereHas('sarpras', function ($query) {
                 $query->where('jenis_sarpras', 'Ruangan');
             })
+            ->latest('tanggal_pinjam')
+            ->take(3)
             ->get()
             ->map(function ($peminjaman) {
                 return [
@@ -40,7 +38,7 @@ class PublicController extends Controller
                     'matkul' => $peminjaman->keterangan ?? 'N/A',
                     'waktu' => $peminjaman->jam_mulai . ' - ' . $peminjaman->jam_selesai,
                 ];
-            })->take(3)->toArray();
+            })->toArray();
 
         return view('public.beranda.index', compact(
             'RuanganTersedia',
@@ -56,93 +54,80 @@ class PublicController extends Controller
     /**
      * Menampilkan form untuk mengajukan peminjaman publik.
      */
-    /**
-     * Menampilkan form untuk mengajukan peminjaman publik.
-     */
-    public function createPeminjaman()
+    public function createPeminjaman(Request $request)
     {
-        // Ambil semua peminjaman yang statusnya 'Disetujui'
-        $peminjamanDisetujui = Peminjaman::where('status', 'Disetujui')->get();
+        $selectedSarprasId = $request->input('id_sarpras');
+        $sarprasTersedia = Sarpras::where('status', 'Tersedia')->orderBy('nama_sarpras', 'asc')->get();
+        $jadwalUntukSarpras = [];
 
-        $jadwalPeminjaman = [];
+        if ($selectedSarprasId) {
+            $peminjamanDisetujui = Peminjaman::where('id_sarpras', $selectedSarprasId)
+                ->where('status', 'Disetujui')
+                ->get();
 
-        // Ambil sarpras yang statusnya 'Tersedia' untuk dipilih
-        $sarprasTersedia = Sarpras::where('status', 'Tersedia')->get();
-
-        // Proses setiap peminjaman yang disetujui untuk membuat rentang tanggal
-        foreach ($peminjamanDisetujui as $peminjaman) {
-            $id = $peminjaman->id_sarpras;
-            if (!isset($jadwalPeminjaman[$id])) {
-                $jadwalPeminjaman[$id] = [];
+            foreach ($peminjamanDisetujui as $peminjaman) {
+                $period = CarbonPeriod::create($peminjaman->tanggal_pinjam, $peminjaman->tanggal_kembali);
+                foreach ($period as $date) {
+                    $jadwalUntukSarpras[] = $date->isoFormat('dddd, D MMMM Y');
+                }
             }
-
-            // Buat rentang tanggal dari tanggal pinjam s.d. tanggal kembali
-            $period = \Carbon\CarbonPeriod::create($peminjaman->tanggal_pinjam, $peminjaman->tanggal_kembali);
-            foreach ($period as $date) {
-                $jadwalPeminjaman[$id][] = $date->format('Y-m-d');
-            }
-            // Pastikan tidak ada tanggal duplikat
-            $jadwalPeminjaman[$id] = array_unique($jadwalPeminjaman[$id]);
+            $jadwalUntukSarpras = array_unique($jadwalUntukSarpras);
+            sort($jadwalUntukSarpras);
         }
 
-        // Kirim kedua variabel ke view SETELAH semua data diproses
-        return view('public.peminjaman.create', compact('sarprasTersedia', 'jadwalPeminjaman'));
+        return view('public.peminjaman.create', compact('sarprasTersedia', 'selectedSarprasId', 'jadwalUntukSarpras'));
     }
+
+
     /**
      * Menyimpan data pengajuan peminjaman publik baru.
      */
     public function storePeminjaman(Request $request)
     {
         $request->validate([
-            'telepon_peminjam' => 'required|string|max:20',
+            'nomor_whatsapp' => 'required|string|max:20|regex:/^08[0-9]{8,12}$/',
             'id_sarpras' => 'required|exists:sarpras,id_sarpras',
             'tanggal_pinjam' => 'required|date|after_or_equal:today',
             'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
             'jam_mulai' => 'required',
             'jam_selesai' => 'required|after:jam_mulai',
+            'jumlah_peserta' => 'required|integer|min:1', // Validasi untuk jumlah peserta
             'keterangan' => 'nullable|string',
         ]);
 
-        // Logika untuk cek jadwal bentrok
         $isBentrok = Peminjaman::where('id_sarpras', $request->id_sarpras)
-            ->whereIn('status_peminjaman', ['Disetujui', 'Menunggu']) // Cek jadwal yang sudah disetujui atau masih menunggu
+            ->whereIn('status', ['Disetujui', 'Menunggu'])
             ->where(function ($query) use ($request) {
-                // Waktu mulai dan selesai dari request peminjaman baru
                 $pinjam_mulai = $request->tanggal_pinjam . ' ' . $request->jam_mulai;
                 $pinjam_selesai = $request->tanggal_kembali . ' ' . $request->jam_selesai;
 
-                // Kondisi tumpang tindih:
-                // (start1 < end2) and (start2 < end1)
                 $query->where(function ($q) use ($pinjam_mulai) {
-                    // Pengecekan dimana peminjaman LAMA berakhir SETELAH peminjaman BARU dimulai
                     $q->whereRaw("CONCAT(tanggal_kembali, ' ', jam_selesai) > ?", [$pinjam_mulai]);
                 })->where(function ($q) use ($pinjam_selesai) {
-                    // DAN peminjaman LAMA dimulai SEBELUM peminjaman BARU berakhir
                     $q->whereRaw("CONCAT(tanggal_pinjam, ' ', jam_mulai) < ?", [$pinjam_selesai]);
                 });
             })
-            ->exists(); // Cukup cek apakah ada data yang bentrok
+            ->exists();
 
-        // Jika ditemukan jadwal yang bentrok, kembalikan dengan pesan error
         if ($isBentrok) {
             return back()->withErrors([
-                'id_sarpras' => 'Jadwal yang Anda pilih bentrok dengan peminjaman lain. Silakan pilih tanggal atau jam yang berbeda.'
-            ])->withInput(); // withInput() agar data yang sudah diisi tidak hilang
+                'tanggal_pinjam' => 'Jadwal yang Anda pilih bentrok dengan peminjaman lain. Silakan pilih tanggal atau jam yang berbeda.'
+            ])->withInput();
         }
 
-        // Jika tidak ada bentrok, buat data peminjaman baru
         Peminjaman::create([
-            'id_akun' => Auth::id(), // Menggunakan ID user yang sedang login
+            'id_akun' => Auth::id(),
             'id_sarpras' => $request->id_sarpras,
             'tanggal_pinjam' => $request->tanggal_pinjam,
             'tanggal_kembali' => $request->tanggal_kembali,
             'jam_mulai' => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
+            'jumlah_peserta' => $request->jumlah_peserta, // Menyimpan jumlah peserta
             'keterangan' => $request->keterangan,
-            'nama_peminjam' => Auth::user()->nama, // Ambil dari data user
-            'email_peminjam' => Auth::user()->email, // Ambil dari data user
-            'telepon_peminjam' => $request->telepon_peminjam,
-            'status_peminjaman' => 'Menunggu', // Status default saat pengajuan
+            'nama_peminjam' => Auth::user()->nama,
+            'email_peminjam' => Auth::user()->email,
+            'nomor_whatsapp' => $request->nomor_whatsapp,
+            'status' => 'Menunggu',
         ]);
 
         return redirect()->route('public.peminjaman.daftarpeminjaman')
@@ -151,18 +136,13 @@ class PublicController extends Controller
 
     public function daftarpeminjaman()
     {
-        // Misalnya ambil semua data peminjaman dari model Peminjaman
-        $peminjaman = \App\Models\Peminjaman::latest()->get();
-
-        // Tampilkan view publik
+        $peminjaman = Peminjaman::latest()->get();
         return view('public.peminjaman.daftarpeminjaman', compact('peminjaman'));
     }
 
     public function saranaPrasarana()
     {
         $halamansarpras = \App\Models\Halamansarpras::latest()->get();
-
-        // Tampilkan view publik
         return view('public.user.halamansarpras', compact('halamansarpras'));
     }
 }

@@ -10,103 +10,178 @@ use Carbon\Carbon;
 
 class PeminjamanController extends Controller
 {
+    // ... (Fungsi index, show, dan lainnya tetap sama) ...
+
     public function index(Request $request)
     {
-        // Menampilkan halaman daftar peminjaman untuk approval
-        $status = $request->get('status', 'all'); // Default to 'all' if no status provided
-
+        $status = $request->get('status', 'all');
         $query = Peminjaman::with(['user', 'sarpras']);
 
         if ($status !== 'all') {
             $query->where('status', $status);
         }
 
-        if ($request->has(['nama', 'jenis']) && $request->nama != '') {
-            $query->where('nama_peminjam', $request->nama);
-        }
-
         if ($request->has('search') && $request->search) {
-            $query->whereHas('sarpras', function($q) use ($request) {
+            $query->whereHas('sarpras', function ($q) use ($request) {
                 $q->where('nama_sarpras', 'like', '%' . $request->search . '%');
             });
         }
 
         $peminjaman = $query->latest()->get();
-
         return view('admin.peminjaman.index', compact('peminjaman', 'status'));
     }
 
+    public function show($id)
+    {
+        $mainPeminjaman = Peminjaman::with(['sarpras', 'user'])->findOrFail($id);
+
+        $conflictingPeminjaman = Peminjaman::where('id_sarpras', $mainPeminjaman->id_sarpras)
+            ->where('id_peminjaman', '!=', $id)
+            ->where('status', 'Menunggu')
+            ->where(function ($query) use ($mainPeminjaman) {
+                $query->where(function ($q) use ($mainPeminjaman) {
+                    $q->where('tanggal_pinjam', '<=', $mainPeminjaman->tanggal_kembali)
+                        ->where('tanggal_kembali', '>=', $mainPeminjaman->tanggal_pinjam);
+                });
+            })
+            ->with('user')
+            ->get();
+
+        $candidates = collect([$mainPeminjaman])->merge($conflictingPeminjaman);
+        $rankedPeminjaman = [];
+
+        if ($candidates->count() > 1 && $mainPeminjaman->status == 'Menunggu') {
+            $weights = [
+                'jenis_kegiatan' => 0.0746,
+                'jumlah_peserta' => 0.3932,
+                'waktu_pengajuan' => 0.1633,
+                'durasi_peminjaman' => 0.3690,
+            ];
+            $criteriaTypes = [
+                'jenis_kegiatan' => 'benefit',
+                'jumlah_peserta' => 'benefit',
+                'waktu_pengajuan' => 'cost',
+                'durasi_peminjaman' => 'cost',
+            ];
+            $matrix = [];
+            $peminjamanMap = [];
+            foreach ($candidates as $p) {
+                $nilaiKegiatan = $this->convertKegiatanToValue($p->keterangan);
+                $waktuPengajuan = Carbon::parse($p->tanggal_pinjam)->diffInDays(Carbon::parse($p->created_at)) + 1;
+                $durasi = Carbon::parse($p->tanggal_kembali . ' ' . $p->jam_selesai)->diffInHours(Carbon::parse($p->tanggal_pinjam . ' ' . $p->jam_mulai));
+                $matrix[$p->id_peminjaman] = [
+                    'jenis_kegiatan' => $nilaiKegiatan,
+                    'jumlah_peserta' => $p->jumlah_peserta ?? 1,
+                    'waktu_pengajuan' => $waktuPengajuan,
+                    'durasi_peminjaman' => $durasi > 0 ? $durasi : 1,
+                ];
+                $peminjamanMap[$p->id_peminjaman] = $p;
+            }
+            $normalizedMatrix = [];
+            $minMax = [];
+            foreach (array_keys($weights) as $criteria) {
+                $column = array_column($matrix, $criteria);
+                $minMax[$criteria] = ['min' => min($column), 'max' => max($column)];
+            }
+            foreach ($matrix as $id_p => $values) {
+                foreach ($values as $criteria => $value) {
+                    if ($criteriaTypes[$criteria] == 'benefit') {
+                        $normalizedMatrix[$id_p][$criteria] = $minMax[$criteria]['max'] > 0 ? $value / $minMax[$criteria]['max'] : 0;
+                    } else {
+                        $normalizedMatrix[$id_p][$criteria] = $value > 0 ? $minMax[$criteria]['min'] / $value : 0;
+                    }
+                }
+            }
+            $scores = [];
+            foreach ($normalizedMatrix as $id_p => $values) {
+                $score = 0;
+                foreach ($values as $criteria => $normalizedValue) {
+                    $score += $normalizedValue * $weights[$criteria];
+                }
+                $scores[$id_p] = $score;
+            }
+            arsort($scores);
+            foreach ($scores as $id_p => $score) {
+                $rankedPeminjaman[] = ['peminjaman' => $peminjamanMap[$id_p], 'kriteria' => $matrix[$id_p], 'skor' => $score];
+            }
+        } elseif ($mainPeminjaman->status == 'Menunggu') {
+            $rankedPeminjaman[] = ['peminjaman' => $mainPeminjaman, 'skor' => 1];
+        }
+
+        return view('admin.peminjaman.show', [
+            'mainPeminjaman' => $mainPeminjaman,
+            'rankedPeminjaman' => $rankedPeminjaman,
+            'conflictingCount' => $conflictingPeminjaman->count()
+        ]);
+    }
+
+    private function convertKegiatanToValue($keterangan)
+    {
+        $keterangan = strtolower($keterangan ?? '');
+        if (str_contains($keterangan, 'seminar') || str_contains($keterangan, 'workshop')) return 5;
+        if (str_contains($keterangan, 'rapat penting') || str_contains($keterangan, 'pelatihan')) return 4;
+        if (str_contains($keterangan, 'kuliah pengganti') || str_contains($keterangan, 'rapat internal')) return 3;
+        if (str_contains($keterangan, 'diskusi kelompok') || str_contains($keterangan, 'belajar bersama')) return 2;
+        return 1;
+    }
+
     /**
-     * Menyimpan data pengajuan peminjaman baru.
+     * [BARU] Menyimpan pengajuan peminjaman dari form publik.
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'id_sarpras' => 'required|exists:sarpras,id_sarpras',
             'tanggal_pinjam' => 'required|date|after_or_equal:today',
             'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
             'jam_mulai' => 'required',
             'jam_selesai' => 'required|after:jam_mulai',
-            'keterangan' => 'nullable|string',
+            'nomor_whatsapp' => 'required|string|max:15',
+            'jumlah_peserta' => 'required|integer|min:1',
+            'keterangan' => 'required|string|max:500',
         ]);
 
-        // Tambahan: Logika untuk cek jadwal bentrok bisa ditambahkan di sini
+        // Menambahkan ID pengguna yang sedang login secara otomatis
+        $validatedData['id_akun'] = Auth::id();
+        $validatedData['status'] = 'Menunggu'; // Set status awal
 
-        Peminjaman::create([
-            'id_akun' => Auth::id(),
-            'id_sarpras' => $request->id_sarpras,
-            'tanggal_pinjam' => $request->tanggal_pinjam,
-            'tanggal_kembali' => $request->tanggal_kembali,
-            'jam_mulai' => $request->jam_mulai,
-            'jam_selesai' => $request->jam_selesai,
-            'keterangan' => $request->keterangan,
-            'status' => 'Menunggu', // Status default saat pengajuan
-        ]);
+        Peminjaman::create($validatedData);
 
-        // Redirect ke halaman riwayat peminjaman user
-        return redirect()->route('peminjaman.riwayat')->with('success', 'Pengajuan peminjaman berhasil dikirim. Mohon tunggu konfirmasi.');
+        return redirect()->route('public.peminjaman.riwayat')->with('success', 'Pengajuan peminjaman berhasil dikirim. Silakan tunggu konfirmasi dari admin.');
     }
 
-    public function show($id)
+    public function approve(Request $request, $id)
     {
-        $peminjaman = Peminjaman::with(['user', 'sarpras'])->findOrFail($id);
-        return view('admin.peminjaman.show', compact('peminjaman'));
-    }
+        $approvedPeminjaman = Peminjaman::findOrFail($id);
 
-    public function approve($id)
-    {
-        $peminjaman = Peminjaman::findOrFail($id);
+        if ($approvedPeminjaman->status !== 'Menunggu') {
+            return redirect()->route('peminjaman.show', $id)->with('error', 'Peminjaman ini sudah diproses sebelumnya.');
+        }
 
-        // Create start and end datetime for the current peminjaman
-        $start1 = Carbon::parse($peminjaman->tanggal_pinjam . ' ' . $peminjaman->jam_mulai);
-        $end1 = Carbon::parse($peminjaman->tanggal_kembali . ' ' . $peminjaman->jam_selesai);
-
-        // Find conflicting peminjaman by the same user with overlapping time
-        $conflicting = Peminjaman::where('id_akun', $peminjaman->id_akun)
-            ->where('status', 'Menunggu')
+        $conflictingPeminjaman = Peminjaman::where('id_sarpras', $approvedPeminjaman->id_sarpras)
             ->where('id_peminjaman', '!=', $id)
-            ->get()
-            ->filter(function($p) use ($start1, $end1) {
-                $start2 = Carbon::parse($p->tanggal_pinjam . ' ' . $p->jam_mulai);
-                $end2 = Carbon::parse($p->tanggal_kembali . ' ' . $p->jam_selesai);
-                return $start1->lt($end2) && $start2->lt($end1);
-            });
+            ->where('status', 'Menunggu')
+            ->where(function ($query) use ($approvedPeminjaman) {
+                $query->where('tanggal_pinjam', '<=', $approvedPeminjaman->tanggal_kembali)
+                    ->where('tanggal_kembali', '>=', $approvedPeminjaman->tanggal_pinjam)
+                    ->where(function ($timeQuery) use ($approvedPeminjaman) {
+                        $timeQuery->where('jam_mulai', '<', $approvedPeminjaman->jam_selesai)
+                            ->where('jam_selesai', '>', $approvedPeminjaman->jam_mulai);
+                    });
+            })
+            ->get();
 
-        // Reject conflicting peminjaman with reason
-        foreach ($conflicting as $conflict) {
+        foreach ($conflictingPeminjaman as $conflict) {
             $conflict->update([
                 'status' => 'Ditolak',
-                'alasan_penolakan' => 'Peminjaman ditolak karena bentrok dengan peminjaman yang disetujui pada waktu yang sama.',
+                'alasan_penolakan' => 'Jadwal bentrok dengan peminjaman lain yang telah disetujui.',
             ]);
         }
 
-        // Approve the current peminjaman
-        $peminjaman->update(['status' => 'Disetujui']);
+        $approvedPeminjaman->update(['status' => 'Disetujui']);
+        $approvedPeminjaman->sarpras->update(['status' => 'Dipinjam']);
 
-        // Update status sarpras menjadi 'Dipinjam'
-        $peminjaman->sarpras->update(['status' => 'Dipinjam']);
-
-        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil disetujui.');
+        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil disetujui. Pengajuan lain yang bentrok telah otomatis ditolak.');
     }
 
     public function reject(Request $request, $id)
@@ -124,43 +199,18 @@ class PeminjamanController extends Controller
         return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil ditolak.');
     }
 
-    public function complete($id)
+    public function complete(Request $request, $id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
         $peminjaman->update(['status' => 'Selesai']);
-
-        // Update status sarpras kembali ke 'Tersedia'
         $peminjaman->sarpras->update(['status' => 'Tersedia']);
-
         return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil diselesaikan.');
     }
 
-    // Tambahan: Anda perlu membuat method dan route untuk riwayat peminjaman
     public function riwayat()
     {
-        $peminjaman = Peminjaman::where('id_akun', Auth::id())->latest()->get();
+        $userId = Auth::id();
+        $peminjaman = Peminjaman::where('id_akun', $userId)->with('sarpras')->latest()->get();
         return view('public.peminjaman.riwayat', compact('peminjaman'));
-    }
-    public function daftareminjaman()
-    {
-        $user = Auth::user();
-
-        // Hitung total ruangan & proyektor yang pernah dipinjam
-        $totalRuangan = Peminjaman::where('id_akun', $user->id_akun ?? null)
-            ->whereHas('sarpras', function ($q) {
-                $q->where('jenis', 'ruangan');
-            })->count();
-
-        $totalProyektor = Peminjaman::where('id_akun', $user->id_akun ?? null)
-            ->whereHas('sarpras', function ($q) {
-                $q->where('jenis', 'proyektor');
-            })->count();
-
-        // Daftar peminjaman aktif user
-        $peminjamanAktif = Peminjaman::where('id_akun', $user->id_akun ?? null)
-            ->orderBy('tanggal_pinjam', 'desc')
-            ->get();
-
-        return view('peminjaman.peminjaman.daftarpeminjaman', compact('totalRuangan', 'totalProyektor', 'peminjamanAktif'));
     }
 }

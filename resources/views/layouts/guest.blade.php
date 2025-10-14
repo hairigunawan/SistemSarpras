@@ -6,6 +6,7 @@
     <title>@yield('title', 'SIMPERSITE')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/kalender.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -76,5 +77,7 @@
             </ul>
         </div>
     @endif
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
 </body>
 </html>
