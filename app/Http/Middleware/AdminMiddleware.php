@@ -9,11 +9,11 @@ class AdminMiddleware
 {
     public function handle($request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
+        if (Auth::check() && Auth::user()->userRole === 'Admin') {
             return $next($request);
         }
 
-        return redirect('/inventory')->with('error', 'Akses ditolak. Hanya admin yang bisa ke sini.');
+        return redirect('/')->with('error', 'Akses ditolak. Hanya admin yang bisa ke sini.');
     }
 }
 

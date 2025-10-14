@@ -19,9 +19,10 @@ class Peminjaman extends Model
         'jam_selesai',
         'status',
         'keterangan',
+        'jumlah_peserta',
         'nama_peminjam',
         'email_peminjam',
-        'telepon_peminjam',
+        'nomor_whatsapp',
         'alasan_penolakan',
     ];
 

@@ -26,7 +26,7 @@ class SocialAuthController extends Controller
 
             if ($user) {
                 // Jika user sudah ada, periksa apakah role admin
-                if ($user->role->nama_role === 'Admin') {
+                if ($user->userRole->nama_role === 'Admin') {
                     return redirect('/login')->with('error', 'Admin harus login menggunakan email dan password.');
                 }
 
@@ -58,12 +58,12 @@ class SocialAuthController extends Controller
             // Redirect sesuai peran:
             // - Non-admin: ke halaman landing
             // - Admin via SSO tidak diperbolehkan (fallback proteksi)
-            if ($user->role && $user->role->nama_role === 'Admin') {
+            if ($user->userRole && $user->userRole->nama_role === 'Admin') {
                 Auth::logout();
                 return redirect('/login')->with('error', 'Admin harus login menggunakan email dan password.');
             }
 
-            return redirect()->route('landing');
+            return redirect()->route('public.beranda.index');
 
         } catch (\Exception $e) {
             return redirect('/login')->with('error', 'Gagal login dengan Google. Silakan coba lagi.');

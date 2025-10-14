@@ -66,7 +66,7 @@ class SarprasController extends Controller
             ],
             'lokasi' => 'nullable|string',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'kapasitas' => 'required_if:jenis_sarpras,Ruangan|nullable|integer|min:1',
+            'kapasitas_ruangan' => 'required_if:jenis_sarpras,Ruangan|nullable|integer|min:1',
             'merk' => 'required_if:jenis_sarpras,Proyektor|nullable|string|max:255',
         ]);
 
@@ -128,7 +128,7 @@ class SarprasController extends Controller
             ],
             'lokasi' => 'nullable|string',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'kapasitas' => 'required_if:jenis_sarpras,Ruangan|nullable|integer|min:1',
+            'kapasitas_ruangan' => 'required_if:jenis_sarpras,Ruangan|nullable|integer|min:1',
             'merk' => 'required_if:jenis_sarpras,Proyektor|nullable|string|max:255',
         ]);
 

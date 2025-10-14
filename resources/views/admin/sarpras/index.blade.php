@@ -44,7 +44,7 @@
                         </span>
                     </div>
                     <div class="mt-auto flex space-x-2">
-                        <a href="{{ route('sarpras.show', $item->id_sarpras) }}" class="w-full text-center bg-[#179ACE] text-white px-3 py-2 rounded hover:bg-[#0F6A8F] text-xs font-semibold">Detail</a>
+                        <a href="{{ route('admin.sarpras.lihat_sarpras', $item->id_sarpras) }}" class="w-full text-center bg-[#179ACE] text-white px-3 py-2 rounded hover:bg-[#0F6A8F] text-xs font-semibold">Detail</a>
                     </div>
                 </div>
             </div>

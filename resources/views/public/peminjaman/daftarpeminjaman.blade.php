@@ -7,7 +7,7 @@
 
   <!-- CSS Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  
+
   <!-- Tailwind via Vite -->
   @vite('resources/css/app.css')
 
@@ -90,7 +90,7 @@
               <a href="{{ route('register') }}" class="ml-4 border py-1 px-4 rounded-full border-gray-300 font-semibold text-gray-600 hover:text-gray-300">Register</a>
             @endif
           @else
-            <a href="{{ route('dashboard.index') }}" class="font-semibold text-gray-700 hover:text-gray-300">Dashboard</a>
+            <a href="{{ route('admin.dashboard.index') }}" class="font-semibold text-gray-700 hover:text-gray-300">Dashboard</a>
           @endguest
         </div>
       </div>
@@ -107,7 +107,7 @@
     </p>
 
     <div class="flex justify-center space-x-4 mt-3">
-      <a href="{{ route('public.peminjaman.create') }}" 
+      <a href="{{ route('public.peminjaman.create') }}"
        class="inline-block bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-md hover:bg-blue-700 transition">
        Ajukan Peminjaman
       </a>

@@ -17,7 +17,7 @@ class CheckRole
     // app/Http/Middleware/CheckRole.php
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!Auth::check() || !in_array(Auth::user()->role->nama_role, $roles)) {
+        if (!Auth::check() || !in_array(Auth::user()->userRole->nama_role, $roles)) {
             abort(403, 'ANDA TIDAK MEMILIKI AKSES.');
         }
         return $next($request);
