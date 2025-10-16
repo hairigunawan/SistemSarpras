@@ -25,7 +25,8 @@
     <div class="alert alert-success">{{ session('success') }}</div>
   @endif
 
-  <div class="text-end mb-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{{ route('admin.dashboard.index') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
     <form method="POST" action="{{ route('admin.prioritas.ruangan.hitung') }}">
       @csrf
       <button class="btn btn-primary px-4">Hitung</button>

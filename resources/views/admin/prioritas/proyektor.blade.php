@@ -1,30 +1,81 @@
-@extends('layouts')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prioritas Proyektor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; }
+    .card-header { background-color: #2563eb; color: white; font-weight: bold; }
+    .btn-primary { background-color: #2563eb; border-color: #2563eb; }
+    .table-success { background-color: #dbeafe; color: #1e3a8a; }
+    .badge.bg-success { background-color: #2563eb !important; }
+    .badge.bg-warning { background-color: #facc15 !important; color: #1e3a8a !important; }
+  </style>
+</head>
+<body>
+<div class="container py-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold text-primary">Prioritas Peminjaman Proyektor</h2>
+    <p class="text-muted">Menampilkan daftar peminjaman proyektor dan menghitung prioritas menggunakan AHP</p>
+  </div>
 
-@section('content')
-<div class="container py-4">
-  <h3>Prioritas Peminjaman Proyektor</h3>
+  @if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+  @endif
 
-  <form method="POST" action="{{ route('admin.prioritas.proyektor.hitung') }}">
-    @csrf
-    <button type="submit" class="btn btn-primary mb-3">Hitung Prioritas Proyektor</button>
-  </form>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{{ route('admin.dashboard.index') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
+    <form method="POST" action="{{ route('admin.prioritas.proyektor.hitung') }}">
+      @csrf
+      <button class="btn btn-primary px-4">Hitung</button>
+    </form>
+  </div>
 
-  <table class="table">
-    <thead><tr><th>Nama</th><th>Barang</th><th>Jenis Kegiatan</th><th>Peserta</th><th>Waktu Pengajuan</th><th>Durasi</th></tr></thead>
-    <tbody>
-      @forelse($peminjamans as $p)
-      <tr>
-        <td>{{ $p->nama }}</td>
-        <td>{{ $p->barang }}</td>
-        <td>{{ $p->jenis_kegiatan }}</td>
-        <td>{{ $p->jumlah_peserta }}</td>
-        <td>{{ $p->waktu_pengajuan }}</td>
-        <td>{{ $p->durasi_peminjaman }}</td>
-      </tr>
-      @empty
-      <tr><td colspan="6" class="text-center">Belum ada data</td></tr>
-      @endforelse
-    </tbody>
-  </table>
+  <div class="card shadow-sm border-0">
+    <div class="card-header">Daftar Peminjaman Proyektor</div>
+    <div class="card-body p-0">
+      <table class="table table-striped mb-0">
+        <thead class="table-success">
+          <tr>
+            <th>Nama</th>
+            <th>Barang</th>
+            <th>Jenis Kegiatan</th>
+            <th>Jumlah Peserta</th>
+            <th>Waktu Pengajuan</th>
+            <th>Durasi Peminjaman</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($peminjamans as $item)
+            <tr>
+              <td>{{ $item->nama_peminjam }}</td>
+              <td>{{ $item->barang }}</td>
+              <td>{{ $item->jenis_kegiatan }}</td>
+              <td>{{ $item->jumlah_peserta }}</td>
+              <td>{{ $item->waktu_pengajuan }}</td>
+              <td>{{ $item->durasi_peminjaman }}</td>
+              <td>
+                @if($item->status == 'Disetujui')
+                  <span class="badge bg-success">{{ $item->status }}</span>
+                @elseif($item->status == 'Menunggu')
+                  <span class="badge bg-warning">{{ $item->status }}</span>
+                @else
+                  <span class="badge bg-secondary">{{ $item->status }}</span>
+                @endif
+              </td>
+            </tr>
+          @empty
+            <tr>
+              <td colspan="7" class="text-center text-muted">Tidak ada data peminjaman proyektor</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
-@endsection
+</body>
+</html>

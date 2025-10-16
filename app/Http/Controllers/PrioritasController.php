@@ -13,7 +13,7 @@ class PrioritasController extends Controller
     public function indexRuangan()
     {
         // Ambil semua data peminjaman yang jenis = 'ruangan'
-        $peminjaman = Peminjaman::where('jenis', 'ruangan')->get();
+        $peminjamans = Peminjaman::where('jenis', 'ruangan')->get();
 
         return view('admin.prioritas.ruangan', compact('peminjamans'));
     }
@@ -24,7 +24,7 @@ class PrioritasController extends Controller
     public function indexProyektor()
     {
         // Ambil semua data peminjaman yang jenis = 'proyektor'
-        $peminjaman = Peminjaman::where('jenis', 'proyektor')->get();
+        $peminjamans = Peminjaman::where('jenis', 'proyektor')->get();
 
         return view('admin.prioritas.proyektor', compact('peminjamans'));
     }
