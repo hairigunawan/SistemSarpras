@@ -20,8 +20,6 @@
             <h3 class="text-gray-50 text-sm font-medium">Peminjaman Disetujui</h3>
             <p class="text-3xl text-gray-50 font-semibold">{{ $peminjaman_disetujui ?? 0 }}</p>
         </a>
-    </div>
-
     <div class="bg-white p-6 rounded-lg">
        <h3 class="font-semibold mb-4">Statistik</h3>
        <div class="h-64 bg-gray-100 rounded-lg flex items-center justify-center">

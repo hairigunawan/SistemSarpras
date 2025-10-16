@@ -213,4 +213,52 @@ class PeminjamanController extends Controller
         $peminjaman = Peminjaman::where('id_akun', $userId)->with('sarpras')->latest()->get();
         return view('public.peminjaman.riwayat', compact('peminjaman'));
     }
+
+
+public function pengajuan(Request $request)
+{
+    // validasi data seperti biasa
+    $request->validate([
+        'id_sarpras' => 'required',
+        'tanggal_pinjam' => 'required|date',
+        // tambah validasi lain kalau ada
+    ]);
+
+    Peminjaman::create([
+        'id_user' => auth()->id(),
+        'id_sarpras' => $request->id_sarpras,
+        'tanggal_pinjam' => $request->tanggal_pinjam,
+        'status' => 'Menunggu',
+        'hari_pengajuan' => Carbon::now()->translatedFormat('l'), // <-- simpan hari
+    ]);
+
+    return redirect()->route('peminjaman.riwayat')->with('success', 'Peminjaman berhasil diajukan.');
+}
+
+public function prioritasRuangan()
+    {
+        $peminjamans = Peminjaman::whereHas('sarpras', function ($query) {
+            $query->where('jenis_sarpras', 'Proyektor');
+        })->with('sarpras')->get();
+        
+        return view('admin.prioritas.ruangan', compact('peminjaman'));
+    }
+
+    public function prioritasProyektor()
+{
+    $peminjamans = Peminjaman::whereHas('sarpras', function ($query) {
+        $query->where('jenis_sarpras', 'Proyektor');
+    })->with('sarpras')->get();
+    
+
+    return view('admin.prioritas.proyektor', compact('peminjaman'));
+}
+    
+    public function hitungPrioritas(Request $request)
+    {
+        // Contoh logika hitung sederhana
+        $total = Peminjaman::count();
+        return redirect()->back()->with('success', 'Perhitungan prioritas selesai! Total data: ' . $total);
+    }
+
 }

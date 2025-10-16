@@ -10,11 +10,11 @@
             <p class="text-gray-500 mb-6">Kelola data peminjaman sarpras</p>
         </div>
         <form method="GET" action="{{ route('peminjaman.index') }}" class="flex items-center space-x-2">
-                @if(request('jenis'))
-                    <input type="hidden" name="nama" value="{{ request('nama') }}">
-                @endif
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari sarpras..." class="w-full md:w-64 px-4 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300">
-            </form>
+            @if(request('jenis'))
+                <input type="hidden" name="nama" value="{{ request('nama') }}">
+            @endif
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari sarpras..." class="w-full md:w-64 px-4 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300">
+        </form>
     </div>
 
     <div class="flex justify-between">
@@ -34,6 +34,7 @@
                     <th class="py-3 px-2 font-medium">Sarpras ID</th>
                     <th class="py-3 px-2 font-medium">Peminjam</th>
                     <th class="py-3 px-2 font-medium">Nama Sarpras</th>
+                    <th class="py-3 px-2 font-medium">Hari Pengajuan</th> {{-- Tambahan kolom --}}
                     <th class="py-3 px-2 font-medium">Status</th>
                     <th class="flex justify-center py-3 px-2 font-medium">Aksi</th>
                 </tr>
@@ -44,6 +45,9 @@
                     <td class="py-4 px-2">{{ $item->id_sarpras }}</td>
                     <td class="py-4 px-2 font-semibold">{{ $item->nama_peminjam ?? $item->user->name ?? 'N/A' }}</td>
                     <td class="py-4 px-2">{{ $item->sarpras->nama_sarpras ?? 'N/A' }}</td>
+                    <td class="py-4 px-2 text-gray-600">
+                        {{ $item->hari_pengajuan ?? '-' }}
+                    </td>
                     <td class="py-4 px-2">
                         @if($item->status == 'Menunggu')
                             <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-3 py-1.5 rounded">Menunggu</span>
@@ -63,7 +67,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="py-4 px-2 text-center text-gray-500">Tidak ada data peminjaman</td>
+                    <td colspan="6" class="py-4 px-2 text-center text-gray-500">Tidak ada data peminjaman</td>
                 </tr>
                 @endforelse
             </tbody>

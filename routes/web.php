@@ -12,6 +12,7 @@ use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\PrioritasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +90,24 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::patch('/peminjaman/{id}/approve', [PeminjamanController::class, 'approve'])->name('peminjaman.approve');
     Route::patch('/peminjaman/{id}/reject', [PeminjamanController::class, 'reject'])->name('peminjaman.reject');
     Route::patch('/peminjaman/{id}/complete', [PeminjamanController::class, 'complete'])->name('peminjaman.complete');
+
+    
+//prioritas
+Route::prefix('admin/prioritas')->middleware(['web','auth','role:Admin'])->group(function () {
+    // Halaman index (GET)
+    Route::get('/proyektor', [PrioritasController::class, 'indexProyektor'])
+        ->name('admin.prioritas.proyektor');
+
+    Route::get('/ruangan', [PrioritasController::class, 'indexRuangan'])
+        ->name('admin.prioritas.ruangan');
+
+    // Aksi hitung (POST) -> langsung render hasil view
+    Route::post('/proyektor/hitung', [PrioritasController::class, 'hitungProyektor'])
+        ->name('admin.prioritas.proyektor.hitung');
+
+    Route::post('/ruangan/hitung', [PrioritasController::class, 'hitungRuangan'])
+        ->name('admin.prioritas.ruangan.hitung');
+});
 });
 
 /*
