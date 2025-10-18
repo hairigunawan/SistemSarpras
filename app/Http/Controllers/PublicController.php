@@ -59,6 +59,7 @@ class PublicController extends Controller
         $selectedSarprasId = $request->input('id_sarpras');
         $sarprasTersedia = Sarpras::where('status', 'Tersedia')->orderBy('nama_sarpras', 'asc')->get();
         $jadwalUntukSarpras = [];
+        $user = auth()->user();
 
         if ($selectedSarprasId) {
             $peminjamanDisetujui = Peminjaman::where('id_sarpras', $selectedSarprasId)
@@ -140,9 +141,19 @@ class PublicController extends Controller
         return view('public.peminjaman.daftarpeminjaman', compact('peminjaman'));
     }
 
-    public function saranaPrasarana()
+    public function halamansarpras()
+        {
+            $sarpras = Sarpras::all();
+            return view('public.user.halamansarpras', compact('sarpras'));
+        }
+        // ✅ Detail sarpras
+        public function detail_sarpras($id)
     {
-        $halamansarpras = \App\Models\Halamansarpras::latest()->get();
-        return view('public.user.halamansarpras', compact('halamansarpras'));
+        // Cari sarpras berdasarkan ID
+        $sarpras = Sarpras::findOrFail($id);
+
+        // Kirim data ke view detail
+        return view('public.user.detail_sarpras', compact('sarpras'));
     }
+
 }

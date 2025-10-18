@@ -3,53 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sarana & Prasarana</title>
-
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Tailwind -->
-  @vite('resources/css/app.css')
-
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-
-    .hero h2 {
-      font-weight: bold;
-      color: #2563eb !important; /* Biru elegan */
-    }
-
-    .card-header {
-      background-color: #198754;
-      color: white;
-      font-weight: bold;
-    }
-
-    .btn-outline-success:hover {
-      background-color: #198754;
-      color: white;
-    }
-
-    a {
-      text-decoration: none !important;
-    }
-
-    .inventory-card {
-      transition: all 0.3s ease;
-    }
-
-    .inventory-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-    }
-  </style>
+  <title>Daftar Sarana & Prasarana - SIMPERSITE</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-gray-50 font-sans">
 
-<body class="bg-gray-50 text-gray-800">
-
-  <!-- Navbar -->
+  <!-- 🔹 Navbar -->
   <nav class="bg-white border-b py-3">
     <div class="flex mx-10 justify-between items-center">
       <div class="flex gap-1 items-center">
@@ -61,13 +20,16 @@
         </p>
         <h1 class="text-xl font-semibold text-gray-700">SIMPERSITE.</h1>
       </div>
+
       <div class="flex justify-end px-6 py-3 gap-10 items-center">
         <ul class="flex space-x-6">
           <li><a href="{{ route('public.beranda.index') }}" class="hover:text-blue-500 font-normal">Beranda</a></li>
           <li><a href="{{ route('public.peminjaman.daftarpeminjaman') }}" class="hover:text-blue-500 font-normal">Peminjaman</a></li>
           <li><a href="{{ route('public.user.halamansarpras') }}" class="hover:text-blue-500 font-normal text-blue-600">Sarana & Prasarana</a></li>
         </ul>
+
         <p class="text-xl text-gray-300 font-light">|</p>
+
         <div class="flex items-center">
           @guest
             <a href="{{ route('login') }}" class="font-semibold text-gray-700 hover:text-gray-300">Log in</a>
@@ -75,44 +37,77 @@
               <a href="{{ route('register') }}" class="ml-4 border py-1 px-4 rounded-full border-gray-300 font-semibold text-gray-600 hover:text-gray-300">Register</a>
             @endif
           @else
-            <a href="{{ route('admin.dashboard.index') }}" class="font-semibold text-gray-700 hover:text-gray-300">Dashboard</a>
+            <div class="flex items-center space-x-3">
+              <span class="font-semibold text-gray-700">Admin</span>
+              <a href="{{ route('logout') }}" 
+                 class="border py-1 px-4 rounded-full border-gray-300 font-semibold text-gray-600 hover:text-gray-300"
+                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                 Logout
+              </a>
+              <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                @csrf
+              </form>
+            </div>
           @endguest
         </div>
       </div>
     </div>
   </nav>
 
-  <!-- Hero Section -->
-<section class="hero text-center py-5 bg-light mb-4">
-  <h2 class="text-4xl font-extrabold text-blue-600 mb-2">Daftar Sarana & Prasarana</h2>
-  <p class="text-muted">Lihat fasilitas yang tersedia untuk digunakan.</p>
-</section>
+  <!-- 🔹 Header -->
+  <header class="text-center py-10">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Sarana & Prasarana</h1>
+    <p class="text-gray-500">Daftar fasilitas yang tersedia untuk digunakan</p>
+  </header>
 
-  <!-- Konten Sarana & Prasarana -->
-  <div class="container">
-    <div class="row g-4">
-      @forelse($inventories as $item)
-        <div class="col-md-4">
-          <div class="card inventory-card shadow-sm border-0">
-            <div class="card-header text-center">
-              {{ $item->nama_barang }}
-            </div>
-            <div class="card-body text-center">
+  <!-- 🔹 Daftar Sarpras -->
+  <div class="max-w-7xl mx-auto px-6 pb-12">
+    @if($sarpras->isEmpty())
+      <div class="text-center text-gray-500 py-20">
+        <p>Belum ada data sarana dan prasarana yang tersedia.</p>
+      </div>
+    @else
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        @foreach ($sarpras as $item)
+          <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+            <div class="h-48 w-full">
               @if($item->gambar)
-                <img src="{{ asset('storage/' . $item->gambar) }}" class="img-fluid mb-3 rounded" alt="{{ $item->nama_barang }}">
+                <img src="{{ asset('storage/' . str_replace('public/', '', $item->gambar)) }}" 
+                     alt="{{ $item->nama_sarpras }}" 
+                     class="w-full h-full object-cover">
               @else
-                <img src="https://via.placeholder.com/300x200?text=No+Image" class="img-fluid mb-3 rounded" alt="No Image">
+                <img src="https://via.placeholder.com/400x250?text=Tidak+Ada+Gambar" 
+                     alt="Tidak Ada Gambar" 
+                     class="w-full h-full object-cover">
               @endif
-              <p class="text-muted">{{ Str::limit($item->keterangan, 100) }}</p>
-              <p><strong>Jumlah:</strong> {{ $item->jumlah }}</p>
-              <a href="{{ route('public.user.halamansarpras.show', $item->id) }}" class="btn btn-outline-success">Lihat Detail</a>
+            </div>
+
+            <div class="p-5">
+              <h2 class="text-lg font-bold text-gray-800">{{ $item->nama_sarpras }}</h2>
+              <p class="text-sm text-gray-500 mb-3">{{ $item->lokasi ?? 'Lokasi tidak diketahui' }}</p>
+
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-sm font-medium {{ $item->status == 'Tersedia' ? 'text-green-600' : 'text-yellow-600' }}">
+                  {{ $item->status }}
+                </span>
+                <span class="text-sm text-gray-500 italic">{{ $item->jenis_sarpras ?? '-' }}</span>
+              </div>
+
+              <a href="{{ route('public.user.detail_sarpras', $item->id_sarpras) }}" 
+                 class="block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition">
+                Lihat Detail
+              </a>
             </div>
           </div>
-        </div>
-      @empty
-        <p class="text-center text-muted">Belum ada data inventaris tersedia.</p>
-      @endforelse
-    </div>
+        @endforeach
+      </div>
+    @endif
   </div>
+
+  <!-- 🔹 Footer -->
+  <footer class="mt-10 py-6 text-center text-gray-500 text-sm border-t">
+    © {{ date('Y') }} SIMPERSITE. Semua hak dilindungi.
+  </footer>
+
 </body>
 </html>

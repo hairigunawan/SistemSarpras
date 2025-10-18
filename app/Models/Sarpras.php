@@ -28,7 +28,7 @@ class Sarpras extends Model
         'gambar',
         'merk',
     ];
-
+    
     public function peminjamans()
     {
         return $this->hasMany(Peminjaman::class, 'id_sarpras', 'id_sarpras');

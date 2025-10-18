@@ -88,23 +88,23 @@ class SarprasController extends Controller
     /**
      * Menampilkan detail satu sarpras.
      */
-    public function lihat_sarpras(Sarpras $sarpra)
+    public function lihat_sarpras(Sarpras $sarpras)
     {
-        return view('admin.sarpras.lihat_sarpras', compact('sarpra'));
+        return view('admin.sarpras.lihat_sarpras', compact('sarpras'));
     }
 
     /**
      * Menampilkan form untuk mengedit sarpras.
      */
-    public function edit_sarpras(Sarpras $sarpra)
+    public function edit_sarpras(Sarpras $sarpras)
     {
-        return view('admin.sarpras.edit_sarpras', compact('sarpra'));
+        return view('admin.sarpras.edit_sarpras', compact('sarpras'));
     }
 
     /**
      * Memperbarui data sarpras di database.
      */
-    public function update(Request $request, Sarpras $sarpra)
+    public function update(Request $request, Sarpras $sarpras)
     {
         $validated = $request->validate([
             'nama_sarpras' => 'required|string|max:255',
@@ -116,7 +116,7 @@ class SarprasController extends Controller
                 'string',
                 'max:50',
                 Rule::unique(Sarpras::class, 'kode_ruangan')
-                    ->ignore($sarpra)
+                    ->ignore($sarpras)
                     ->where(fn($query) => $query->where('jenis_sarpras', 'Ruangan'))
             ],
             'kode_proyektor' => [
@@ -124,7 +124,7 @@ class SarprasController extends Controller
                 'nullable',
                 'string',
                 'max:50',
-                Rule::unique(Sarpras::class, 'kode_proyektor')->ignore($sarpra)->where(fn($query) => $query->where('jenis_sarpras', 'Proyektor')),
+                Rule::unique(Sarpras::class, 'kode_proyektor')->ignore($sarpras)->where(fn($query) => $query->where('jenis_sarpras', 'Proyektor')),
             ],
             'lokasi' => 'nullable|string',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
@@ -134,16 +134,16 @@ class SarprasController extends Controller
 
         if ($request->hasFile('gambar')) {
             // Hapus gambar lama jika ada
-            if ($sarpra->gambar) {
-                Storage::delete('public/' . $sarpra->gambar);
+            if ($sarpras->gambar) {
+                Storage::delete('public/' . $sarpras->gambar);
             }
             $path = $request->file('gambar')->store('images', 'public');
             $validated['gambar'] = str_replace('public/', '', $path);
         }
 
         try {
-            $sarpra->update($validated);
-            return redirect()->route('sarpras.show', $sarpra)->with('success', 'Sarpras berhasil diperbarui.');
+            $sarpras->update($validated);
+            return redirect()->route('sarpras.show', $sarpras)->with('success', 'Sarpras berhasil diperbarui.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal memperbarui sarpras: ' . $e->getMessage())->withInput();
         }
@@ -152,25 +152,24 @@ class SarprasController extends Controller
     /**
      * Menghapus sarpras dari database.
      */
-    public function destroy(Sarpras $sarpra)
+    public function destroy($sarpras)
     {
-        // Cek apakah sarpras sedang dipinjam
-        if ($sarpra->status === 'Dipinjam') {
-            return redirect()->route('sarpras.index')->with('error', 'Sarpras tidak dapat dihapus karena sedang dipinjam.');
+        $sarpras = Sarpras::findOrFail($sarpras);
+    
+        if ($sarpras->status === 'Dipinjam') {
+            return redirect()->route('admin.sarpras.index')->with('error', 'Sarpras tidak dapat dihapus karena sedang dipinjam.');
         }
-
-        // Cek apakah sarpras memiliki riwayat peminjaman
-        if ($sarpra->peminjamans()->exists()) {
-            return redirect()->route('sarpras.index')->with('error', 'Sarpras tidak dapat dihapus karena memiliki riwayat peminjaman.');
+    
+        if ($sarpras->peminjamans()->exists()) {
+            return redirect()->route('admin.sarpras.index')->with('error', 'Sarpras tidak dapat dihapus karena memiliki riwayat peminjaman.');
         }
-
-        // Hapus gambar dari storage jika ada
-        if ($sarpra->gambar) {
-            Storage::delete('public/' . $sarpra->gambar);
+    
+        if ($sarpras->gambar) {
+            Storage::delete('public/' . $sarpras->gambar);
         }
-
-        $sarpra->delete();
-
-        return redirect()->route('sarpras.index')->with('success', 'Sarpras berhasil dihapus.');
-    }
+    
+        $sarpras->delete();
+    
+        return redirect()->route('admin.sarpras.index')->with('success', 'Sarpras berhasil dihapus.');
+    }    
 }

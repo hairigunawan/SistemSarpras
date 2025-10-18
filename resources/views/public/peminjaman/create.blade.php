@@ -29,21 +29,21 @@
                             <div>
                                 <label for="nama" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
                                 <input type="text" id="nama"
-                                       value="{{ Auth::user()->name ?? Auth::user()->nama }}"
+                                       value="{{ Auth::user()->name ?? Auth::user()->nama  ?? '-' }}"
                                        class="mt-2 w-full rounded-xl bg-gray-100 border border-gray-200 px-4 py-3 shadow-sm focus:ring-0 cursor-not-allowed text-gray-700"
                                        readonly>
                             </div>
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700">Alamat Email</label>
                                 <input type="email" id="email"
-                                       value="{{ Auth::user()->email }}"
+                                       value="{{ Auth::user()->email ?? '-'}}"
                                        class="mt-2 w-full rounded-xl bg-gray-100 border border-gray-200 px-4 py-3 shadow-sm focus:ring-0 cursor-not-allowed text-gray-700"
                                        readonly>
                             </div>
                             <div class="md:col-span-2">
                                 <label for="nomor_whatsapp" class="block text-sm font-medium text-gray-700">Nomor Telepon (WhatsApp)</label>
                                 <input type="text" name="nomor_whatsapp" id="nomor_whatsapp"
-                                       value="{{ old('nomor_whatsapp', Auth::user()->telepon) }}"
+                                       value="{{ old('nomor_whatsapp', Auth::user()->telepon ?? '-') }}"
                                        class="mt-2 w-full rounded-xl border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                        placeholder="Contoh: 081234567890" required>
                                 @error('nomor_whatsapp') 

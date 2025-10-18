@@ -31,10 +31,11 @@ Route::get('/peminjaman-public/daftar', [PublicController::class, 'daftarPeminja
     ->name('public.peminjaman.daftarpeminjaman');
 
 // Sarana & Prasarana (Publik)
-Route::get('/sarana-prasarana', [UserInventoryController::class, 'index'])
+Route::get('/halaman-sarpras', [PublicController::class, 'halamansarpras'])
     ->name('public.user.halamansarpras');
-Route::get('/sarana-prasarana/{id}', [UserInventoryController::class, 'show'])
-    ->name('public.user.halamansarpras.show');
+
+Route::get('/sarpras/{id}', [PublicController::class, 'detail_sarpras'])
+        ->name('public.user.detail_sarpras');
 
 // Autentikasi
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
@@ -73,15 +74,37 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:Admin'])->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard.index');
-    Route::resource('/akun', AkunController::class)->names('admin.akun');
-    Route::get('/sarpras', [SarprasController::class, 'index'])->name('admin.sarpras.index');
-    Route::get('/sarpras/tambah_sarpras', [SarprasController::class, 'tambah_sarpras'])->name('admin.sarpras.tambah_sarpras');
-    Route::post('/sarpras', [SarprasController::class, 'store'])->name('admin.sarpras.store');
-    Route::get('/sarpras/{id}/lihat_sarpras', [SarprasController::class, 'lihat_sarpras'])->name('admin.sarpras.lihat_sarpras');
-    Route::get('/sarpras/{id}/edit_sarpras', [SarprasController::class, 'edit_sarpras'])->name('admin.sarpras.edit_sarpras');
-    Route::put('/sarpras/{id}', [SarprasController::class, 'update'])->name('admin.sarpras.update');
-    Route::delete('/sarpras/{id}', [SarprasController::class, 'destroy'])->name('admin.sarpras.destroy');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])
+        ->name('admin.dashboard.index');
+
+    Route::resource('/akun', AkunController::class)
+        ->names('admin.akun');
+
+    Route::get('/sarpras', [SarprasController::class, 'index'])
+        ->name('admin.sarpras.index');
+
+    Route::get('/sarpras/tambah_sarpras', [SarprasController::class, 'tambah_sarpras'])
+        ->name('admin.sarpras.tambah_sarpras');
+
+    Route::post('/sarpras', [SarprasController::class, 'store'])
+        ->name('admin.sarpras.store');
+
+   // Lihat
+    Route::get('/sarpras/{sarpras}/lihat_sarpras', [SarprasController::class, 'lihat_sarpras'])
+        ->name('admin.sarpras.lihat_sarpras');
+
+    // Edit
+    Route::get('/sarpras/{sarpras}/edit_sarpras', [SarprasController::class, 'edit_sarpras'])
+    ->name('admin.sarpras.edit_sarpras');
+
+// Update
+Route::put('/sarpras/{sarpras}/update', [SarprasController::class, 'update'])
+->name('admin.sarpras.update');
+
+// Hapus
+Route::delete('/sarpras/{sarpras}/destroy', [SarprasController::class, 'destroy'])
+->name('admin.sarpras.destroy');
+
 
     Route::get('/peminjaman', [PeminjamanController::class, 'index'])->name('peminjaman.index');
     Route::get('/peminjaman/{id}', [PeminjamanController::class, 'show'])->name('peminjaman.show');

@@ -32,25 +32,35 @@
     @endif
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse ($sarpras as $item)
-            <div class="border rounded-lg overflow-hidden shadow-sm flex flex-col">
-                <img src="{{ $item->gambar ? asset('storage/' . str_replace('public/', '', $item->gambar)) : 'https://via.placeholder.com/400x250' }}" alt="{{ $item->nama_sarpras }}" class="w-full h-48 object-cover">
-                <div class="p-4 flex flex-col flex-grow">
-                    <h3 class="font-bold text-lg">{{ $item->nama_sarpras }}</h3>
-                    <p class="text-sm text-gray-500 mb-3">{{ $item->lokasi }}</p>
-                    <div class="mb-4">
-                        <span class="text-xs font-semibold inline-block py-1 px-4 uppercase rounded-[5px] {{ $item->status == 'Tersedia' ? 'text-green-600 bg-green-200' : 'text-yellow-600 bg-yellow-200' }}">
-                            {{ $item->status }}
-                        </span>
-                    </div>
-                    <div class="mt-auto flex space-x-2">
-                        <a href="{{ route('admin.sarpras.lihat_sarpras', $item->id_sarpras) }}" class="w-full text-center bg-[#179ACE] text-white px-3 py-2 rounded hover:bg-[#0F6A8F] text-xs font-semibold">Detail</a>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <p class="col-span-3 text-center text-gray-500 py-8">Data sarpras tidak ditemukan.</p>
-        @endforelse
+        @forelse($sarpras as $item)
+  <div class="col-md-4">
+    <div class="card inventory-card shadow-sm border-0">
+      <div class="card-header text-center">
+        {{ $item->nama_sarpras }}
+      </div>
+      <div class="card-body text-center">
+        @if($item->gambar)
+          <img src="{{ asset('storage/' . str_replace('public/', '', $item->gambar)) }}" 
+               class="img-fluid mb-3 rounded" 
+               alt="{{ $item->nama_sarpras }}">
+        @else
+          <img src="https://via.placeholder.com/300x200?text=No+Image" 
+               class="img-fluid mb-3 rounded" 
+               alt="No Image">
+        @endif
+
+        <p class="text-sm text-gray-500">{{ $item->lokasi }}</p>
+
+        <span class="text-xs font-semibold inline-block py-1 px-4 rounded-[5px] 
+          {{ $item->status == 'Tersedia' ? 'text-green-600 bg-green-200' : 'text-yellow-600 bg-yellow-200' }}">
+          {{ $item->status }}
+        </span>
+      </div>
+    </div>
+  </div>
+@empty
+  <p class="text-center text-muted">Belum ada data inventaris tersedia.</p>
+@endforelse
     </div>
 
     <div class="mt-6">
