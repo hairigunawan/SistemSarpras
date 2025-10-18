@@ -16,4 +16,3 @@ class AdminMiddleware
         return redirect('/')->with('error', 'Akses ditolak. Hanya admin yang bisa ke sini.');
     }
 }
-
