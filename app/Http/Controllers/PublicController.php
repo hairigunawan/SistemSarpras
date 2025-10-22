@@ -59,7 +59,7 @@ class PublicController extends Controller
         $selectedSarprasId = $request->input('id_sarpras');
         $sarprasTersedia = Sarpras::where('status', 'Tersedia')->orderBy('nama_sarpras', 'asc')->get();
         $jadwalUntukSarpras = [];
-        $user = auth()->user();
+        $user = Auth::user();
 
         if ($selectedSarprasId) {
             $peminjamanDisetujui = Peminjaman::where('id_sarpras', $selectedSarprasId)

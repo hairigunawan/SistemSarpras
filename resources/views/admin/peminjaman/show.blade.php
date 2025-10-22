@@ -6,7 +6,7 @@
 <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mx-auto">
     <!-- Header with Actions -->
     <div class="flex flex-wrap justify-between items-center mb-6 pb-4">
-        <a href="{{ route('peminjaman.index') }}" class="flex gap-2 text-xl items-center text-gray-800 font-semibold mb-4 sm:mb-0 hover:text-gray-600">
+        <a href="{{ route('admin.peminjaman.index') }}" class="flex gap-2 text-xl items-center text-gray-800 font-semibold mb-4 sm:mb-0 hover:text-gray-600">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 18l-6-6l6-6"/></svg>
             <span>Detail Peminjam</span>
         </a>

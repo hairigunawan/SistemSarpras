@@ -141,9 +141,8 @@ class PeminjamanController extends Controller
             'keterangan' => 'required|string|max:500',
         ]);
 
-        // Menambahkan ID pengguna yang sedang login secara otomatis
         $validatedData['id_akun'] = Auth::id();
-        $validatedData['status'] = 'Menunggu'; // Set status awal
+        $validatedData['status'] = 'Menunggu';
 
         Peminjaman::create($validatedData);
 
@@ -155,7 +154,7 @@ class PeminjamanController extends Controller
         $approvedPeminjaman = Peminjaman::findOrFail($id);
 
         if ($approvedPeminjaman->status !== 'Menunggu') {
-            return redirect()->route('peminjaman.show', $id)->with('error', 'Peminjaman ini sudah diproses sebelumnya.');
+            return redirect()->route('admin.peminjaman.show', $id)->with('error', 'Peminjaman ini sudah diproses sebelumnya.');
         }
 
         $conflictingPeminjaman = Peminjaman::where('id_sarpras', $approvedPeminjaman->id_sarpras)
@@ -181,7 +180,7 @@ class PeminjamanController extends Controller
         $approvedPeminjaman->update(['status' => 'Disetujui']);
         $approvedPeminjaman->sarpras->update(['status' => 'Dipinjam']);
 
-        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil disetujui. Pengajuan lain yang bentrok telah otomatis ditolak.');
+        return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil disetujui. Pengajuan lain yang bentrok telah otomatis ditolak.');
     }
 
     public function reject(Request $request, $id)
@@ -196,7 +195,7 @@ class PeminjamanController extends Controller
             'alasan_penolakan' => $request->alasan_penolakan,
         ]);
 
-        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil ditolak.');
+        return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil ditolak.');
     }
 
     public function complete(Request $request, $id)
@@ -204,7 +203,7 @@ class PeminjamanController extends Controller
         $peminjaman = Peminjaman::findOrFail($id);
         $peminjaman->update(['status' => 'Selesai']);
         $peminjaman->sarpras->update(['status' => 'Tersedia']);
-        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil diselesaikan.');
+        return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil diselesaikan.');
     }
 
     public function riwayat()
@@ -225,14 +224,14 @@ public function pengajuan(Request $request)
     ]);
 
     Peminjaman::create([
-        'id_user' => auth()->id(),
+        'id_user' => Auth::id(),
         'id_sarpras' => $request->id_sarpras,
         'tanggal_pinjam' => $request->tanggal_pinjam,
         'status' => 'Menunggu',
-        'hari_pengajuan' => Carbon::now()->translatedFormat('l'), // <-- simpan hari
+        'hari_pengajuan' => Carbon::now()->translatedFormat('l'),
     ]);
 
-    return redirect()->route('peminjaman.riwayat')->with('success', 'Peminjaman berhasil diajukan.');
+    return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil diajukan.');
 }
 
 public function prioritasRuangan()
@@ -240,7 +239,7 @@ public function prioritasRuangan()
         $peminjamans = Peminjaman::whereHas('sarpras', function ($query) {
             $query->where('jenis_sarpras', 'Proyektor');
         })->with('sarpras')->get();
-        
+
         return view('admin.prioritas.ruangan', compact('peminjaman'));
     }
 
@@ -249,11 +248,11 @@ public function prioritasRuangan()
     $peminjamans = Peminjaman::whereHas('sarpras', function ($query) {
         $query->where('jenis_sarpras', 'Proyektor');
     })->with('sarpras')->get();
-    
+
 
     return view('admin.prioritas.proyektor', compact('peminjaman'));
 }
-    
+
     public function hitungPrioritas(Request $request)
     {
         // Contoh logika hitung sederhana

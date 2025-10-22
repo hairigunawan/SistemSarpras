@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('laporans', function (Blueprint $table) {
             $table->id('id_laporan');
-            $table->string('periode')->nullable(); 
+            $table->string('periode')->nullable();
             $table->string('sarpras_terbanyak')->nullable();
             $table->string('ruangan_tersering')->nullable();
-            $table->time('jam_selesai')->nullable();
             $table->string('file_laporan')->nullable();
             $table->timestamps();
         });

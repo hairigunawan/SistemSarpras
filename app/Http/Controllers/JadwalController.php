@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel; 
+use App\Imports\JadwalImport;     
 
 class JadwalController extends Controller
 {
@@ -49,23 +51,23 @@ class JadwalController extends Controller
 
     // Update data jadwal
     public function update(Request $request, Jadwal $jadwal)
-{
-    $request->validate([
-        'kode_mk' => 'required',
-        'nama_kelas' => 'required',
-        'kelas_mahasiswa' => 'required',
-        'sebaran_mahasiswa' => 'required|integer',
-        'hari' => 'required',
-        'jam_mulai' => 'required',
-        'jam_selesai' => 'required',
-        'ruangan' => 'required',
-        'daya_tampung' => 'required|integer',
-    ]);
+    {
+        $request->validate([
+            'kode_mk' => 'required',
+            'nama_kelas' => 'required',
+            'kelas_mahasiswa' => 'required',
+            'sebaran_mahasiswa' => 'required|integer',
+            'hari' => 'required',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required',
+            'ruangan' => 'required',
+            'daya_tampung' => 'required|integer',
+        ]);
 
-    $jadwal->update($request->all());
+        $jadwal->update($request->all());
 
-    return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil diperbarui');
-}
+        return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil diperbarui');
+    }
 
 
     // Hapus data
@@ -76,22 +78,4 @@ class JadwalController extends Controller
 
         return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil dihapus');
     }
-
-    public function importStore(Request $request)
-{
-    $request->validate([
-        'file' => 'required|mimes:xlsx,xls,csv|max:2048',
-    ]);
-
-    try {
-        Excel::import(new \App\Imports\JadwalImport, $request->file('file'));
-
-        return redirect()->route('jadwal.index')
-                         ->with('success', 'Data jadwal berhasil diimport.');
-    } catch (\Exception $e) {
-        return redirect()->route('jadwal.index')
-                         ->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
-    }
-}
-
 }

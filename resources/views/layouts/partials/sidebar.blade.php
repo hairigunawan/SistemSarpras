@@ -24,7 +24,7 @@
                 </li>
 
                 <li class="mb-2">
-                    <a href="{{ Route('peminjaman.index') }}"
+                    <a href="{{ Route('admin.peminjaman.index') }}"
                         class="flex items-center p-3 text-sm rounded-lg gap-2 font-medium {{ request()->is('peminjaman*') ? 'pl-7 bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             viewBox="0 0 24 24">
@@ -84,7 +84,7 @@
                                 </svg>
                                 Prioritas
                             </span>
-                
+
                             <!-- 🔻 Panah dropdown -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                 viewBox="0 0 24 24"
@@ -92,24 +92,24 @@
                                 <path fill="currentColor" d="M7 10l5 5l5-5z" />
                             </svg>
                         </summary>
-                
+
                         <!-- Submenu -->
                         <ul class="ml-8 mt-2 space-y-1">
                             <li>
                                 <a href="{{ Route('admin.prioritas.ruangan') }}"
-                                    class="block text-sm text-gray-600 hover:text-blue-700">
+                                    class="{{ request()->is('prioritas/ruangan*') ? 'block text-sm pl-7 bg-blue-100 text-blue-800 rounded-lg' : 'block text-sm text-gray-600 hover:text-blue-700' }}">
                                     Ruangan
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ Route('admin.prioritas.proyektor') }}"
-                                    class="block text-sm text-gray-600 hover:text-blue-700">
+                                    class="{{ request()->is('prioritas/proyektor*') ? 'block text-sm pl-7 bg-blue-100 text-blue-800 rounded-lg' : 'block text-sm text-gray-600 hover:text-blue-700' }}">
                                     Proyektor
                                 </a>
                             </li>
                         </ul>
                     </details>
-                </li>                
+                </li>
         </nav>
     </div>
 

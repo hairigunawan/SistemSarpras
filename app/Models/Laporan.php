@@ -13,7 +13,6 @@ class Laporan extends Model
         'priode',
         'sarpras_terbanyak',
         'ruang_tersering',
-        'jam_selesai',
         'file_laporan',
     ];
 

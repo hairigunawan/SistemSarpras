@@ -7,9 +7,6 @@ use Illuminate\Http\Request;
 
 class PrioritasController extends Controller
 {
-    // ==============================
-    // 🔹 Halaman Prioritas Ruangan
-    // ==============================
     public function indexRuangan()
     {
         // Ambil semua data peminjaman yang jenis = 'ruangan'
@@ -20,9 +17,6 @@ class PrioritasController extends Controller
         return view('admin.prioritas.ruangan', compact('peminjamans'));
     }
 
-    // ==============================
-    // 🔹 Halaman Prioritas Proyektor
-    // ==============================
     public function indexProyektor()
     {
         // Ambil semua data peminjaman yang jenis = 'proyektor'
@@ -87,9 +81,7 @@ class PrioritasController extends Controller
         ]);
     }
 
-    // ==============================
-    // 🔸 Fungsi Perhitungan AHP
-    // ==============================
+    // Fungsi Perhitungan AHP
     private function ahpWeights(array $A)
     {
         $n = count($A);
@@ -139,9 +131,7 @@ class PrioritasController extends Controller
         ];
     }
 
-    // ==============================
-    // 🔸 Fungsi Hitung SAW
-    // ==============================
+    // Fungsi Hitung SAW
     private function hitungSAW($dataCollection, array $bobot)
     {
         $maxJenis = $dataCollection->max('jenis_kegiatan');

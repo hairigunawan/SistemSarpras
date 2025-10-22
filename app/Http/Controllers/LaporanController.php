@@ -5,18 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Exports\LaporanExport;
 use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Pdf\Facades\PDF;
 use App\Models\Peminjaman;
 use App\Models\Laporan;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class LaporanController extends Controller
 {
-    public function Index()
+    public function index()
     {
-        $totalpeminjaman = peminjaman::count();
+        $totalpeminjaman = Peminjaman::count();
         $peminjamanHariIni = Peminjaman::whereDate('tanggal_pinjam', Carbon::today())->count();
         $waktuRataRata = Peminjaman::selectRaw('AVG(TIMESTAMPDIFF(HOUR, jam_mulai, jam_selesai)) as avg_jam')
             ->value('avg_jam') ?? 0;
@@ -39,26 +38,26 @@ class LaporanController extends Controller
         $sarprasNama = $topSarpras && $topSarpras->sarpras ? $topSarpras->sarpras->nama_sarpras : '-';
         $ruanganKode = $topSarpras && $topSarpras->sarpras ? $topSarpras->sarpras->kode_ruangan : '-';
 
-         $laporan = Laporan::updateOrCreate(
+        $laporan = Laporan::updateOrCreate(
             ['periode' => Carbon::now()->format('F Y')],
-                [
+            [
                 'sarpras_terbanyak' => $sarprasNama,
                 'ruangan_tersering' => $ruanganKode,
-                'jam_selesai' => sprintf('%.1f', $rataJam ?? 0),
-                ]
-            );
+                'jam_selesai' => sprintf('%.1f', $waktuRataRata ?? 0),
+            ]
+        );
 
-            return view('admin.laporan.index', [
+        return view('admin.laporan.index', [
             'totalPeminjaman' => $totalpeminjaman,
             'peminjamanHariIni' => $peminjamanHariIni,
             'waktuRataRata' => $waktuRataRata,
             'peminjamTeratas' => $peminjamTeratas,
             'sarprasTerpopuler' => $sarprasTerpopuler,
             'laporan' => $laporan,
-            ]);
-        }
-        public function exportPdf()
-        {
+        ]);
+    }
+    public function exportPdf()
+    {
         $data = [
             'laporan' => Laporan::latest()->first(),
             'tanggal' => Carbon::now()->format('d M Y'),
@@ -68,11 +67,7 @@ class LaporanController extends Controller
     }
 
     public function exportExcel()
-        {
-        $data = [
-            'laporan' => Laporan::latest()->first(),
-            'tanggal' => Carbon::now()->format('d M Y'),
-        ];
-        return Excel::download(new Laporan, 'admin.laporan.xlsx' . date('Y-m-d') . '.xlsx');
-        }
+    {
+        return Excel::download(new LaporanExport, 'laporan-' . date('Y-m-d') . '.xlsx');
     }
+}

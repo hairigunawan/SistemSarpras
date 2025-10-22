@@ -1,14 +1,40 @@
 <?php
-use Maatwebsite\Excel\Concerns\FromView;
-use Illuminate\Contracts\View\View;
 
-class LaporanExport implements FromView
+namespace App\Exports;
+
+use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use App\Models\Laporan;
+use Carbon\Carbon;
+
+class LaporanExport implements FromArray, WithHeadings
 {
-    public function view(): View
+    // Return rows for the Excel file
+    public function array(): array
     {
-        return view('admin.laporan.xlsx', [
-            'laporan' => Laporan::latest()->first(),
-            'tanggal' => now()->format('d M Y'),
-        ]);
+        $laporan = Laporan::latest()->first();
+
+        $row = [
+            'periode' => $laporan ? $laporan->periode : '',
+            'sarpras_terbanyak' => $laporan ? $laporan->sarpras_terbanyak : '',
+            'ruangan_tersering' => $laporan ? $laporan->ruangan_tersering : '',
+            'jam_selesai' => $laporan ? $laporan->jam_selesai : '',
+            'generated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+        ];
+
+        // Return as array of rows
+        return [array_values($row)];
+    }
+
+    // Headings for the sheet
+    public function headings(): array
+    {
+        return [
+            'Periode',
+            'Sarpras Terbanyak',
+            'Ruangan Tersering',
+            'Jam Selesai (avg)',
+            'Generated At',
+        ];
     }
 }
