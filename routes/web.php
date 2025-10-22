@@ -85,6 +85,9 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])
         ->name('admin.dashboard.index');
 
+Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');});
+
     Route::resource('/akun', AkunController::class)
         ->names('admin.akun');
 
@@ -93,7 +96,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 
     Route::get('/sarpras/create', [SarprasController::class, 'tambah_sarpras'])
         ->name('admin.sarpras.tambah_sarpras');
-    
+
 
     Route::post('/sarpras', [SarprasController::class, 'store'])
         ->name('admin.sarpras.store');
@@ -123,7 +126,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::patch('/peminjaman/{id}/reject', [PeminjamanController::class, 'reject'])->name('peminjaman.reject');
     Route::patch('/peminjaman/{id}/complete', [PeminjamanController::class, 'complete'])->name('peminjaman.complete');
 
-    
+
 //prioritas
 Route::prefix('admin/prioritas')->middleware(['web','auth','role:Admin'])->group(function () {
     // Halaman index (GET)

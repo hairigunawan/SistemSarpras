@@ -24,6 +24,9 @@ return new class extends Migration
             // Menambahkan jumlah peserta
             $table->integer('jumlah_peserta');
 
+            // Jenis sarpras (ruangan/proyektor)
+            $table->string('jenis')->nullable()->after('id_sarpras');
+
             // Detail waktu
             $table->date('tanggal_pinjam');
             $table->date('tanggal_kembali');

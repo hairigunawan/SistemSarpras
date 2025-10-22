@@ -13,7 +13,9 @@ class PrioritasController extends Controller
     public function indexRuangan()
     {
         // Ambil semua data peminjaman yang jenis = 'ruangan'
-        $peminjamans = Peminjaman::where('jenis', 'ruangan')->get();
+        $peminjamans = Peminjaman::whereHas('sarpras', function ($query){
+            $query->where('jenis_sarpras', 'ruangan');
+            })->get();
 
         return view('admin.prioritas.ruangan', compact('peminjamans'));
     }
@@ -24,9 +26,24 @@ class PrioritasController extends Controller
     public function indexProyektor()
     {
         // Ambil semua data peminjaman yang jenis = 'proyektor'
-        $peminjamans = Peminjaman::where('jenis', 'proyektor')->get();
+        $peminjamans = Peminjaman::whereHas('sarpras', function ($query){
+            $query->where('jenis_sarpras', 'proyektor');
+            })->get();
 
         return view('admin.prioritas.proyektor', compact('peminjamans'));
+    }
+
+    // ====================================================
+    // 🔹 Fungsi hitung khusus untuk tiap tipe (ruangan / proyektor)
+    // ====================================================
+    public function hitungRuangan(Request $request)
+    {
+        return $this->hitung(new Request(['tipe' => 'ruangan']));
+    }
+
+    public function hitungProyektor(Request $request)
+    {
+        return $this->hitung(new Request(['tipe' => 'proyektor']));
     }
 
     // ==============================
@@ -37,7 +54,9 @@ class PrioritasController extends Controller
         $tipe = $request->input('tipe', 'ruangan');
 
         // Ambil data sesuai tipe
-        $data = Peminjaman::where('jenis', $tipe)->get();
+        $data = Peminjaman::whereHas('sarpras', function ($query) use ($tipe){
+            $query->where('jenis_sarpras', ucfirst($tipe));
+            })->get();
 
         if ($data->isEmpty()) {
             return redirect()->back()->with('error', 'Tidak ada data untuk tipe: ' . $tipe);

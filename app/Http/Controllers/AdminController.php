@@ -47,4 +47,9 @@ class AdminController extends Controller
             'peminjaman_terbaru'
         ));
     }
+    // method index untuk menampilkan halaman dashboard admin
+    public function index()
+    {
+        return view('admin.dashboard');
+    }
 }
