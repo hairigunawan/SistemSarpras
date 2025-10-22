@@ -18,8 +18,8 @@
             </form>
 
             {{-- Tombol Tambah --}}
-            <a href="{{ route('jadwal.create') }}"
-               class="px-4 py-2 text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700">
+            <a href="{{ route('admin.jadwal.create') }}"
+               class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
                + Tambah Jadwal
             </a>
         </div>
@@ -57,9 +57,9 @@
                         <td class="px-4 py-2">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
                         <td class="px-4 py-2">{{ $jadwal->ruangan }}</td>
                         <td class="px-4 py-2">{{ $jadwal->daya_tampung }}</td>
-                        <td class="flex justify-center gap-2 px-4 py-2">
+                        <td class="px-4 py-2 flex justify-center gap-2">
                             <a href="{{ route('jadwal.edit', $jadwal->id_jadwal) }}"
-                               class="px-3 py-1 text-white bg-yellow-400 rounded hover:bg-yellow-500">Edit</a>
+                               class="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500">Edit</a>
                             <form action="{{ route('jadwal.destroy', $jadwal->id_jadwal) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
                                 @csrf
                                 @method('DELETE')
