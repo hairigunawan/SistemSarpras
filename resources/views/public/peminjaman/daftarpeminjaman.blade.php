@@ -57,7 +57,7 @@
       border-top: 2px solid #dee2e6;
     }
 
-    a {
+    {
       text-decoration: none !important;
     }
   </style>
@@ -114,26 +114,6 @@
   </div>
   </div>
 
-  <!-- Statistik -->
-  <div class="row text-center mb-5">
-    <div class="col-md-6 mb-3">
-      <div class="card shadow-sm border-0">
-        <div class="card-body">
-          <h5 class="fw-bold text-primary">Total Ruangan Dipinjam</h5>
-          <p class="display-5 fw-bold mb-0">10</p> <!-- Angka hitam -->
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6 mb-3">
-      <div class="card shadow-sm border-0">
-        <div class="card-body">
-          <h5 class="fw-bold text-primary">Total Proyektor Dipinjam</h5>
-          <p class="display-5 fw-bold mb-0">7</p> <!-- Angka hitam -->
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Tabel -->
   <div class="card shadow-sm border-0 mb-4">
     <div class="card-header">
@@ -150,32 +130,42 @@
             <th>Tanggal Pengembalian</th>
             <th>Jam</th>
             <th>Status</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Asep Mahasiswa</td>
-            <td>Ruangan</td>
-            <td>Presentasi Proyek</td>
-            <td>2025-10-08</td>
-            <td>2025-10-08</td>
-            <td>10:00 - 12:00</td>
-            <td><span class="badge bg-success">Disetujui</span></td>
-          </tr>
-          <tr>
-            <td>Budi Dosen</td>
-            <td>Proyektor</td>
-            <td>Kuliah Umum</td>
-            <td>2025-10-09</td>
-            <td>2025-10-09</td>
-            <td>08:00 - 10:00</td>
-            <td><span class="badge bg-warning text-dark">Pending</span></td>
-          </tr>
+            @forelse($peminjaman as $item)
+            <tr>
+                <td>{{ $item->nama_peminjam }}</td>
+                <td>{{ $item->sarpras->jenis_sarpras ?? 'N/A' }}</td>
+                <td>{{ $item->keterangan }}</td>
+                <td>{{ $item->tanggal_pinjam }}</td>
+                <td>{{ $item->tanggal_kembali }}</td>
+                <td>{{ $item->jam_mulai }} - {{ $item->jam_selesai }}</td>
+                <td>
+                    @if($item->status == 'Menunggu')
+                        <span class="badge bg-warning">Menunggu</span>
+                    @elseif($item->status == 'Disetujui')
+                        <span class="badge bg-success">Disetujui</span>
+                    @else
+                        <span class="badge bg-danger">Ditolak</span>
+                    @endif
+                </td>
+                <td>
+                    <a href="{{ route('public.peminjaman.edit', $item->id_peminjaman) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <form action="{{ route('public.peminjaman.destroy', $item->id_peminjaman) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus peminjaman ini?')">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="8" class="text-center">Tidak ada data peminjaman.</td>
+            </tr>
+            @endforelse
         </tbody>
-      </table>
-    </div>
-  </div>
-</div>
 
 <!-- Modal Ruangan -->
 <div class="modal fade" id="modalRuangan" tabindex="-1" aria-hidden="true">
@@ -215,6 +205,9 @@
             <textarea name="keperluan" class="form-control" required></textarea>
           </div>
         </div>
+      </div class="mb-3">
+            <label class="aksi">Aksi</label>
+            <input type="text" name="aksi" class="form-control" required>
         <div class="modal-footer">
           <button class="btn btn-success">Kirim</button>
         </div>

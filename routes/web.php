@@ -30,6 +30,14 @@ Route::post('/peminjaman-public', [PublicController::class, 'storePeminjaman'])
 Route::get('/peminjaman-public/daftar', [PublicController::class, 'daftarPeminjaman'])
     ->name('public.peminjaman.daftarpeminjaman');
 
+// Routes for editing and deleting public peminjaman
+Route::get('/peminjaman-public/{peminjaman}/edit', [PublicController::class, 'editPeminjaman'])
+    ->name('public.peminjaman.edit');
+Route::put('/peminjaman-public/{peminjaman}', [PublicController::class, 'updatePeminjaman'])
+    ->name('public.peminjaman.update');
+Route::delete('/peminjaman-public/{peminjaman}', [PublicController::class, 'destroyPeminjaman'])
+    ->name('public.peminjaman.destroy');
+
 // Sarana & Prasarana (Publik)
 Route::get('/halaman-sarpras', [PublicController::class, 'halamansarpras'])
     ->name('public.user.halamansarpras');
@@ -83,8 +91,9 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/sarpras', [SarprasController::class, 'index'])
         ->name('admin.sarpras.index');
 
-    Route::get('/sarpras/tambah_sarpras', [SarprasController::class, 'tambah_sarpras'])
+    Route::get('/sarpras/create', [SarprasController::class, 'tambah_sarpras'])
         ->name('admin.sarpras.tambah_sarpras');
+    
 
     Route::post('/sarpras', [SarprasController::class, 'store'])
         ->name('admin.sarpras.store');
@@ -97,13 +106,13 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/sarpras/{sarpras}/edit_sarpras', [SarprasController::class, 'edit_sarpras'])
     ->name('admin.sarpras.edit_sarpras');
 
-// Update
-Route::put('/sarpras/{sarpras}/update', [SarprasController::class, 'update'])
-->name('admin.sarpras.update');
+    // Update
+    Route::put('/sarpras/{sarpras}/update', [SarprasController::class, 'update'])
+    ->name('admin.sarpras.update');
 
-// Hapus
-Route::delete('/sarpras/{sarpras}/destroy', [SarprasController::class, 'destroy'])
-->name('admin.sarpras.destroy');
+    // Hapus
+    Route::delete('/sarpras/{sarpras}/destroy', [SarprasController::class, 'destroy'])
+    ->name('admin.sarpras.destroy');
 
 
     Route::get('/peminjaman', [PeminjamanController::class, 'index'])->name('peminjaman.index');
@@ -130,6 +139,12 @@ Route::prefix('admin/prioritas')->middleware(['web','auth','role:Admin'])->group
 
     Route::post('/ruangan/hitung', [PrioritasController::class, 'hitungRuangan'])
         ->name('admin.prioritas.ruangan.hitung');
+});
+
+//jadwal
+Route::middleware(['auth'])->group(function () {
+    Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
+    Route::post('/jadwal/import', [JadwalController::class, 'importStore'])->name('jadwal.import.store');
 });
 });
 

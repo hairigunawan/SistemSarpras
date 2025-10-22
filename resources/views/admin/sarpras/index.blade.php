@@ -31,36 +31,40 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
         @forelse($sarpras as $item)
-  <div class="col-md-4">
-    <div class="card inventory-card shadow-sm border-0">
-      <div class="card-header text-center">
-        {{ $item->nama_sarpras }}
-      </div>
-      <div class="card-body text-center">
-        @if($item->gambar)
-          <img src="{{ asset('storage/' . str_replace('public/', '', $item->gambar)) }}" 
-               class="img-fluid mb-3 rounded" 
-               alt="{{ $item->nama_sarpras }}">
-        @else
-          <img src="https://via.placeholder.com/300x200?text=No+Image" 
-               class="img-fluid mb-3 rounded" 
-               alt="No Image">
-        @endif
+          <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+            <div class="h-48 w-full">
+              @if($item->gambar)
+                <img src="{{ asset('storage/' . str_replace('public/', '', $item->gambar)) }}" 
+                     alt="{{ $item->nama_sarpras }}" 
+                     class="w-full h-full object-cover">
+              @else
+                <img src="https://via.placeholder.com/400x250?text=Tidak+Ada+Gambar" 
+                     class="w-full h-full object-cover">
+              @endif
+            </div>
 
-        <p class="text-sm text-gray-500">{{ $item->lokasi }}</p>
+            <div class="p-5">
+              <h2 class="text-lg font-bold text-gray-800">{{ $item->nama_sarpras }}</h2>
+              <p class="text-sm text-gray-500 mb-3">{{ $item->lokasi ?? 'Lokasi tidak diketahui' }}</p>
 
-        <span class="text-xs font-semibold inline-block py-1 px-4 rounded-[5px] 
-          {{ $item->status == 'Tersedia' ? 'text-green-600 bg-green-200' : 'text-yellow-600 bg-yellow-200' }}">
-          {{ $item->status }}
-        </span>
-      </div>
-    </div>
-  </div>
-@empty
-  <p class="text-center text-muted">Belum ada data inventaris tersedia.</p>
-@endforelse
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-sm font-medium {{ $item->status == 'Tersedia' ? 'text-green-600' : 'text-yellow-600' }}">
+                  {{ $item->status }}
+                </span>
+                <span class="text-sm text-gray-500 italic">{{ $item->jenis_sarpras ?? '-' }}</span>
+              </div>
+
+              <a href="{{ route('admin.sarpras.lihat_sarpras', $item->id_sarpras) }}" 
+                 class="block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition">
+                Lihat Detail
+              </a>
+            </div>
+          </div>
+        @empty
+          <p class="text-center text-muted col-span-full">Belum ada data inventaris tersedia.</p>
+        @endforelse
     </div>
 
     <div class="mt-6">

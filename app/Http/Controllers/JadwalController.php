@@ -76,4 +76,22 @@ class JadwalController extends Controller
 
         return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil dihapus');
     }
+
+    public function importStore(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+    ]);
+
+    try {
+        Excel::import(new \App\Imports\JadwalImport, $request->file('file'));
+
+        return redirect()->route('jadwal.index')
+                         ->with('success', 'Data jadwal berhasil diimport.');
+    } catch (\Exception $e) {
+        return redirect()->route('jadwal.index')
+                         ->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
+    }
+}
+
 }

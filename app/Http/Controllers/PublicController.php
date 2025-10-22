@@ -156,4 +156,80 @@ class PublicController extends Controller
         return view('public.user.detail_sarpras', compact('sarpras'));
     }
 
+    /**
+     * Menampilkan form untuk mengedit peminjaman publik.
+     */
+    public function editPeminjaman(Peminjaman $peminjaman)
+    {
+        // Ensure only the owner can edit
+        if (Auth::id() !== $peminjaman->id_akun) {
+            abort(403, 'Anda tidak memiliki akses untuk mengedit peminjaman ini.');
+        }
+        $sarprasTersedia = Sarpras::where('status', 'Tersedia')->orderBy('nama_sarpras', 'asc')->get();
+        return view('public.peminjaman.edit', compact('peminjaman', 'sarprasTersedia'));
+    }
+
+    /**
+     * Memperbarui data peminjaman publik di database.
+     */
+    public function updatePeminjaman(Request $request, Peminjaman $peminjaman)
+    {
+        // Ensure only the owner can update
+        if (Auth::id() !== $peminjaman->id_akun) {
+            abort(403, 'Anda tidak memiliki akses untuk memperbarui peminjaman ini.');
+        }
+
+        $validated = $request->validate([
+            'nomor_whatsapp' => 'required|string|max:20|regex:/^08[0-9]{8,12}$/',
+            'id_sarpras' => 'required|exists:sarpras,id_sarpras',
+            'tanggal_pinjam' => 'required|date|after_or_equal:today',
+            'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required|after:jam_mulai',
+            'jumlah_peserta' => 'required|integer|min:1',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $isBentrok = Peminjaman::where('id_sarpras', $request->id_sarpras)
+            ->where('id_peminjaman', '!=', $peminjaman->id_peminjaman) // Exclude current peminjaman
+            ->whereIn('status', ['Disetujui', 'Menunggu'])
+            ->where(function ($query) use ($request) {
+                $pinjam_mulai = $request->tanggal_pinjam . ' ' . $request->jam_mulai;
+                $pinjam_selesai = $request->tanggal_kembali . ' ' . $request->jam_selesai;
+
+                $query->where(function ($q) use ($pinjam_mulai) {
+                    $q->whereRaw("CONCAT(tanggal_kembali, ' ', jam_selesai) > ?", [$pinjam_mulai]);
+                })->where(function ($q) use ($pinjam_selesai) {
+                    $q->whereRaw("CONCAT(tanggal_pinjam, ' ', jam_mulai) < ?", [$pinjam_selesai]);
+                });
+            })
+            ->exists();
+
+        if ($isBentrok) {
+            return back()->withErrors([
+                'tanggal_pinjam' => 'Jadwal yang Anda pilih bentrok dengan peminjaman lain. Silakan pilih tanggal atau jam yang berbeda.'
+            ])->withInput();
+        }
+
+        $peminjaman->update($validated);
+
+        return redirect()->route('public.peminjaman.daftarpeminjaman')
+            ->with('success', 'Peminjaman berhasil diperbarui.');
+    }
+
+    /**
+     * Menghapus peminjaman publik dari database.
+     */
+    public function destroyPeminjaman(Peminjaman $peminjaman)
+    {
+        // Ensure only the owner can delete
+        if (Auth::id() !== $peminjaman->id_akun) {
+            abort(403, 'Anda tidak memiliki akses untuk menghapus peminjaman ini.');
+        }
+
+        $peminjaman->delete();
+
+        return redirect()->route('public.peminjaman.daftarpeminjaman')
+            ->with('success', 'Peminjaman berhasil dihapus.');
+    }
 }
