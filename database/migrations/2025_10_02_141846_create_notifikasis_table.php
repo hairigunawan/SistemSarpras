@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('notifikasis', function (Blueprint $table) {
-            $table->id();
+            $table->id('id_notifikasi');
+            $table->string('pesan')->nullable();
+            $table->enum('status_pesan', ['Dibaca', 'terkirim', 'Tidak terkirim'])->default('Terkirim');
             $table->timestamps();
         });
     }

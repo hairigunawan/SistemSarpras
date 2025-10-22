@@ -48,7 +48,7 @@ class SarprasController extends Controller
     {
         $validated = $request->validate([
             'nama_sarpras' => 'required|string|max:255',
-            'jenis_sarpras' => 'required|string',
+            'jenis_sarpras' => 'required|string|in:Ruangan,Proyrktor',
             'status' => 'required|string|in:Tersedia,Dipinjam,Penuh,Perbaikan',
             'kode_ruangan' => [
                 'required_if:jenis_sarpras,Ruangan',
@@ -81,8 +81,13 @@ class SarprasController extends Controller
 
         Sarpras::create($validated);
 
-        return redirect()->route('admin.sarpras.index')
-            ->with('success', 'Sarpras berhasil ditambahkan.');
+        if ($request->get('jenis_sarpras' == 'Ruangan')) {
+            return redirect()->route('admin.sarpras.index')
+                ->with('success', 'Ruangan berhasil ditambahkan.');
+        }else{
+            return redirect()->route('admin.sarpras.index')
+                ->with('success', 'Proyektor berhasil ditambahkan.');
+        }
     }
 
     /**
@@ -143,7 +148,7 @@ class SarprasController extends Controller
 
         try {
             $sarpras->update($validated);
-            return redirect()->route('sarpras.show', $sarpras)->with('success', 'Sarpras berhasil diperbarui.');
+            return redirect()->route('admin.sarpras.lihat_sarpras', $sarpras)->with('success', 'Sarpras berhasil diperbarui.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal memperbarui sarpras: ' . $e->getMessage())->withInput();
         }

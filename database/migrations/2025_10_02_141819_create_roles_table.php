@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('roles', function (Blueprint $table) {
-            $table->id('id_role'); // Primary key dengan nama custom
+            $table->id('id_role');
             $table->enum('nama_role', ['Dosen', 'Mahasiswa', 'Admin'])->default('Mahasiswa');
             $table->timestamps();
         });

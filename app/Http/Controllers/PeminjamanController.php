@@ -154,7 +154,7 @@ class PeminjamanController extends Controller
         $approvedPeminjaman = Peminjaman::findOrFail($id);
 
         if ($approvedPeminjaman->status !== 'Menunggu') {
-            return redirect()->route('admin.peminjaman.show', $id)->with('error', 'Peminjaman ini sudah diproses sebelumnya.');
+            return redirect()->route('peminjaman.show', $id)->with('error', 'Peminjaman ini sudah diproses sebelumnya.');
         }
 
         $conflictingPeminjaman = Peminjaman::where('id_sarpras', $approvedPeminjaman->id_sarpras)
@@ -180,7 +180,7 @@ class PeminjamanController extends Controller
         $approvedPeminjaman->update(['status' => 'Disetujui']);
         $approvedPeminjaman->sarpras->update(['status' => 'Dipinjam']);
 
-        return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil disetujui. Pengajuan lain yang bentrok telah otomatis ditolak.');
+        return redirect()->route('peminjaman.show')->with('success', 'Peminjaman berhasil disetujui. Pengajuan lain yang bentrok telah otomatis ditolak.');
     }
 
     public function reject(Request $request, $id)
@@ -195,7 +195,7 @@ class PeminjamanController extends Controller
             'alasan_penolakan' => $request->alasan_penolakan,
         ]);
 
-        return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil ditolak.');
+        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil ditolak.');
     }
 
     public function complete(Request $request, $id)

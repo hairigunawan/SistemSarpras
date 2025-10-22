@@ -21,16 +21,13 @@ class SocialAuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
 
-            // Cek apakah user sudah ada berdasarkan email
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
-                // Jika user sudah ada, periksa apakah role admin
                 if ($user->userRole->nama_role === 'Admin') {
                     return redirect('/login')->with('error', 'Admin harus login menggunakan email dan password.');
                 }
 
-                // Jika user sudah ada, update provider info jika belum ada
                 if (!$user->provider) {
                     $user->update([
                         'provider' => 'google',
@@ -38,8 +35,6 @@ class SocialAuthController extends Controller
                     ]);
                 }
             } else {
-                // Jika user belum ada, buat user baru
-                // Cari role default (misalnya Mahasiswa)
                 $defaultRole = Role::where('nama_role', 'Mahasiswa')->first();
 
                 $user = User::create([
@@ -47,17 +42,14 @@ class SocialAuthController extends Controller
                     'email' => $googleUser->getEmail(),
                     'provider' => 'google',
                     'provider_id' => $googleUser->getId(),
-                    'role_id' => $defaultRole ? $defaultRole->id_role : 1, // Default ke role pertama jika tidak ada
-                    'password' => Hash::make(uniqid()), // Password random karena login via Google
+                    'role_id' => $defaultRole ? $defaultRole->id_role : 3,
+                    'password' => Hash::make(uniqid()),
                 ]);
             }
 
             // Login user
             Auth::login($user);
 
-            // Redirect sesuai peran:
-            // - Non-admin: ke halaman landing
-            // - Admin via SSO tidak diperbolehkan (fallback proteksi)
             if ($user->userRole && $user->userRole->nama_role === 'Admin') {
                 Auth::logout();
                 return redirect('/login')->with('error', 'Admin harus login menggunakan email dan password.');

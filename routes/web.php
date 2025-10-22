@@ -83,7 +83,6 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
 
     Route::get('/sarpras', [SarprasController::class, 'index'])
         ->name('admin.sarpras.index');
-
     Route::get('/sarpras/tambah_sarpras', [SarprasController::class, 'tambah_sarpras'])
         ->name('admin.sarpras.tambah_sarpras');
     Route::post('/sarpras', [SarprasController::class, 'store'])
@@ -91,11 +90,9 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
     Route::get('/sarpras/{sarpras}/lihat_sarpras', [SarprasController::class, 'lihat_sarpras'])
         ->name('admin.sarpras.lihat_sarpras');
     Route::get('/sarpras/{sarpras}/edit_sarpras', [SarprasController::class, 'edit_sarpras'])
-        ->name('admin.sarpras.edit_sarpras');
-
+    ->name('admin.sarpras.edit_sarpras');
     Route::put('/sarpras/{sarpras}/update', [SarprasController::class, 'update'])
-        ->name('admin.sarpras.update');
-
+    ->name('admin.sarpras.update');
     Route::delete('/sarpras/{sarpras}/destroy', [SarprasController::class, 'destroy'])
         ->name('admin.sarpras.destroy');
 
@@ -134,7 +131,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
     Route::post('/jadwal/import', [JadwalController::class, 'importStore'])->name('jadwal.import.store');
 });
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -150,6 +146,5 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
     Route::get('/peminjaman/create', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create.auth');
     Route::post('/peminjaman', [PeminjamanController::class, 'store'])->name('public.peminjaman.store.auth');
 
-    // Riwayat peminjaman pribadi
     Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('peminjaman.riwayat');
 });
