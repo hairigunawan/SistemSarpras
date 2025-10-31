@@ -91,7 +91,7 @@ class LoginController extends Controller
         Auth::login($user);
 
         if (in_array($role->nama_role, ['Dosen', 'Mahasiswa'])) {
-            return redirect()->route('public.beranda.index');
+            return redirect()->route('public.beranda.index.auth');
         }
 
         return redirect()->route('public.beranda.index');

@@ -4,157 +4,211 @@ namespace App\Http\Controllers;
 
 use App\Models\Peminjaman;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class PrioritasController extends Controller
 {
+    /**
+     * Menampilkan hasil perhitungan prioritas peminjaman ruangan.
+     */
     public function indexRuangan()
     {
-        // Ambil semua data peminjaman yang jenis = 'ruangan'
-        $peminjamans = Peminjaman::whereHas('sarpras', function ($query){
-            $query->where('jenis_sarpras', 'ruangan');
-            })->get();
+        $peminjamans = Peminjaman::with(['ruangan', 'user'])
+            ->whereHas('sarpras', fn($q) => $q->where('tipe', 'Ruangan'))
+            ->get();
 
-        return view('admin.prioritas.ruangan', compact('peminjamans'));
-    }
-
-    public function indexProyektor()
-    {
-        // Ambil semua data peminjaman yang jenis = 'proyektor'
-        $peminjamans = Peminjaman::whereHas('sarpras', function ($query){
-            $query->where('jenis_sarpras', 'proyektor');
-            })->get();
-
-        return view('admin.prioritas.proyektor', compact('peminjamans'));
-    }
-
-    // ====================================================
-    // 🔹 Fungsi hitung khusus untuk tiap tipe (ruangan / proyektor)
-    // ====================================================
-    public function hitungRuangan(Request $request)
-    {
-        return $this->hitung(new Request(['tipe' => 'ruangan']));
-    }
-
-    public function hitungProyektor(Request $request)
-    {
-        return $this->hitung(new Request(['tipe' => 'proyektor']));
-    }
-
-    // ==============================
-    // 🔹 Hitung Prioritas (AHP + SAW)
-    // ==============================
-    public function hitung(Request $request)
-    {
-        $tipe = $request->input('tipe', 'ruangan');
-
-        // Ambil data sesuai tipe
-        $data = Peminjaman::whereHas('sarpras', function ($query) use ($tipe){
-            $query->where('jenis_sarpras', ucfirst($tipe));
-            })->get();
-
-        if ($data->isEmpty()) {
-            return redirect()->back()->with('error', 'Tidak ada data untuk tipe: ' . $tipe);
+        if ($peminjamans->isEmpty()) {
+            return back()->with('warning', 'Tidak ada data peminjaman ruangan untuk dihitung.');
         }
 
-        // ====== Matriks AHP (4 kriteria) ======
+        // Contoh matriks AHP antar kriteria
         $A = [
-            [1,     2,     4,     3],
-            [1/2,   1,     3,     2],
-            [1/4,   1/3,   1,     1/2],
-            [1/3,   1/2,   2,     1],
+            [1,   3,   5],
+            [1 / 3, 1,   2],
+            [1 / 5, 1 / 2, 1],
         ];
 
-        $ahp = $this->ahpWeights($A);
-        $bobotAHP = $ahp['weights'];
+        // Hitung bobot dengan AHP
+        $ahp = $this->hitungAHP($A);
 
-        $hasil = $this->hitungSAW($data, $bobotAHP);
+        // Hitung hasil SAW
+        $hasil = $this->hitungSAW($peminjamans, $ahp['weights']);
 
-        return view('admin.prioritas.hasil', [
+        // Simpan hasil ke database
+        foreach ($hasil as $index => $item) {
+            $peminjaman = Peminjaman::find($item['id']);
+            if ($peminjaman) {
+                $peminjaman->update([
+                    'nilai_prioritas' => $item['nilai'],
+                    'peringkat' => $index + 1,
+                ]);
+            }
+        }
+
+        return view('admin.prioritas.ruangan', [
             'hasil' => $hasil,
-            'bobotAHP' => $bobotAHP,
-            'consistency' => [
-                'lambda_max' => $ahp['lambda_max'],
-                'CI' => $ahp['CI'],
-                'CR' => $ahp['CR'],
-            ],
-            'tipe' => $tipe,
+            'weights' => $ahp['weights'],
+            'cr' => $ahp['cr'],
+        ]);
+    }
+    public function indexProyektor()
+    {
+        $peminjamans = Peminjaman::with(['proyektor', 'user'])
+            ->whereHas('proyektor', fn($q) => $q->where('tipe', 'proyektor'))
+            ->get();
+
+        if ($peminjamans->isEmpty()) {
+            return back()->with('warning', 'Tidak ada data peminjaman ruangan untuk dihitung.');
+        }
+
+        // Contoh matriks AHP antar kriteria
+        $A = [
+            [1,   3,   5],
+            [1 / 3, 1,   2],
+            [1 / 5, 1 / 2, 1],
+        ];
+
+        // Hitung bobot dengan AHP
+        $ahp = $this->hitungAHP($A);
+
+        // Hitung hasil SAW
+        $hasil = $this->hitungSAW($peminjamans, $ahp['weights']);
+
+        // Simpan hasil ke database
+        foreach ($hasil as $index => $item) {
+            $peminjaman = Peminjaman::find($item['id']);
+            if ($peminjaman) {
+                $peminjaman->update([
+                    'nilai_prioritas' => $item['nilai'],
+                    'peringkat' => $index + 1,
+                ]);
+            }
+        }
+
+        return view('admin.prioritas.ruangan', [
+            'hasil' => $hasil,
+            'weights' => $ahp['weights'],
+            'cr' => $ahp['cr'],
         ]);
     }
 
-    // Fungsi Perhitungan AHP
-    private function ahpWeights(array $A)
+    /**
+     * Fungsi umum untuk menghitung bobot AHP.
+     */
+    private function hitungAHP(array $matrix)
     {
-        $n = count($A);
-        $colSum = array_fill(0, $n, 0.0);
-        for ($j = 0; $j < $n; $j++) {
-            for ($i = 0; $i < $n; $i++) {
-                $colSum[$j] += $A[$i][$j];
+        $n = count($matrix);
+        $col_sum = array_fill(0, $n, 0);
+
+        // Hitung total kolom
+        for ($i = 0; $i < $n; $i++) {
+            for ($j = 0; $j < $n; $j++) {
+                $col_sum[$j] += $matrix[$i][$j];
             }
         }
 
+        // Normalisasi dan hitung bobot
         $norm = [];
         for ($i = 0; $i < $n; $i++) {
             for ($j = 0; $j < $n; $j++) {
-                $norm[$i][$j] = $A[$i][$j] / ($colSum[$j] ?: 1);
+                $norm[$i][$j] = ($col_sum[$j] == 0) ? 0 : $matrix[$i][$j] / $col_sum[$j];
             }
         }
 
-        $w = [];
+        $weights = [];
         for ($i = 0; $i < $n; $i++) {
-            $w[$i] = array_sum($norm[$i]) / $n;
+            $weights[$i] = array_sum($norm[$i]) / $n;
         }
 
-        $sumW = array_sum($w);
-        if ($sumW > 0) {
-            $w = array_map(fn($val) => $val / $sumW, $w);
-        }
-
-        // Hitung konsistensi
-        $Aw = [];
+        // Hitung Consistency Ratio (CR)
+        $λmax = 0;
         for ($i = 0; $i < $n; $i++) {
-            $Aw[$i] = 0;
+            $row_sum = 0;
             for ($j = 0; $j < $n; $j++) {
-                $Aw[$i] += $A[$i][$j] * $w[$j];
+                $row_sum += $matrix[$i][$j] * $weights[$j];
             }
+            $λmax += $row_sum / ($weights[$i] ?: 1);
         }
+        $λmax /= $n;
 
-        $lambda = array_sum(array_map(fn($a, $b) => $a / $b, $Aw, $w)) / $n;
-        $CI = ($lambda - $n) / ($n - 1);
-        $RI = [1 => 0, 2 => 0, 3 => 0.58, 4 => 0.90, 5 => 1.12][$n] ?? 1.49;
-        $CR = $RI == 0 ? 0 : $CI / $RI;
+        $CI = ($n > 1) ? (($λmax - $n) / ($n - 1)) : 0;
+        $RI = [0, 0, 0.58, 0.90, 1.12, 1.24]; // Random Index
+        $CR = ($n <= 5) ? ($CI / $RI[$n]) : 0;
+
+        if ($CR > 0.1) {
+            Session::flash('warning', '⚠️ Rasio Konsistensi (CR) = ' . round($CR, 3) . ' > 0.1. Bobot kriteria mungkin tidak konsisten.');
+        }
 
         return [
-            'weights' => $w,
-            'lambda_max' => round($lambda, 6),
-            'CI' => round($CI, 6),
-            'CR' => round($CR, 6),
+            'weights' => $weights,
+            'cr' => round($CR, 4),
         ];
     }
 
-    // Fungsi Hitung SAW
-    private function hitungSAW($dataCollection, array $bobot)
+    /**
+     * Fungsi umum untuk menghitung prioritas SAW.
+     */
+    private function hitungSAW($data, $bobot)
     {
-        $maxJenis = $dataCollection->max('jenis_kegiatan');
-        $maxPeserta = $dataCollection->max('jumlah_peserta');
-        $minWaktu = $dataCollection->min('waktu_pengajuan');
-        $minDurasi = $dataCollection->min('durasi_peminjaman');
+        // Ubah data ke array nilai numerik (misal: lama peminjaman, urgensi, dll)
+        $alternatif = [];
+        foreach ($data as $d) {
+            $alternatif[] = [
+                'id' => $d->id,
+                'nama_peminjam' => $d->user->name ?? 'Tidak diketahui',
+                'ruangan' => $d->ruangan->nama_ruangan ?? '-',
+                'kriteria' => [
 
-        $results = $dataCollection->map(function ($item) use ($bobot, $maxJenis, $maxPeserta, $minWaktu, $minDurasi) {
-            $r1 = ($maxJenis == 0) ? 0 : ($item->jenis_kegiatan / $maxJenis);
-            $r2 = ($maxPeserta == 0) ? 0 : ($item->jumlah_peserta / $maxPeserta);
-            $r3 = ($item->waktu_pengajuan == 0) ? 0 : ($minWaktu / $item->waktu_pengajuan);
-            $r4 = ($item->durasi_peminjaman == 0) ? 0 : ($minDurasi / $item->durasi_peminjaman);
-
-            $nilai = ($r1 * $bobot[0]) + ($r2 * $bobot[1]) + ($r3 * $bobot[2]) + ($r4 * $bobot[3]);
-            $item->nilai_saw = round($nilai, 6);
-            return $item;
-        });
-
-        $sorted = $results->sortByDesc('nilai_saw')->values();
-        foreach ($sorted as $i => $row) {
-            $row->peringkat = $i + 1;
+                    $lama_peminjaman = ($d->tanggal_kembali - $d->tanggal_pinjam) - ($d->jam_selesai - $d->jam_mulai),
+                    $lama_peminjaman ?? 1,
+                    $d->kepentingan ?? 1,
+                    $d->frekuensi ?? 1,
+                ],
+            ];
         }
 
-        return $sorted;
+        // Normalisasi (benefit criteria)
+        $transpose = [];
+        foreach ($alternatif as $alt) {
+            foreach ($alt['kriteria'] as $i => $val) {
+                $transpose[$i][] = $val;
+            }
+        }
+
+        $normalized = [];
+        foreach ($alternatif as $alt) {
+            $nilai = [];
+            foreach ($alt['kriteria'] as $i => $val) {
+                $max = max($transpose[$i]);
+                $nilai[$i] = ($max == 0) ? 0 : $val / $max;
+            }
+            $normalized[] = $nilai;
+        }
+
+        // Hitung nilai akhir
+        $hasil = [];
+        foreach ($alternatif as $i => $alt) {
+            $nilai_akhir = 0;
+            foreach ($bobot as $j => $w) {
+                $nilai_akhir += $normalized[$i][$j] * $w;
+            }
+
+            $hasil[] = [
+                'id' => $alt['id'],
+                'nama_peminjam' => $alt['nama_peminjam'],
+                'ruangan' => $alt['ruangan'],
+                'nilai' => round($nilai_akhir, 4),
+            ];
+        }
+
+        // Urutkan descending
+        $hasil = collect($hasil)->sortByDesc('nilai')->values()->all();
+
+        // Tambahkan peringkat
+        foreach ($hasil as $index => &$item) {
+            $item['peringkat'] = $index + 1;
+        }
+
+        return $hasil;
     }
 }

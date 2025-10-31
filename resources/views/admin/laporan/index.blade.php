@@ -11,7 +11,7 @@
             <p class="text-sm text-gray-500">Analisis dan statistik sistem</p>
         </div>
         <div class="flex gap-3">
-            <a href="{{ route('laporan.Pdf') }}"
+            <a href="{{ route('laporan.pdf') }}"
                class="flex items-center gap-2 px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700">
                 {{-- Download Icon --}}
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -20,7 +20,7 @@
                 Unduh PDF
             </a>
 
-            <a href="{{ route('laporan.xlsx') }}"
+            <a href="{{ route('laporan.excel') }}"
                class="flex items-center gap-2 px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700">
                 {{-- File Spreadsheet Icon --}}
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

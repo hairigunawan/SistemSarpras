@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jadwal;
+use App\Model\Ruangan;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel; 
-use App\Imports\JadwalImport;     
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\JadwalImport;
 
 class JadwalController extends Controller
 {
@@ -39,7 +40,7 @@ class JadwalController extends Controller
 
         Jadwal::create($request->all());
 
-        return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil ditambahkan');
+        return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil ditambahkan');
     }
 
     // Form edit jadwal

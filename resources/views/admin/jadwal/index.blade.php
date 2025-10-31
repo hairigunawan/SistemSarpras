@@ -9,7 +9,7 @@
 
         <div class="flex gap-3">
             {{-- Tombol Import --}}
-            <form action="{{ route('jadwal.import.store') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2">
+            <form action="{{ route('admin.jadwal.import.store') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2">
                 @csrf
                 <input type="file" name="file" accept=".xls,.xlsx" required class="text-sm">
                 <button type="submit" class="px-4 py-2 text-white transition bg-blue-500 rounded-lg shadow hover:bg-blue-600">
@@ -58,9 +58,9 @@
                         <td class="px-4 py-2">{{ $jadwal->ruangan }}</td>
                         <td class="px-4 py-2">{{ $jadwal->daya_tampung }}</td>
                         <td class="px-4 py-2 flex justify-center gap-2">
-                            <a href="{{ route('jadwal.edit', $jadwal->id_jadwal) }}"
+                            <a href="{{ route('admin.jadwal.edit', $jadwal->id_jadwal) }}"
                                class="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500">Edit</a>
-                            <form action="{{ route('jadwal.destroy', $jadwal->id_jadwal) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
+                            <form action="{{ route('admin.jadwal.destroy', $jadwal->id_jadwal) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
                                 @csrf
                                 @method('DELETE')
                                 <button class="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600">Hapus</button>

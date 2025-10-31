@@ -7,10 +7,15 @@
     <div class="text-center py-10">
         <h2 class="text-4xl font-bold mb-2">Peminjaman Ruangan Dan Proyektor</h2>
         <p class="text-gray-600 text-sm mb-10">Selamat datang di portal layanan peminjaman sarana prasarana program studi teknologi informasi</p>
-
-        <a href="{{ route('public.peminjaman.create') }}" class="flex justify-center space-x-4">
-            <button class="bg-blue-600 text-white px-5 py-2 font-medium rounded-md hover:bg-blue-700">Ajukan Peminjaman</button>
+        @if (Auth::user()== null)
+            <a href="{{ route('login') }}" class="flex justify-center space-x-4">
+                <button class="bg-[#179ACE] text-white px-5 py-2 font-medium rounded-md hover:bg-[#0E7CBA]">Ajukan Peminjaman</button>
+            </a>
+        @else
+        <a href="{{ route('public.peminjaman.create.auth') }}" class="flex justify-center space-x-4">
+            <button class="bg-[#179ACE] text-white px-5 py-2 font-medium rounded-md hover:bg-[#0E7CBA]">Ajukan Peminjaman</button>
         </a>
+        @endif
     </div>
 
     <!-- Statistik Ruangan -->

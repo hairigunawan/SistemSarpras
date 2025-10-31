@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use App\Exports\LaporanExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Peminjaman;
+use App\Models\Proyektor;
+use App\Models\Ruangan;
 use App\Models\Laporan;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -20,29 +23,58 @@ class LaporanController extends Controller
         $waktuRataRata = Peminjaman::selectRaw('AVG(TIMESTAMPDIFF(HOUR, jam_mulai, jam_selesai)) as avg_jam')
             ->value('avg_jam') ?? 0;
 
-        $peminjamTeratas = Peminjaman::select('id_akun')
-            ->selectRaw('count(*) as total')
+        $peminjamTeratas = Peminjaman::select('id_akun', DB::raw('count(*) as total'))
             ->groupBy('id_akun')
             ->orderByDesc('total')
+            ->with('user') // Memuat relasi user
             ->take(3)
-            ->get();
+            ->get()
+            ->map(function ($peminjam) {
+                return [
+                    'nama' => $peminjam->user->name ?? 'N/A',
+                    'email' => $peminjam->user->email ?? 'N/A',
+                    'jumlah' => $peminjam->total,
+                ];
+            });
 
-        $sarprasTerpopuler = Peminjaman::select('id_sarpras')
-            ->selectRaw('count(*) as total')
-            ->groupBy('id_sarpras')
+        $sarprasTerpopuler = Peminjaman::select('id_ruangan', 'id_proyektor', DB::raw('count(*) as total'))
+            ->groupBy('id_ruangan', 'id_proyektor')
             ->orderByDesc('total')
             ->take(3)
-            ->get();
+            ->get()
+            ->map(function ($sarpras) {
+                $nama = 'N/A';
+                $lokasi = 'N/A';
+                if ($sarpras->id_ruangan) {
+                    $ruangan = Ruangan::find($sarpras->id_ruangan);
+                    $nama = $ruangan->nama_ruangan ?? 'N/A';
+                    $lokasi = $ruangan->lokasi->nama_lokasi ?? 'N/A';
+                } elseif ($sarpras->id_proyektor) {
+                    $proyektor = Proyektor::find($sarpras->id_proyektor);
+                    $nama = $proyektor->nama_proyektor ?? 'N/A';
+                    $lokasi = $proyektor->lokasi->nama_lokasi ?? 'N/A';
+                }
+                return [
+                    'nama' => $nama,
+                    'lokasi' => $lokasi,
+                    'jumlah' => $sarpras->total,
+                ];
+            });
 
-        $topSarpras = $sarprasTerpopuler->first();
-        $sarprasNama = $topSarpras && $topSarpras->sarpras ? $topSarpras->sarpras->nama_sarpras : '-';
-        $ruanganKode = $topSarpras && $topSarpras->sarpras ? $topSarpras->sarpras->kode_ruangan : '-';
+        $topSarprasNama = 'N/A';
+        $topSarprasKode = 'N/A';
+
+        if ($sarprasTerpopuler->isNotEmpty()) {
+            $firstSarpras = $sarprasTerpopuler->first();
+            $topSarprasNama = $firstSarpras['nama'];
+            $topSarprasKode = $firstSarpras['lokasi'];
+        }
 
         $laporan = Laporan::updateOrCreate(
             ['periode' => Carbon::now()->format('F Y')],
             [
-                'sarpras_terbanyak' => $sarprasNama,
-                'ruangan_tersering' => $ruanganKode,
+                'sarpras_terbanyak' => $topSarprasNama,
+                'ruangan_tersering' => $topSarprasKode,
                 'jam_selesai' => sprintf('%.1f', $waktuRataRata ?? 0),
             ]
         );

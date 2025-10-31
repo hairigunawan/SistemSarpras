@@ -4,7 +4,7 @@
 <div class="p-6 max-w-3xl mx-auto bg-white shadow-sm rounded-xl border border-gray-100">
     <h2 class="text-lg font-semibold mb-6 text-gray-800 border-b pb-3">➕ Tambah Jadwal</h2>
 
-    <form action="{{ route('jadwal.store') }}" method="POST" class="space-y-5">
+    <form action="{{ route('admin.jadwal.store') }}" method="POST" class="space-y-5">
         @csrf
 
         <!-- Kode MK -->
@@ -110,7 +110,7 @@
                     class="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition focus:ring-2 focus:ring-blue-300">
                 Simpan
             </button>
-            <a href="{{ route('jadwal.index') }}"
+            <a href="{{ route('admin.jadwal.index') }}"
                class="px-5 py-2.5 bg-gray-300 text-gray-800 font-medium rounded-lg hover:bg-gray-400 transition focus:ring-2 focus:ring-gray-200">
                 Kembali
             </a>

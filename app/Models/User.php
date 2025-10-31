@@ -20,11 +20,9 @@ class User extends Authenticatable
         'role_id',
         'provider',
         'provider_id',
-    ];
-
-    protected $hidden = [
-        'password',
-        'remember_token',
+        'token',
+        'avatar',
+        'refresh_token',  
     ];
 
     protected function casts(): array
@@ -44,5 +42,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Peminjaman::class, 'id_akun', 'id_akun');
     }
-
 }

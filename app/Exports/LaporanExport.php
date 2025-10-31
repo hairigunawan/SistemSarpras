@@ -15,14 +15,13 @@ class LaporanExport implements FromArray, WithHeadings
         $laporan = Laporan::latest()->first();
 
         $row = [
-            'periode' => $laporan ? $laporan->periode : '',
-            'sarpras_terbanyak' => $laporan ? $laporan->sarpras_terbanyak : '',
-            'ruangan_tersering' => $laporan ? $laporan->ruangan_tersering : '',
-            'jam_selesai' => $laporan ? $laporan->jam_selesai : '',
+            'periode' => $laporan->periode ?? '',
+            'sarpras_terbanyak' => $laporan->sarpras_terbanyak ?? '',
+            'ruangan_tersering' => $laporan->ruangan_tersering ?? '',
+            'jam_selesai' => $laporan->jam_selesai ?? '',
             'generated_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ];
 
-        // Return as array of rows
         return [array_values($row)];
     }
 

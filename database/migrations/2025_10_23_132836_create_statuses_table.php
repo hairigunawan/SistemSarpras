@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notifikasis', function (Blueprint $table) {
-            $table->id('id_notifikasi');
-            $table->string('pesan')->nullable();
-            $table->enum('status_pesan', ['Dibaca', 'terkirim', 'Tidak terkirim'])->default('Terkirim');
+        Schema::create('statuses', function (Blueprint $table) {
+            $table->id('id_status');
+            $table->string('nama_status', 255);
             $table->timestamps();
         });
     }
@@ -24,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notifikasis');
+        Schema::dropIfExists('statuses');
     }
 };

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Role;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -90,9 +91,9 @@ class AkunController extends Controller
     public function destroy(User $akun)
     {
         // Tambahkan validasi agar tidak bisa menghapus akun sendiri jika perlu
-        // if (auth()->id() == $akun->id_akun) {
-        //     return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
-        // }
+        if (Auth::check() && Auth::id() === $akun->id_akun) {
+            return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
 
         $akun->delete();
         return redirect()->route('akun.index')->with('success', 'Akun berhasil dihapus.');

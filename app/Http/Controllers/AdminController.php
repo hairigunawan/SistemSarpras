@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Sarpras;
+use App\Models\Ruangan;
 use App\Models\Peminjaman;
+use App\Models\Proyektor;
 
 class AdminController extends Controller
 {
@@ -16,22 +17,34 @@ class AdminController extends Controller
     {
         // Menghitung jumlah data untuk ditampilkan di card statistik
         $jumlah_akun = User::count();
-        $jumlah_sarpras = Sarpras::count();
-        $peminjaman_menunggu = Peminjaman::where('status', 'Menunggu')->count();
-        $peminjaman_disetujui = Peminjaman::where('status', 'Disetujui')->count();
+        $jumlah_sarpras = Ruangan::count();
+        $peminjaman_menunggu = Peminjaman::where('status_peminjaman', 'Menunggu')->count();
+        $peminjaman_disetujui = Peminjaman::where('status_peminjaman', 'Disetujui')->count();
 
         // Statistik ruangan
-        $ruanganTersedia = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Tersedia')->count();
-        $ruanganTerpakai = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Dipinjam')->count();
-        $ruanganPerbaikan = Sarpras::where('jenis_sarpras', 'Ruangan')->where('status', 'Perbaikan')->count();
+        $ruanganTersedia = Ruangan::whereHas('status', function ($query) {
+            $query->where('nama_status', 'Tersedia');
+        })->count();
+        $ruanganTerpakai = Ruangan::whereHas('status', function ($query) {
+            $query->where('nama_status', 'Dipinjam');
+        })->count();
+        $ruanganPerbaikan = Ruangan::whereHas('status', function ($query) {
+            $query->where('nama_status', 'Perbaikan');
+        })->count();
 
         // Statistik proyektor
-        $proyektorTersedia = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Tersedia')->count();
-        $proyektorTerpakai = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Dipinjam')->count();
-        $proyektorPerbaikan = Sarpras::where('jenis_sarpras', 'Proyektor')->where('status', 'Perbaikan')->count();
+        $proyektorTersedia = Proyektor::whereHas('status', function ($query) {
+            $query->where('nama_status', 'Tersedia');
+        })->count();
+        $proyektorTerpakai = Proyektor::whereHas('status', function ($query) {
+            $query->where('nama_status', 'Dipinjam');
+        })->count();
+        $proyektorPerbaikan = Proyektor::whereHas('status', function ($query) {
+            $query->where('nama_status', 'Perbaikan');
+        })->count();
 
         // Mengambil data peminjaman terbaru untuk ditampilkan di tabel
-        $peminjaman_terbaru = Peminjaman::with(['user', 'sarpras'])->latest()->take(5)->get();
+        $peminjaman_terbaru = Peminjaman::with('user', 'ruangan', 'proyektor')->latest()->take(5)->get();
 
         return view('admin.dashboard.index', compact(
             'jumlah_akun',
@@ -50,6 +63,6 @@ class AdminController extends Controller
     // method index untuk menampilkan halaman dashboard admin
     public function index()
     {
-        return view('admin.dashboard');
+        return view('admin.dashboard.index');
     }
 }

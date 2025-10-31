@@ -1,19 +1,18 @@
 <aside class="flex flex-col justify-between w-64 p-6 bg-white">
-    <div>
-        <div class="flex gap-1 mb-10">
-            <p class="rotate-6">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
-                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="m21 14l-9 6l-9-6m18-4l-9 6l-9-6l9-6z" />
-                </svg>
-            </p>
-            <h1 class="flex items-center justify-between gap-2 text-xl font-bold text-gray-800">SIMPERSITE.</h1>
+        <div
+            <div>
+                <div class="flex items-center gap-2 mb-10">
+            <div class="flex items-center gap-2">
+                <img src="{{ asset('storage/images/TI.png') }}" alt="Logo TI" class="w-8 h-8 object-contain">
+                <img src="{{ asset('storage/images/politala.png') }}" alt="Logo Politala" class="w-8 h-8 object-contain">
+            </div>
+            <h1 class="text-xl font-semibold text-gray-800">SIMPERSITE.</h1>
         </div>
         <nav>
             <ul>
-                <li class="mb-2">
+                <li class="mb-1.5">
                     <a href="{{ Route('admin.dashboard.index') }}"
-                        class="flex items-center p-3 text-sm rounded-lg gap-2 font-medium {{ request()->is('dashboard*') ? 'pl-7 bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100' }}">
+                        class="flex items-center p-2 text-sm rounded gap-2 font-medium {{ request()->routeIs('admin.dashboard*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             viewBox="0 0 24 24">
                             <path fill="currentColor"
@@ -25,7 +24,7 @@
 
                 <li class="mb-2">
                     <a href="{{ Route('admin.peminjaman.index') }}"
-                        class="flex items-center p-3 text-sm rounded-lg gap-2 font-medium {{ request()->is('peminjaman*') ? 'pl-7 bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100' }}">
+                        class="flex items-center p-2 text-sm rounded gap-2 font-medium {{ request()->routeIs('admin.peminjaman*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             viewBox="0 0 24 24">
                             <path fill="currentColor"
@@ -36,8 +35,8 @@
                 </li>
 
                 <li class="mb-2">
-                    <a href="{{ Route('admin.sarpras.index') }}"
-                        class="flex items-center text-sm p-3 gap-2 rounded-lg font-medium {{ request()->is('sarpras*') ? 'pl-7 bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <a href="{{ Route('sarpras.index') }}"
+                        class="flex items-center text-sm p-2 gap-2 rounded font-medium {{ request()->routeIs('admin.sarpras*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27"
                             viewBox="0 0 24 24">
                             <path fill="currentColor"
@@ -49,7 +48,7 @@
 
                 <li class="mb-2">
                     <a href="{{ Route('laporan.index') }}"
-                        class="flex items-center gap-2 p-3 rounded-lg font-medium text-sm {{ request()->is('laporan*') ? 'pl-7 bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100' }}">
+                        class="flex items-center gap-2 p-2 rounded font-medium text-sm {{ request()->routeIs('admin.laporan*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             viewBox="0 0 24 24">
                             <path fill="currentColor"
@@ -60,8 +59,8 @@
                 </li>
 
                 <li class="mb-2">
-                    <a href="{{ Route('jadwal.index') }}"
-                        class="flex items-center p-3 gap-2 rounded-lg font-medium text-sm {{ request()->is('jadwal*') ? 'pl-7 bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <a href="{{ route('admin.jadwal.index') }}"
+                    class="flex items-center p-2 gap-2 rounded font-medium text-sm {{ request()->routeIs('admin.prioritas.jadwal.*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             viewBox="0 0 24 24">
                             <path fill="currentColor"
@@ -74,7 +73,7 @@
                 <li class="mb-2">
                     <details class="group" {{ request()->is('prioritas*') ? 'open' : '' }}>
                         <summary
-                            class="flex items-center justify-between p-3 rounded-lg cursor-pointer text-sm font-medium {{ request()->is('prioritas*') ? 'pl-7 bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-100' }}">
+                            class="flex items-center justify-between p-2 rounded cursor-pointer text-sm font-medium {{ request()->is('prioritas*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                             <span class="flex items-center gap-2">
                                 <!-- 🔹 ICON PRIORITAS -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -94,16 +93,16 @@
                         </summary>
 
                         <!-- Submenu -->
-                        <ul class="ml-8 mt-2 space-y-1">
+                        <ul class="ml-8 mt-2 mb-3 space-y-1">
                             <li>
                                 <a href="{{ Route('admin.prioritas.ruangan') }}"
-                                    class="{{ request()->is('prioritas/ruangan*') ? 'block text-sm pl-7 bg-blue-100 text-blue-800 rounded-lg' : 'block text-sm text-gray-600 hover:text-blue-700' }}">
+                                    class="{{ request()->is('prioritas/ruangan*') ? 'block text-sm pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
                                     Ruangan
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ Route('admin.prioritas.proyektor') }}"
-                                    class="{{ request()->is('prioritas/proyektor*') ? 'block text-sm pl-7 bg-blue-100 text-blue-800 rounded-lg' : 'block text-sm text-gray-600 hover:text-blue-700' }}">
+                                    class="{{ request()->is('prioritas/proyektor*') ? 'block text-sm pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
                                     Proyektor
                                 </a>
                             </li>

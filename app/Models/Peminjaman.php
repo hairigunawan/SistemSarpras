@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 // app/Models/Peminjaman.php
 class Peminjaman extends Model
@@ -12,17 +13,18 @@ class Peminjaman extends Model
 
     protected $fillable = [
         'id_akun',
-        'id_sarpras',
+        'id_ruangan',
+        'id_proyektor',
+        'nama_peminjam',
+        'email_peminjam',
+        'nomor_whatsapp',
+        'jumlah_peserta',
         'tanggal_pinjam',
         'tanggal_kembali',
         'jam_mulai',
         'jam_selesai',
-        'status',
-        'keterangan',
-        'jumlah_peserta',
-        'nama_peminjam',
-        'email_peminjam',
-        'nomor_whatsapp',
+        'status_peminjaman',
+        'jenis_kegiatan',
         'alasan_penolakan',
     ];
 
@@ -31,12 +33,32 @@ class Peminjaman extends Model
         return $this->belongsTo(User::class, 'id_akun', 'id_akun');
     }
 
+    public function ruangan()
+    {
+        return $this->belongsTo(Ruangan::class, 'id_ruangan', 'id_ruangan');
+    }
+
+    public function proyektor()
+    {
+        return $this->belongsTo(Proyektor::class, 'id_proyektor', 'id_proyektor');
+    }
+
+    public function notifikasis()
+    {
+        return $this->hasMany(Notifikasi::class, 'id_peminjaman', 'id_peminjaman');
+    }
+
+    public function feedback()
+    {
+        return $this->hasMany(Feedback::class, 'id_peminjaman', 'id_peminjaman');
+    }
     public function sarpras()
     {
-        return $this->belongsTo(Sarpras::class, 'id_sarpras', 'id_sarpras');
-    }
-    public function laporan()
-    {
-        return $this->belongsTo(Laporan::class, 'id_laporan', 'id_laporan');
+        if ($this->id_ruangan) {
+            return $this->belongsTo(Ruangan::class, 'id_ruangan', 'id_ruangan');
+        } elseif ($this->id_proyektor) {
+            return $this->belongsTo(Proyektor::class, 'id_proyektor', 'id_proyektor');
+        }
+        return null; // Atau throw exception jika tidak ada
     }
 }

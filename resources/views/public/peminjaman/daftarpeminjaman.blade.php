@@ -1,222 +1,105 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Peminjaman Ruangan & Proyektor</title>
+@extends('layouts.guest')
 
-  <!-- CSS Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('title', 'Daftar Peminjaman')
 
-  <!-- Tailwind via Vite -->
-  @vite('resources/css/app.css')
+@section('content')
+<div class="bg-gray-50 text-gray-800">
+  <div class="container mx-auto py-10 px-4">
+    <!-- Hero -->
+    <div class="text-center mb-8">
+      <h2 class="text-2xl font-bold mb-2">Daftar Peminjaman Sarana dan Prasarana</h2>
+      <p class="text-gray-600 text-sm mb-6">
+        Berikut adalah daftar semua pengajuan peminjaman yang telah diajukan
+      </p>
 
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-
-    .hero h2 {
-      font-weight: bold;
-    }
-
-    /* 🔵 Gaya biru utama */
-    .card-header {
-      background-color: #2563eb;
-      color: white;
-      font-weight: bold;
-    }
-
-    .btn-outline-success:hover,
-    .btn-success {
-      background-color: #2563eb !important;
-      border-color: #2563eb !important;
-      color: white !important;
-    }
-
-    .modal-header {
-      background-color: #2563eb;
-      color: white;
-    }
-
-    .table-success {
-      background-color: #dbeafe !important;
-      color: #1e3a8a !important;
-    }
-
-    .badge.bg-success {
-      background-color: #2563eb !important;
-    }
-
-    .badge.bg-warning {
-      background-color: #facc15 !important;
-      color: #1e3a8a !important;
-    }
-
-    .table > :not(:first-child) {
-      border-top: 2px solid #dee2e6;
-    }
-
-    {
-      text-decoration: none !important;
-    }
-  </style>
-</head>
-<body class="bg-gray-50 text-gray-800">
-
-  <!-- Navbar -->
-  <nav class="bg-white border-b py-3">
-    <div class="flex mx-10 justify-between items-center">
-      <div class="flex gap-1 items-center">
-        <p class="rotate-6">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="m21 14l-9 6l-9-6m18-4l-9 6l-9-6l9-6z" />
-          </svg>
-        </p>
-        <h1 class="text-xl font-semibold text-gray-700">SIMPERSITE.</h1>
-      </div>
-      <div class="flex justify-end px-6 py-3 gap-10 items-center">
-        <ul class="flex space-x-6">
-          <li><a href="{{ route('public.beranda.index') }}" class="hover:text-blue-500 font-normal">Beranda</a></li>
-          <li><a href="{{ route('public.peminjaman.daftarpeminjaman') }}" class="hover:text-blue-500 font-normal text-blue-600">Peminjaman</a></li>
-          <li><a href="{{ route('public.user.halamansarpras') }}" class="hover:text-blue-500 font-normal">Sarana & Prasarana</a></li>
-        </ul>
-        <p class="text-xl text-gray-300 font-light">|</p>
-        <div class="flex items-center">
-          @guest
-            <a href="{{ route('login') }}" class="font-semibold text-gray-700 hover:text-gray-300">Log in</a>
-            @if (Route::has('register'))
-              <a href="{{ route('register') }}" class="ml-4 border py-1 px-4 rounded-full border-gray-300 font-semibold text-gray-600 hover:text-gray-300">Register</a>
-            @endif
-          @else
-            <a href="{{ route('admin.dashboard.index') }}" class="font-semibold text-gray-700 hover:text-gray-300">Dashboard</a>
-          @endguest
-        </div>
+      <div class="flex justify-center">
+        <a href="{{ route('public.peminjaman.create') }}" class="flex justify-center space-x-4">
+            <button class="bg-[#179ACE] text-white px-5 py-2 font-medium rounded-md hover:bg-[#0E7CBA]">Ajukan Peminjaman</button>
+        </a>
       </div>
     </div>
-  </nav>
 
-<div class="container py-5">
-
-  <!-- Hero -->
-  <div class="text-center mb-5 hero">
-    <h2 class="text-2xl font-bold mb-2">Peminjaman Ruangan Dan Proyektor</h2>
-    <p class="text-gray-600 text-sm mb-4">
-        Selamat datang di portal layanan peminjaman sarana prasarana program studi Teknologi Informasi
-    </p>
-
-    <div class="flex justify-center space-x-4 mt-3">
-      <a href="{{ route('public.peminjaman.create') }}"
-       class="inline-block bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-md hover:bg-blue-700 transition">
-       Ajukan Peminjaman
-      </a>
-  </div>
-  </div>
-
-  <!-- Tabel -->
-  <div class="card shadow-sm border-0 mb-4">
-    <div class="card-header">
-      Daftar Peminjaman
-    </div>
-    <div class="card-body p-0">
-      <table class="table table-striped mb-0">
-        <thead class="table-success">
-          <tr>
-            <th>Nama</th>
-            <th>Jenis</th>
-            <th>Keperluan</th>
-            <th>Tanggal Peminjaman</th>
-            <th>Tanggal Pengembalian</th>
-            <th>Jam</th>
-            <th>Status</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-            @forelse($peminjaman as $item)
+    <!-- Tabel -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-blue-50">
             <tr>
-                <td>{{ $item->nama_peminjam }}</td>
-                <td>{{ $item->sarpras->jenis_sarpras ?? 'N/A' }}</td>
-                <td>{{ $item->keterangan }}</td>
-                <td>{{ $item->tanggal_pinjam }}</td>
-                <td>{{ $item->tanggal_kembali }}</td>
-                <td>{{ $item->jam_mulai }} - {{ $item->jam_selesai }}</td>
-                <td>
-                    @if($item->status == 'Menunggu')
-                        <span class="badge bg-warning">Menunggu</span>
-                    @elseif($item->status == 'Disetujui')
-                        <span class="badge bg-success">Disetujui</span>
-                    @else
-                        <span class="badge bg-danger">Ditolak</span>
-                    @endif
-                </td>
-                <td>
-                    <a href="{{ route('public.peminjaman.edit', $item->id_peminjaman) }}" class="btn btn-sm btn-primary">Edit</a>
-                    <form action="{{ route('public.peminjaman.destroy', $item->id_peminjaman) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus peminjaman ini?')">Hapus</button>
-                    </form>
-                </td>
+              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">No</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Nama Peminjam</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Sarana/Prasarana</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Keperluan</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Tanggal Peminjaman</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Tanggal Pengembalian</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Jam</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Status</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @forelse($peminjaman as $index => $item)
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $item->nama_peminjam }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                @if($item->ruangan)
+                  <div class="flex items-center">
+                    {{ $item->ruangan->nama_ruangan }}
+                  </div>
+                @elseif($item->proyektor)
+                  <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    {{ $item->proyektor->nama_proyektor }}
+                  </div>
+                @else
+                  <span class="text-gray-500">N/A</span>
+                @endif
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" title="{{ $item->jenis_kegiatan }}">{{ $item->jenis_kegiatan }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d M Y') }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($item->tanggal_kembali)->format('d M Y') }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $item->jam_mulai }} - {{ $item->jam_selesai }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                @if($item->status_peminjaman == 'Menunggu')
+                  <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+                    Menunggu
+                  </span>
+                @elseif($item->status_peminjaman == 'Disetujui')
+                  <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+                    Disetujui
+                  </span>
+                @elseif($item->status_peminjaman == 'Ditolak')
+                  <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+                    Ditolak
+                  </span>
+                @elseif($item->status_peminjaman == 'Selesai')
+                  <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+                    Selesai
+                  </span>
+                @else
+                  <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{{ $item->status_peminjaman }}</span>
+                @endif
+              </td>
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="text-center">Tidak ada data peminjaman.</td>
+              <td colspan="8" class="px-6 py-12 text-center">
+                <div class="flex flex-col items-center justify-center">
+                  <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <h3 class="text-lg font-medium text-gray-500 mb-1">Tidak ada data peminjaman</h3>
+                  <p class="text-gray-400">Belum ada pengajuan peminjaman yang diajukan</p>
+                </div>
+              </td>
             </tr>
             @endforelse
-        </tbody>
-
-<!-- Modal Ruangan -->
-<div class="modal fade" id="modalRuangan" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <form method="POST" action="#">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Form Peminjaman Ruangan</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" name="jenis" value="ruangan">
-          <div class="mb-3">
-            <label class="form-label">Nama Peminjam</label>
-            <input type="text" name="nama" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Tanggal Peminjaman</label>
-            <input type="date" name="tgl_pinjam" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Tanggal Pengembalian</label>
-            <input type="date" name="tgl_kembali" class="form-control" required>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Jam Mulai</label>
-              <input type="time" name="jam_mulai" class="form-control" required>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Jam Selesai</label>
-              <input type="time" name="jam_selesai" class="form-control" required>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Keperluan</label>
-            <textarea name="keperluan" class="form-control" required></textarea>
-          </div>
-        </div>
-      </div class="mb-3">
-            <label class="aksi">Aksi</label>
-            <input type="text" name="aksi" class="form-control" required>
-        <div class="modal-footer">
-          <button class="btn btn-success">Kirim</button>
-        </div>
+          </tbody>
+        </table>
       </div>
-    </form>
+    </div>
+
   </div>
 </div>
-
-<!-- Bootstrap Script -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@endsection

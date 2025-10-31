@@ -9,6 +9,8 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
@@ -22,11 +24,11 @@
                         <p class="font-semibold text-sm">{{ Auth::user()->nama ?? 'Admin' }}</p>
                         <p class="text-xs text-gray-500">{{ Auth::user()->email ?? 'admin@gmail.com' }}</p>
                     </div>
-                    <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama ?? 'Admin') }}&background=random" alt="User Avatar">
+                    <img class="h-10 w-10 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->nama ?? 'Admin') . '&background=random' }}" alt="User Avatar">
                 </div>
             </header>
 
-            <main class="flex-1 p-8 overflow-y-auto">
+            <main class="flex-1 p-4 overflow-y-auto">
                 @yield('content')
             </main>
         </div>
