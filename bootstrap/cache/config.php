@@ -1,4 +1,4 @@
-<?php return array (
+ return array (
   'broadcasting' => 
   array (
     'default' => 'log',
