@@ -2,9 +2,9 @@
     <div class="flex mx-5 justify-between items-center">
 
         <div class="flex gap-2 items-center">
-            <div class="flex items-center gap-2">
-                <img src="{{ asset('storage/images/TI.png') }}" alt="Logo TI" class="w-8 h-8 object-contain">
-                <img src="{{ asset('storage/images/politala.png') }}" alt="Logo Politala" class="w-8 h-8 object-contain">
+            <div class="flex items-center gap-2.5">
+                <img src="{{ asset('storage/images/TI.png') }}" alt="Logo TI" class="w-10 h-10 object-contain">
+                <img src="{{ asset('storage/images/politala.png') }}" alt="Logo Politala" class="w-10 h-10 object-contain">
             </div>
             <h1 class="text-xl font-semibold text-gray-800">SIMPERSITE.</h1>
         </div>
@@ -27,9 +27,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('public.user.halamansarpras') }}"
+                    <a href="{{ route('public.sarana_perasarana.halamansarpras') }}"
                        class="text-sm font-normal transition-colors duration-200
-                       {{ request()->routeIs('public.user.*') ? 'text-[#179ACE]' : 'text-gray-600 hover:text-[#0E7CBA]' }}">
+                       {{ request()->routeIs('public.sarana_perasarana.*') ? 'text-[#179ACE]' : 'text-gray-600 hover:text-[#0E7CBA]' }}">
                         Sarana & Prasarana
                     </a>
                 </li>
@@ -116,7 +116,7 @@
                                             Riwayat Peminjaman
                                         </a>
 
-                                        <a href="{{ route('public.profile') }}"
+                                        <a href="{{ route('public.profile.index') }}"
                                         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd"

@@ -32,7 +32,7 @@
                         </svg>
                         <span>Tolak</span>
                     </button>
-                @elseif ($mainPeminjaman->status == 'Disetujui')
+                @elseif ($mainPeminjaman->status_peminjaman == 'Disetujui')
                     <form action="{{ route('peminjaman.complete', $mainPeminjaman->id_peminjaman) }}" method="POST">
                         @csrf
                         @method('PATCH')
@@ -111,6 +111,12 @@
                     </span>
                 </div>
                 <div class="flex justify-between items-start pb-3 border-b border-gray-100">
+                    <span class="text-gray-500">Lokasi</span>
+                    <span class="font-medium text-gray-700 text-right max-w-xs">
+                        {{ ($mainPeminjaman->ruangan->lokasi->nama_lokasi ?? '-' ) }}
+                    </span>
+                </div>
+                <div class="flex justify-between items-start pb-3 border-b border-gray-100">
                     <span class="text-gray-500">Alasan Penolakan</span>
                     <span class="font-medium text-gray-700 text-right max-w-xs">
                         {{ $mainPeminjaman->alasan_penolakan ?? '-' }}
@@ -180,7 +186,8 @@
                                         bg-red-100 text-red-800
                                     @else
                                         bg-gray-100 text-gray-800
-                                    @endif">
+                                    @endif
+                                    ">
                                     {{ $item['peminjaman']->status }}
                                 </span>
                             </td>

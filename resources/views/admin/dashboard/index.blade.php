@@ -26,4 +26,20 @@
            <p class="text-gray-400"></p>
        </div>
     </div>
+    <div class="bg-gray-700 p-6 rounded-lg">
+            <h3 class="text-gray-50 text-sm font-medium">Tambah Ruangan</h3>
+            <p class="text-3xl text-gray-50 font-semibold">{{ $jumlah_akun ?? 0 }}</p>
+        </div>
+        <div class="bg-gray-700 p-6 rounded-lg">
+            <h3 class="text-gray-50 text-sm font-medium">Tambah Proyektor</h3>
+            <p class="text-3xl text-gray-50 font-semibold">{{ $jumlah_sarpras ?? 0 }}</p>
+        </div>
+          <a href="{{ route('admin.peminjaman.index') }}" class="bg-gray-700 p-6 rounded-lg">
+            <h3 class="text-gray-50 text-sm font-medium">Laporan</h3>
+            <p class="text-3xl text-gray-50 font-semibold">{{ $peminjaman_menunggu ?? 0 }}</p>
+        </a>
+        <a href="{{ route('admin.peminjaman.index') }}" class="bg-gray-700 p-6 rounded-lg">
+            <h3 class="text-gray-50 text-sm font-medium">Peminjaman Disetujui</h3>
+            <p class="text-3xl text-gray-50 font-semibold">{{ $peminjaman_disetujui ?? 0 }}</p>
+        </a>
 @endsection

@@ -41,17 +41,22 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $item->nama_peminjam }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                @if($item->ruangan)
-                  <div class="flex items-center">
-                    {{ $item->ruangan->nama_ruangan }}
-                  </div>
+                @if ($item->ruangan && $item->proyektor)
+                    <div class="flex items-center">
+                        <div class="flex items-center">
+                            {{ $item->ruangan->nama_ruangan }}
+                             -
+                            {{ $item->proyektor->nama_proyektor }}
+                        </div>
+                    </div>
+                @elseif($item->ruangan)
+                    <div class="flex items-center">
+                        {{ $item->ruangan->nama_ruangan }}
+                    </div>
                 @elseif($item->proyektor)
-                  <div class="flex items-center">
-                    <svg class="w-4 h-4 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                    </svg>
-                    {{ $item->proyektor->nama_proyektor }}
-                  </div>
+                    <div class="flex items-center">
+                        {{ $item->proyektor->nama_proyektor }}
+                    </div>
                 @else
                   <span class="text-gray-500">N/A</span>
                 @endif

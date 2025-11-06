@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Form Peminjaman Sarpras')
+@section('title', 'Sarpras')
 
 @section('content')
 <div>

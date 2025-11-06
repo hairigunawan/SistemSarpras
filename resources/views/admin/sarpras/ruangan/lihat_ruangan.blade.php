@@ -12,7 +12,7 @@
                 <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">{{ $ruangan->nama_ruangan }}</h1>
                 <p class="mt-1 text-sm text-gray-500">Ruangan</p>
             </div>
-            <a href="{{ route('sarpras.index') }}"
+            <a href="{{ route('admin.sarpras.index') }}"
                class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 hover:bg-gray-50 active:bg-gray-100">
                 <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor" stroke-width="2">

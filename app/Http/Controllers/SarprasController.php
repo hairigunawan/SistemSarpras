@@ -2,24 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Ruangan;
 use App\Models\Proyektor;
+use App\Models\Status;
+use Illuminate\Http\Request;
 
 class SarprasController extends Controller
 {
-    // ...existing code...
-    public function destroy($sarpras)
+    /**
+     * Menampilkan halaman index sarpras dengan data ruangan dan proyektor.
+     */
+    public function index(Request $request)
     {
-        // Implementasi penghapusan data sarpras
-    }
+        // Query untuk ruangan
+        $ruanganQuery = Ruangan::with('status', 'lokasi');
 
-    public function index()
-    {
-        $ruangans = Ruangan::paginate(9);
-        $proyektors = Proyektor::paginate(9);
+        if ($request->has('nama_status') && $request->nama_status) {
+            $statusId = Status::where('nama_status', $request->nama_status)->value('id_status');
+            $ruanganQuery->where('id_status', $statusId);
+        }
 
-        return view('admin.sarpras.index', compact('ruangans', 'proyektors'));
+        if ($request->has('search') && $request->search) {
+            $ruanganQuery->where('nama_ruangan', 'like', '%' . $request->search . '%');
+        }
+
+        $ruangans = $ruanganQuery->latest()->paginate(9);
+
+        // Query untuk proyektor
+        $proyektorQuery = Proyektor::with('status');
+
+        if ($request->has('nama_status') && $request->nama_status) {
+            $statusId = Status::where('nama_status', $request->nama_status)->value('id_status');
+            $proyektorQuery->where('id_status', $statusId);
+        }
+
+        if ($request->has('search') && $request->search) {
+            $proyektorQuery->where('nama_proyektor', 'like', '%' . $request->search . '%');
+        }
+
+        $proyektors = $proyektorQuery->latest()->paginate(9);
+
+        $statuses = Status::all();
+
+        return view('admin.sarpras.index', compact('ruangans', 'proyektors', 'statuses'));
     }
-    // ...existing code...
 }

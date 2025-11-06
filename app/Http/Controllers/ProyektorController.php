@@ -9,26 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class ProyektorController extends Controller
 {
-    public function index(Request $request)
-    {
-        $query = Proyektor::with('status');
-
-        if ($request->has('status') && $request->status) {
-            $statusId = Status::where('nama_status', $request->status)->first()->id_status;
-            $query->where('id_status', $statusId);
-        }
-
-        if ($request->has('search') && $request->search) {
-            $query->where('nama_proyektor', 'like', '%' . $request->search . '%');
-        }
-
-        $proyektors = $query->latest()->paginate(9);
-        $statuses = Status::all();
-
-        return view('admin.sarpras.index', compact('proyektors', 'statuses'));
-    }
-
-
     public function tambah_proyektor()
     {
         $statuses = Status::all();
@@ -54,7 +34,7 @@ class ProyektorController extends Controller
 
         Proyektor::create($validated);
 
-        return redirect()->route('sarpras.index')->with('success', 'Proyektor berhasil ditambahkan!');
+        return redirect()->route('admin.sarpras.index')->with('success', 'Proyektor berhasil ditambahkan!');
     }
 
     public function lihat_proyektor($id)
@@ -93,7 +73,7 @@ class ProyektorController extends Controller
 
         $proyektor->update($validated);
 
-        return redirect()->route('sarpras.index')->with('success', 'Data proyektor berhasil diperbarui!');
+        return redirect()->route('admin.sarpras.index')->with('success', 'Data proyektor berhasil diperbarui!');
     }
 
     public function destroy($id)
@@ -106,6 +86,6 @@ class ProyektorController extends Controller
 
         $proyektor->delete();
 
-        return redirect()->route('sarpras.index')->with('success', 'Data proyektor berhasil dihapus!');
+        return redirect()->route('admin.sarpras.index')->with('success', 'Data proyektor berhasil dihapus!');
     }
 }

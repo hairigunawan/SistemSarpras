@@ -46,7 +46,7 @@
                   <span class="text-sm text-gray-600">Kapasitas: {{ $item->kapasitas }} orang</span>
                 </div>
 
-                <a href="{{ route('public.user.detail_ruangan', $item->id_ruangan) }}"
+                <a href="{{ route('public.sarana_perasarana.detail_sarpras', ['type' => 'ruangan', 'id' => $item->id_ruangan]) }}"
                    class="block text-center bg-[#179ACE] hover:bg-[#0F6A8F] text-white font-semibold py-2 rounded-lg transition">
                   Lihat Detail
                 </a>
@@ -88,7 +88,7 @@
                   </div>
                 @endif
 
-                <a href="{{ route('public.user.detail_proyektor', $item->id_proyektor) }}"
+                <a href="{{ route('public.sarana_perasarana.detail_sarpras', ['type' => 'proyektor', 'id' => $item->id_proyektor]) }}"
                    class="block text-center bg-[#179ACE] hover:bg-[#0F6A8F] text-white font-semibold py-2 rounded-lg transition">
                   Lihat Detail
                 </a>

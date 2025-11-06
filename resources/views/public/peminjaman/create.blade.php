@@ -117,7 +117,7 @@
                                         </label>
                                         <div class="relative">
                                             <select name="id_ruangan" id="id_ruangan"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition appearance-none bg-white">
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                                                 <option value="">Pilih Ruangan</option>
                                                 @foreach($ruanganTersedia as $ruangan)
                                                     <option value="{{ $ruangan->id_ruangan }}" {{ (old('id_ruangan') == $ruangan->id_ruangan || ($selectedSarprasType == 'ruangan' && $selectedSarprasId == $ruangan->id_ruangan)) ? 'selected' : '' }}>
@@ -125,11 +125,6 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                                </svg>
-                                            </div>
                                         </div>
                                         @error('id_ruangan')
                                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -141,7 +136,7 @@
                                         </label>
                                         <div class="relative">
                                             <select name="id_proyektor" id="id_proyektor"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition appearance-none bg-white">
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                                                 <option value="">Pilih Proyektor</option>
                                                 @foreach($proyektorTersedia as $proyektor)
                                                     <option value="{{ $proyektor->id_proyektor }}" {{ (old('id_proyektor') == $proyektor->id_proyektor || ($selectedSarprasType == 'proyektor' && $selectedSarprasId == $proyektor->id_proyektor)) ? 'selected' : '' }}>
@@ -149,11 +144,6 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                                </svg>
-                                            </div>
                                         </div>
                                         @error('id_proyektor')
                                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -162,6 +152,7 @@
                                 </div>
                             </div>
 
+                        
                             <div>
                                 <label for="jumlah_peserta" class="block text-sm font-medium text-gray-700 mb-2">
                                     Jumlah Peserta
@@ -169,7 +160,7 @@
                                 <div class="relative">
                                     <input type="number" name="jumlah_peserta" id="jumlah_peserta"
                                         value="{{ old('jumlah_peserta') }}"
-                                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
                                         placeholder="Masukkan estimasi jumlah peserta" min="1" required>
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                                         <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -178,6 +169,27 @@
                                     </div>
                                 </div>
                                 @error('jumlah_peserta')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Lokasi Peminjaman Proyektor (hanya ditampilkan jika proyektor dipilih) --}}
+                            <div id="lokasi_proyektor_container" style="display: none;">
+                                <label for="lokasi_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Lokasi Peminjaman Proyektor
+                                </label>
+                                <div>
+                                    <select name="lokasi_id" id="lokasi_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Pilih Lokasi</option>
+                                        @foreach($lokasiList as $id => $lokasi)
+                                            <option value="{{ $id }}" {{ old('lokasi_id') == $id ? 'selected' : '' }}>
+                                                {{ $lokasi }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('lokasi_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                </div>
+                                @error('lokasi_id')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -196,9 +208,7 @@
                                                 name="tanggal_pinjam"
                                                 id="tanggal_pinjam"
                                                 value="{{ old('tanggal_pinjam') }}"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 text-sm
-                                                    focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50
-                                                    transition duration-150 ease-in-out"
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
                                                 required
                                             >
                                         </div>
@@ -215,9 +225,7 @@
                                                 name="tanggal_kembali"
                                                 id="tanggal_kembali"
                                                 value="{{ old('tanggal_kembali') }}"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 text-sm
-                                                    focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50
-                                                    transition duration-150 ease-in-out"
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
                                                 required
                                             >
                                         </div>
@@ -238,7 +246,7 @@
                                         <div class="relative">
                                             <input type="time" name="jam_mulai" id="jam_mulai"
                                                 value="{{ old('jam_mulai') }}"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
                                                 required>
                                         </div>
                                         @error('jam_mulai')
@@ -249,7 +257,7 @@
                                         <div class="relative">
                                             <input type="time" name="jam_selesai" id="jam_selesai"
                                                 value="{{ old('jam_selesai') }}"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
                                                 required>
                                         </div>
                                         @error('jam_selesai')
@@ -269,7 +277,7 @@
                             Jenis Kegiatan / Keperluan
                         </label>
                         <div class="relative">
-                            <select name="jenis_kegiatan" id="jenis_kegiatan" aria-placeholder="Pilih Kegiatan" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition appearance-none bg-white" required>
+                            <select name="jenis_kegiatan" id="jenis_kegiatan" aria-placeholder="Pilih Kegiatan" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
                                 <option value="">Pilih Jenis Kegiatan</option>
                                 <option value="Seminar Tugas Akhir">Seminar Tugas Akhir</option>
                                 <option value="Seminar PKL">Seminar PKL</option>
@@ -301,3 +309,26 @@
     </div>
 </div>
 @endsection
+
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const proyektorSelect = document.getElementById('id_proyektor');
+        const lokasiProyektorContainer = document.getElementById('lokasi_proyektor_container');
+
+        function toggleLokasiProyektor() {
+            if (proyektorSelect.value) {
+                lokasiProyektorContainer.style.display = 'block';
+            } else {
+                lokasiProyektorContainer.style.display = 'none';
+            }
+        }
+
+        proyektorSelect.addEventListener('change', toggleLokasiProyektor);
+
+        // Initial check on page load
+        toggleLokasiProyektor();
+    });
+</script>
+@endpush
