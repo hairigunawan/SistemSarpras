@@ -31,7 +31,7 @@ class RuanganController extends Controller
         $statuses = Status::all();
         $proyektors = Proyektor::with('status')->latest()->paginate(9);
 
-        return view('sarpras.index', compact('ruangans', 'statuses', 'proyektors'));
+                        return view('sarpras.index', compact('ruangans', 'statuses', 'proyektors'));
     }
 
 
@@ -49,7 +49,7 @@ class RuanganController extends Controller
 
         $defaultStatusId = $defaultStatus->id_status;
 
-        return view('sarpras.ruangan.tambah_ruangan', compact('statuses', 'lokasiList', 'defaultStatusId'));
+                return view('admin.sarpras.ruangan.tambah_ruangan', compact('statuses', 'lokasiList', 'defaultStatusId'));
     }
 
     public function store(Request $request)
@@ -78,7 +78,7 @@ class RuanganController extends Controller
 
         Ruangan::create($validated);
 
-        return redirect()->route('admin.sarpras.index')
+                return redirect()->route('sarpras.index')
             ->with('success', 'Ruangan berhasil ditambahkan.');
     }
 

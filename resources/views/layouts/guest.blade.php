@@ -7,7 +7,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
-<body class="bg-gray-100 text-gray-800 ">
+<body class="bg-gray-100 text-gray-800">
     <div class="min-h-screen flex flex-col overflow-hidden">
 
         @include('layouts.partials.NavbarPublic')

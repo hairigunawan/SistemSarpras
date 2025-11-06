@@ -134,85 +134,44 @@ class PeminjamanController extends Controller
     }
 
     public function approve($id)
-    {
-        $approvedPeminjaman = Peminjaman::findOrFail($id);
+{
+    // Ambil data peminjaman yang akan disetujui
+    $approvedPeminjaman = Peminjaman::findOrFail($id);
+    $approvedPeminjaman->status_peminjaman = 'Disetujui';
+    $approvedPeminjaman->alasan_penolakan = null;
+    $approvedPeminjaman->save();
 
-        if ($approvedPeminjaman->status_peminjaman !== 'Menunggu') {
-            return redirect()->route('admin.peminjaman.lihat_peminjaman', $id)
-                ->with('error', 'Peminjaman ini sudah diproses sebelumnya.');
-        }
+    $isRuangan = $approvedPeminjaman->id_ruangan !== null;
 
-        $sarprasId = $approvedPeminjaman->id_ruangan ?? $approvedPeminjaman->id_proyektor;
-        $isRuangan = $approvedPeminjaman->id_ruangan !== null;
-
-        $existingApproved = Peminjaman::where(function ($query) use ($sarprasId, $isRuangan) {
+    $conflictingPeminjaman = Peminjaman::where('id_peminjaman', '!=', $id)
+        ->whereIn('status_peminjaman', ['Menunggu', 'Disetujui'])
+        ->where(function ($query) use ($approvedPeminjaman, $isRuangan) {
             if ($isRuangan) {
-                $query->where('id_ruangan', $sarprasId);
+                $query->where('id_ruangan', $approvedPeminjaman->id_ruangan);
             } else {
-                $query->where('id_proyektor', $sarprasId);
+                $query->where('id_proyektor', $approvedPeminjaman->id_proyektor);
             }
         })
-            ->where('status_peminjaman', 'Disetujui')
-            ->where(function ($query) use ($approvedPeminjaman) {
-                $query->where(function ($q) use ($approvedPeminjaman) {
-                    $q->where('tanggal_pinjam', '<=', $approvedPeminjaman->tanggal_kembali)
-                        ->where('tanggal_kembali', '>=', $approvedPeminjaman->tanggal_pinjam);
-                });
-            })
-            ->where(function ($timeQuery) use ($approvedPeminjaman) {
-                $timeQuery->where('jam_mulai', '<', $approvedPeminjaman->jam_selesai)
-                    ->where('jam_selesai', '>', $approvedPeminjaman->jam_mulai);
-            })
-            ->exists();
+        ->where(function ($query) use ($approvedPeminjaman) {
+            // 🔹 Logika bentrok waktu
+            $query->where('tanggal_pinjam', '<=', $approvedPeminjaman->tanggal_kembali)
+                  ->where('tanggal_kembali', '>=', $approvedPeminjaman->tanggal_pinjam)
+                  ->where('jam_mulai', '<', $approvedPeminjaman->jam_selesai)
+                  ->where('jam_selesai', '>', $approvedPeminjaman->jam_mulai);
+        })
+        ->get();
 
-        if ($existingApproved) {
-            return redirect()->route('admin.peminjaman.lihat_peminjaman', $id)
-                ->with('error', 'Sudah ada peminjaman Disetujui untuk sarpras ini pada waktu yang bentrok.');
-        }
-
-        $conflictingPeminjaman = Peminjaman::where('id_peminjaman', '!=', $id)
-            ->whereIn('status_peminjaman', ['Menunggu', 'Disetujui'])
-            ->where(function ($query) use ($approvedPeminjaman) {
-                $query->where('tanggal_pinjam', '<=', $approvedPeminjaman->tanggal_kembali)
-                    ->where('tanggal_kembali', '>=', $approvedPeminjaman->tanggal_pinjam)
-                    ->where('jam_mulai', '<', $approvedPeminjaman->jam_selesai)
-                    ->where('jam_selesai', '>', $approvedPeminjaman->jam_mulai);
-            })
-            ->get();
-
-        foreach ($conflictingPeminjaman as $conflict) {
-            $conflict->update([
-                'status_peminjaman' => 'Ditolak',
-                'alasan_penolakan' => 'Jadwal bentrok dengan peminjaman lain yang telah disetujui.',
-            ]);
-        }
-
-        Peminjaman::where('id_akun', $approvedPeminjaman->id_akun)
-            ->where(function ($query) use ($sarprasId, $isRuangan) {
-                if ($isRuangan) {
-                    $query->where('id_ruangan', $sarprasId);
-                } else {
-                    $query->where('id_proyektor', $sarprasId);
-                }
-            })
-            ->where('id_peminjaman', '!=', $id)
-            ->where('status_peminjaman', 'Menunggu')
-            ->update([
-                'status_peminjaman' => 'Ditolak',
-                'alasan_penolakan' => 'Pengajuan lain oleh peminjam yang sama telah disetujui.',
-            ]);
-
-        $approvedPeminjaman->update(['status_peminjaman' => 'Disetujui']);
-
-        $idStatusDipinjam = Status::where('nama_status', 'Dipinjam')->first()->id_status;
-        if ($isRuangan) {
-            Ruangan::where('id_ruangan', $sarprasId)->update(['id_status' => $idStatusDipinjam]);
-        } else {
-            Proyektor::where('id_proyektor', $sarprasId)->update(['id_status' => $idStatusDipinjam]);
-        }
-
-        return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil disetujui. Pengajuan lain yang bentrok atau duplikat telah otomatis ditolak.');
+    // 🔹 Tolak semua peminjaman lain yang bentrok (hanya yang sama jenisnya)
+    foreach ($conflictingPeminjaman as $conflict) {
+        $conflict->update([
+            'status_peminjaman' => 'Ditolak',
+            'alasan_penolakan' => 'Jadwal bentrok dengan peminjaman lain yang telah disetujui.',
+        ]);
     }
+
+    return redirect()->back()->with('success', 'Peminjaman berhasil disetujui.');
+}
+
 
     public function reject(Request $request, $id)
     {
@@ -235,7 +194,7 @@ class PeminjamanController extends Controller
 
         $sarprasId = $peminjaman->id_ruangan ?? $peminjaman->id_proyektor;
         $isRuangan = $peminjaman->id_ruangan !== null;
-        $idStatusTersedia = Status::where('nama_status', 'Tersedia')->first()->id_status;
+                $idStatusTersedia = Status::firstOrCreate(['nama_status' => 'Tersedia'])->id_status;
 
         if ($isRuangan) {
             Ruangan::where('id_ruangan', $sarprasId)->update(['id_status' => $idStatusTersedia]);

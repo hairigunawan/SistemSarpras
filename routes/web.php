@@ -87,10 +87,11 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 
         // Prioritas dan Jadwal
         Route::prefix('prioritas')->group(function () {
-            Route::get('/proyektor', [PrioritasController::class, 'indexProyektor'])->name('admin.prioritas.proyektor');
-            Route::get('/ruangan', [PrioritasController::class, 'indexRuangan'])->name('admin.prioritas.ruangan');
+            Route::get('/proyektor', [PrioritasController::class, 'Proyektor'])->name('admin.prioritas.proyektor');
+            Route::get('/ruangan', [PrioritasController::class, 'Ruangan'])->name('admin.prioritas.ruangan');
             Route::post('/proyektor/hitung', [PrioritasController::class, 'hitungProyektor'])->name('admin.prioritas.proyektor.hitung');
             Route::post('/ruangan/hitung', [PrioritasController::class, 'hitungRuangan'])->name('admin.prioritas.ruangan.hitung');
+            Route::get('/hasil', [PrioritasController::class, 'hasil'])->name('admin.prioritas.hasil');
 
             Route::get('/jadwal', [JadwalController::class, 'index'])->name('admin.jadwal.index');
             Route::resource('jadwal', JadwalController::class)->except(['show'])->names('admin.jadwal');
@@ -113,6 +114,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
             Route::put('/sarpras/proyektor/{proyektor}', [ProyektorController::class, 'update'])->name('sarpras.proyektor.update');
             Route::delete('/sarpras/proyektor/{proyektor}', [ProyektorController::class, 'destroy'])->name('sarpras.proyektor.destroy');
         });
+
 });
 
 /*
