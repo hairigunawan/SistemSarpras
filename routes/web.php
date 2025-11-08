@@ -85,7 +85,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
         Route::patch('/peminjaman/{id}/reject', [PeminjamanController::class, 'reject'])->name('peminjaman.reject');
         Route::patch('/peminjaman/{id}/complete', [PeminjamanController::class, 'complete'])->name('peminjaman.complete');
 
-        // Prioritas dan Jadwal
+        // Prioritas, kriteria dan Jadwal
         Route::prefix('prioritas')->group(function () {
             Route::get('/proyektor', [PrioritasController::class, 'Proyektor'])->name('admin.prioritas.proyektor');
             Route::get('/ruangan', [PrioritasController::class, 'Ruangan'])->name('admin.prioritas.ruangan');
@@ -97,6 +97,14 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
             Route::resource('jadwal', JadwalController::class)->except(['show'])->names('admin.jadwal');
             Route::post('/jadwal/import', [JadwalController::class, 'importStore'])->name('admin.jadwal.import.store');
             Route::get('/jadwal/export', [JadwalController::class, 'export'])->name('admin.jadwal.export');
+
+            Route::get('/kriteria/tambah', [App\Http\Controllers\PrioritasController::class, 'tambahKriteria'])
+            ->name('admin.kriteria.tambah_kruang');
+             // Simpan kriteria baru
+            Route::post('/kriteria/store', [App\Http\Controllers\PrioritasController::class, 'storeKriteria'])
+            ->name('admin.prioritas.storeKriteria');
+            Route::delete('/prioritas/hapus-kriteria/{nama}', [PrioritasController::class, 'deleteKriteria'])->name('prioritas.hapusKriteria');
+
         });
 
         Route::get('/sarpras', [SarprasController::class, 'index'])->name('sarpras.index');
