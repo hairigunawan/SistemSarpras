@@ -106,7 +106,6 @@
       </form>
     </div>
   </div>
-
   <p class="text-gray-400 text-xs mt-6">© 2025 SIMPERSITE. All rights reserved.</p>
 
   <style>
