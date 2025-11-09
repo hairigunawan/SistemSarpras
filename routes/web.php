@@ -13,6 +13,7 @@ use App\Http\Controllers\PrioritasController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\ProyektorController;
 use App\Http\Controllers\SarprasController;
+use App\Http\Controllers\FeedbackController;
 
 
 
@@ -118,4 +119,11 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
     Route::get('/halaman-sarpras', [PublicController::class, 'halamansarpras'])->name('public.sarana_perasarana.halamansarpras');
     Route::get('/sarpras/{type}/{id}', [PublicController::class, 'detail_sarpras'])
         ->name('public.sarana_perasarana.detail_sarpras');
+
+    // Feedback
+    Route::prefix('feedback')->name('public.feedback.')->group(function () {
+        Route::get('/', [FeedbackController::class, 'index'])->name('index');
+        Route::post('/store', [FeedbackController::class, 'store'])->name('store');
+        Route::delete('/{feedback}', [FeedbackController::class, 'destroy'])->name('destroy');
+    });
 });

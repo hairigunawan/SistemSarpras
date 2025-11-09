@@ -36,7 +36,7 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            @forelse($peminjaman as $index => $item)
+            @forelse($mainPeminjaman as $index => $item)
             <tr>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $item->nama_peminjam }}</td>

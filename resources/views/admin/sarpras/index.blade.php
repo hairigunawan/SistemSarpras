@@ -28,7 +28,7 @@
                                   d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
                         </svg>
                     </div>
-                    
+
                     <!-- Filter Status -->
                     <div class="relative">
                         <select id="status-filter" class="w-full sm:w-40 pl-3 pr-10 py-2.5 border border-gray-200 rounded-lg text-sm
@@ -151,7 +151,7 @@
                 Tambah Ruangan
             </a>
             <a href="{{ route('sarpras.proyektor.tambah_proyektor') }}"
-                class="bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg transition">
+                class="text-gray-700 py-2 rounded-lg transition border border-gray-300">
                 Tambah Proyektor
             </a>
         </div>
@@ -168,12 +168,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('modal-tambah-sarpras');
     const openBtn = document.getElementById('btn-tambah-sarpras');
     const closeBtn = document.getElementById('btn-tutup-modal');
-    
-    // Element pencarian
+
     const searchInput = document.querySelector('input[placeholder="Cari sarpras..."]');
-    // Element filter status
     const statusFilter = document.getElementById('status-filter');
-    
+
     // Handle modal
     openBtn.addEventListener('click', () => {
         modal.classList.remove('hidden');
@@ -191,8 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
             modal.classList.remove('flex');
         }
     });
-    
-    // Handle pencarian dengan Enter key
+
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -200,8 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = '/admin/sarpras?search=' + encodeURIComponent(searchTerm);
         }
     });
-    
-    // Handle pencarian dengan debounce
+
     let searchTimeout;
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimeout);
@@ -216,8 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = url.toString();
         }, 500);
     });
-    
-    // Handle filter status
+
     statusFilter.addEventListener('change', function() {
         const selectedStatus = this.value;
         const url = new URL(window.location);
@@ -228,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         window.location.href = url.toString();
     });
-    
+
     // Set nilai filter status dari URL saat halaman dimuat
     const urlParams = new URLSearchParams(window.location.search);
     const statusParam = urlParams.get('nama_status');

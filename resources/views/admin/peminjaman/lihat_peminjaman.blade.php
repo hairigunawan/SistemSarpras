@@ -111,6 +111,20 @@
                     </span>
                 </div>
                 <div class="flex justify-between items-start pb-3 border-b border-gray-100">
+                    <span class="text-gray-500">Sarana dan Perasarana</span>
+                    <span class="font-medium text-gray-700 text-right max-w-xs">
+                        @if($mainPeminjaman->ruangan && $mainPeminjaman->proyektor)
+                            {{ $mainPeminjaman->nama_ruangan }} & {{ $mainPeminjamanproyektor->nama_proyektor }}
+                        @elseif($mainPeminjaman)
+                            {{ $mainPeminjaman->nama_ruangan }}
+                        @elseif($mainPeminjamanproyektor)
+                            {{ $mainPeminjamanproyektor->nama_proyektor }}
+                        @else
+                            N/A
+                        @endif
+                    </span>
+                </div>
+                <div class="flex justify-between items-start pb-3 border-b border-gray-100">
                     <span class="text-gray-500">Lokasi</span>
                     <span class="font-medium text-gray-700 text-right max-w-xs">
                         {{ ($mainPeminjaman->ruangan->lokasi->nama_lokasi ?? '-' ) }}

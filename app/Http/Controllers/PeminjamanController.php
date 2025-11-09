@@ -107,7 +107,6 @@ class PeminjamanController extends Controller
         $conflictRequest->jam_mulai = $peminjaman->jam_mulai;
         $conflictRequest->jam_selesai = $peminjaman->jam_selesai;
 
-        // Set ID sumber daya dari peminjaman
         if ($peminjaman->id_ruangan) {
             $conflictRequest->id_ruangan = $peminjaman->id_ruangan;
         } else {
@@ -173,7 +172,7 @@ class PeminjamanController extends Controller
 
         // Otomatis menolak peminjaman yang konflik
         $rejectedCount = PeminjamanHelper::autoRejectConflictingPeminjaman($peminjaman);
-        
+
         // Tambahkan informasi penolakan otomatis ke pesan sukses
         $successMessage = 'Peminjaman berhasil disetujui.';
         if ($rejectedCount > 0) {
