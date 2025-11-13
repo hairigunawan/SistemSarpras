@@ -8,10 +8,12 @@ use App\Models\Proyektor;
 use App\Models\Lokasi;
 use App\Models\Status;
 use App\Models\Prioritas;
+use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Helpers\PeminjamanHelper;
+use App\Helpers\ProyektorStatusHelper;
 
 class PublicController extends Controller
 {
@@ -73,6 +75,9 @@ class PublicController extends Controller
             $selectedSarprasId = $selectedProyektorId;
         }
 
+        // Perbarui status proyektor berdasarkan peminjaman aktif
+        ProyektorStatusHelper::updateProyektorStatus();
+
         // Menggunakan helper untuk mendapatkan sumber daya yang tersedia
         $resources = PeminjamanHelper::getAvailableResources(true);
         $ruanganTersedia = $resources['ruangan']->sortBy('nama_ruangan');
@@ -93,6 +98,9 @@ class PublicController extends Controller
 
     public function create()
     {
+        // Perbarui status proyektor berdasarkan peminjaman aktif
+        ProyektorStatusHelper::updateProyektorStatus();
+
         // Menggunakan helper untuk mendapatkan sumber daya yang tersedia
         $resources = PeminjamanHelper::getAvailableResources(true);
         $ruanganTersedia = $resources['ruangan']->sortBy('nama_ruangan');
@@ -257,6 +265,9 @@ class PublicController extends Controller
 
     public function halamansarpras(Request $request)
      {
+        // Perbarui status proyektor berdasarkan peminjaman aktif
+        ProyektorStatusHelper::updateProyektorStatus();
+
         // Mengambil data ruangan dengan relasi status dan lokasi
         $ruangans = Ruangan::with('status', 'lokasi')->get();
 
@@ -275,13 +286,40 @@ class PublicController extends Controller
         if ($type && $id) {
             if ($type === 'ruangan') {
                 $sarpras = Ruangan::with(['status', 'lokasi'])->findOrFail($id);
+                // Cari peminjaman terkait ruangan ini
+                $mainPeminjaman = Peminjaman::where('id_ruangan', $id)
+                    ->whereIn('status_peminjaman', ['Menunggu', 'Dipinjam'])
+                    ->latest()
+                    ->first();
+                // Ambil feedback untuk ruangan ini
+                $feedbacks = Feedback::with('user')
+                    ->where('id_ruangan', $id)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
             } elseif ($type === 'proyektor') {
                 $sarpras = Proyektor::with('status')->findOrFail($id);
+                // Perbarui status proyektor berdasarkan peminjaman aktif
+                ProyektorStatusHelper::checkProyektorStatus($id);
+                // Refresh data proyektor setelah status diperbarui
+                $sarpras = Proyektor::with('status')->findOrFail($id);
+                // Cari peminjaman terkait proyektor ini
+                $mainPeminjaman = Peminjaman::where('id_proyektor', $id)
+                    ->whereIn('status_peminjaman', ['Menunggu', 'Dipinjam'])
+                    ->latest()
+                    ->first();
+                // Ambil feedback untuk proyektor ini
+                $feedbacks = Feedback::with('user')
+                    ->where('id_proyektor', $id)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
             } else {
                 abort(404, 'Sarana tidak ditemukan.');
             }
 
-            return view('public.sarana_perasarana.detail_sarpras', compact('sarpras', 'type'));
+            // Ambil status dari sumber daya untuk digunakan di view
+            $resourceStatus = $sarpras->status->nama_status ?? 'Tersedia';
+
+            return view('public.sarana_perasarana.detail_sarpras', compact('sarpras', 'type', 'mainPeminjaman', 'resourceStatus', 'feedbacks'));
         }
 
         $ruangans = Ruangan::with(['status', 'lokasi'])->get();

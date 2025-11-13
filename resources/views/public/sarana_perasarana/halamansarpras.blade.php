@@ -36,7 +36,10 @@
                 <p class="text-sm text-gray-500 mb-3">{{ $item->lokasi->nama_lokasi ?? '-' }}</p>
 
                 <div class="flex justify-between items-center mb-4">
-                  <span class="text-sm font-medium {{ $item->status->nama_status == 'Tersedia' ? 'text-green-600' : 'text-yellow-600' }}">
+                  <span class="text-sm font-medium
+                    {{ $item->status->nama_status == 'Tersedia' ? 'text-green-600' :
+                       ($item->status->nama_status == 'Dipakai' ? 'text-yellow-600' :
+                       ($item->status->nama_status == 'Diperbaiki' ? 'text-orange-600' : 'text-red-600')) }}">
                     {{ $item->status->nama_status }}
                   </span>
                   <span class="text-sm text-gray-500 italic">Ruangan</span>
@@ -76,7 +79,10 @@
                 <p class="text-sm text-gray-500 mb-3">Merk: {{ $item->merk }}</p>
 
                 <div class="flex justify-between items-center mb-4">
-                  <span class="text-sm font-medium {{ $item->status->nama_status == 'Tersedia' ? 'text-green-600' : 'text-yellow-600' }}">
+                  <span class="text-sm font-medium
+                    {{ $item->status->nama_status == 'Tersedia' ? 'text-green-600' :
+                       ($item->status->nama_status == 'Dipakai' ? 'text-yellow-600' :
+                       ($item->status->nama_status == 'Diperbaiki' ? 'text-orange-600' : 'text-red-600')) }}">
                     {{ $item->status->nama_status }}
                   </span>
                   <span class="text-sm text-gray-500 italic">Proyektor</span>

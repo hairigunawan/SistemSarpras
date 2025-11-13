@@ -19,7 +19,7 @@ class FeedbackController extends Controller
     {
         $id_sarpras = $request->input('id_sarpras');
         $sarpras_type = $request->input('type'); // 'ruangan' atau 'proyektor'
-        
+
         if (!$id_sarpras || !$sarpras_type) {
             abort(400, 'Parameter id_sarpras dan type diperlukan');
         }
@@ -36,8 +36,6 @@ class FeedbackController extends Controller
             ->whereIn('status_peminjaman', ['Disetujui', 'Selesai'])
             ->first();
 
-        // Jika tidak ada peminjaman yang disetujui/selesai untuk sumber daya ini,
-        // cek apakah pengguna pernah meminjam sumber daya ini dengan status apapun
         if (!$peminjaman) {
             $anyPeminjaman = Peminjaman::where('id_akun', Auth::id())
                 ->where(function($query) use ($id_sarpras, $sarpras_type) {
@@ -48,11 +46,13 @@ class FeedbackController extends Controller
                     }
                 })
                 ->first();
-            
+
             if (!$anyPeminjaman) {
-                abort(403, 'Anda belum pernah meminjam sumber daya ini. Silakan ajukan peminjaman terlebih dahulu.');
+                return redirect()->back()
+                    ->with('error', 'Lakukan peminjaman terlebih dahulu pada sarpras ini');
             } else {
-                abort(403, 'Anda belum dapat memberikan feedback untuk sumber daya ini. Peminjaman Anda harus disetujui/selesai terlebih dahulu.');
+                return redirect()->back()
+                    ->with('error', 'Anda belum dapat memberikan feedback untuk sumber daya ini. Peminjaman Anda harus disetujui/selesai terlebih dahulu.');
             }
         }
 
@@ -74,10 +74,10 @@ class FeedbackController extends Controller
             } else {
                 $query->where('id_proyektor', $id_sarpras);
             }
-        })->where('id_peminjaman', $peminjaman->id_peminjaman)->get();
+        })->where('id_peminjaman', $peminjaman->id_peminjaman ?? 0)->get();
 
         // Cek apakah sudah ada feedback untuk peminjaman ini
-        $existingFeedback = Feedback::where('id_peminjaman', $peminjaman->id_peminjaman)->first();
+        $existingFeedback = Feedback::where('id_peminjaman', $peminjaman->id_peminjaman ?? 0)->first();
 
         return view('public.feedback.index', compact(
             'ruangan',
@@ -129,7 +129,8 @@ class FeedbackController extends Controller
         $feedback = new Feedback();
         $feedback->id_peminjaman = $request->id_peminjaman;
         $feedback->isi_feedback = $request->isi_feedback;
-        
+        $feedback->id_akun = Auth::id();
+
         if ($request->type === 'ruangan') {
             $feedback->id_ruangan = $request->id_sarpras;
             // Set id_proyektor ke NULL untuk ruangan
@@ -139,7 +140,7 @@ class FeedbackController extends Controller
             // Set id_ruangan ke NULL untuk proyektor
             $feedback->id_ruangan = null;
         }
-        
+
         $feedback->save();
 
         return redirect()->route('public.feedback.index', [

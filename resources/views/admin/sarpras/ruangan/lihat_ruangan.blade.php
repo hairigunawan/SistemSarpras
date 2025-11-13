@@ -48,9 +48,11 @@
                             @php
                                 $color = $ruangan->status->nama_status === 'Tersedia'
                                     ? 'bg-green-100 text-green-700'
-                                    : ($ruangan->status->nama_status === 'Dipinjam'
+                                    : ($ruangan->status->nama_status === 'Dipakai'
                                         ? 'bg-yellow-100 text-yellow-700'
-                                        : 'bg-red-100 text-red-700');
+                                        : ($ruangan->status->nama_status === 'Diperbaiki'
+                                            ? 'bg-orange-100 text-orange-700'
+                                            : 'bg-red-100 text-red-700'));
                             @endphp
                             <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold {{ $color }}">
                                 {{ $ruangan->status->nama_status }}

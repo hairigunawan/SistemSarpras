@@ -6,6 +6,7 @@ use App\Models\Proyektor;
 use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\ProyektorStatusHelper;
 
 class ProyektorController extends Controller
 {
@@ -40,6 +41,9 @@ class ProyektorController extends Controller
     public function lihat_proyektor($id)
     {
         $proyektor = Proyektor::findOrFail($id);
+
+        // Perbarui status proyektor berdasarkan peminjaman aktif
+        ProyektorStatusHelper::checkProyektorStatus($id);
 
         return view('admin.sarpras.proyektor.lihat_proyektor', compact('proyektor'));
     }

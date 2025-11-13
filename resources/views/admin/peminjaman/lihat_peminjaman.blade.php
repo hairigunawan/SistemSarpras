@@ -114,11 +114,11 @@
                     <span class="text-gray-500">Sarana dan Perasarana</span>
                     <span class="font-medium text-gray-700 text-right max-w-xs">
                         @if($mainPeminjaman->ruangan && $mainPeminjaman->proyektor)
-                            {{ $mainPeminjaman->nama_ruangan }} & {{ $mainPeminjamanproyektor->nama_proyektor }}
-                        @elseif($mainPeminjaman)
-                            {{ $mainPeminjaman->nama_ruangan }}
-                        @elseif($mainPeminjamanproyektor)
-                            {{ $mainPeminjamanproyektor->nama_proyektor }}
+                            {{ $mainPeminjaman->ruangan->nama_ruangan }} & {{ $mainPeminjaman->proyektor->nama_proyektor }}
+                        @elseif($mainPeminjaman->ruangan)
+                            {{ $mainPeminjaman->ruangan->nama_ruangan }}
+                        @elseif($mainPeminjaman->proyektor)
+                            {{ $mainPeminjaman->proyektor->nama_proyektor }}
                         @else
                             N/A
                         @endif

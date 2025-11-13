@@ -20,9 +20,11 @@ use App\Http\Controllers\FeedbackController;
 Route::get('/', [PublicController::class, 'index'])->name('public.beranda.index');
 
 // Form peminjaman publik
-Route::get('/peminjaman-public/create', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/peminjaman-public/create', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create');
     Route::post('/peminjaman-public', [PublicController::class, 'storePeminjaman'])->name('public.peminjaman.store');
     Route::get('/peminjaman-public/daftar', [PublicController::class, 'daftarPeminjaman'])->name('public.peminjaman.daftarpeminjaman');
+});
 
 Route::get('/public/halaman-sarpras', [PublicController::class, 'halamansarpras'])->name('public.sarana_perasarana.halamansarpras');
 Route::get('public//halaman-sarpras/{type}/{id}', [PublicController::class, 'detail_sarpras'])

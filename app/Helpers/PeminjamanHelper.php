@@ -32,7 +32,7 @@ class PeminjamanHelper
         });
 
         // Filter status yang dianggap konflik
-        $statusFilter = ['Disetujui'];
+        $statusFilter = ['Disetujui', 'Dipinjam'];
 
         $query->whereIn('status_peminjaman', $statusFilter);
 

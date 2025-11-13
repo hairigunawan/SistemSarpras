@@ -6,6 +6,7 @@ use App\Models\Ruangan;
 use App\Models\Proyektor;
 use App\Models\Status;
 use Illuminate\Http\Request;
+use App\Helpers\ProyektorStatusHelper;
 
 class SarprasController extends Controller
 {
@@ -41,6 +42,12 @@ class SarprasController extends Controller
         }
 
         $proyektors = $proyektorQuery->latest()->paginate(9);
+
+        // Perbarui status proyektor berdasarkan peminjaman aktif
+        ProyektorStatusHelper::updateProyektorStatus();
+
+        // Refresh data proyektor setelah status diperbarui
+        $proyektors = Proyektor::with('status')->latest()->paginate(9);
 
         $statuses = Status::all();
 

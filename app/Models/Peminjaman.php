@@ -16,6 +16,7 @@ class Peminjaman extends Model
         'id_ruangan',
         'id_proyektor',
         'id_lokasi',
+        'id_status',
         'nama_peminjam',
         'email_peminjam',
         'nomor_whatsapp',
@@ -24,7 +25,6 @@ class Peminjaman extends Model
         'tanggal_kembali',
         'jam_mulai',
         'jam_selesai',
-        'status_peminjaman',
         'jenis_kegiatan',
         'alasan_penolakan',
     ];
