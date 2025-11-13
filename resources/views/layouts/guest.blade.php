@@ -1,32 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SIMPERSITE')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-</head>
-<body class="bg-gray-100 text-gray-800">
-        @keyframes slideOutRight {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-
-        .notification-enter {
-            animation: slideInRight 0.3s ease-out forwards;
-        }
-
-        .notification-exit {
-            animation: slideOutRight 0.3s ease-out forwards;
-        }
-    </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
     <div class="min-h-screen flex flex-col overflow-hidden">

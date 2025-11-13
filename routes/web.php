@@ -20,11 +20,8 @@ use App\Http\Controllers\PageController;
 | Rute untuk Publik (Tidak Perlu Login)
 |--------------------------------------------------------------------------
 */
-Route::get('/', [PageController::class, 'beranda'])->name('home');
-Route::get('/tentang-kami', [PageController::class, 'tentangKami'])->name('tentang.kami');
 
-
-Route::get('/public', [PublicController::class, 'index'])->name('public.beranda.index');
+Route::get('/', [PublicController::class, 'index'])->name('public.beranda.index');
 
 // Form peminjaman publik
 Route::middleware(['auth'])->group(function () {
