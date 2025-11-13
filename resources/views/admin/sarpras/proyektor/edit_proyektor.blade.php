@@ -3,10 +3,10 @@
 @section('title', 'Edit Proyektor')
 
 @section('content')
-<div class="bg-white rounded-lg shadow-md w-full max-w-2xl mx-auto">
+<div class="bg-white rounded-lg shadow-md p-6 w-full max-w-2xl mx-auto">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">Edit Proyektor</h2>
-        <a href="{{ route('sarpras.index') }}" class="flex text-gray-600 hover:text-gray-800">
+        <a href="{{ route('admin.sarpras.index') }}" class="flex text-gray-600 hover:text-gray-800">
             <span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                     <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m0 0l6 6m-6-6l6-6"/>

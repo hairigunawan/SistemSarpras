@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Exports\LaporanExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Peminjaman;
@@ -31,8 +32,8 @@ class LaporanController extends Controller
             ->get()
             ->map(function ($peminjam) {
                 return [
-                    'nama' => $peminjam->user->name ?? 'N/A',
-                    'email' => $peminjam->user->email ?? 'N/A',
+                    'nama' => Auth::user()->name ?? 'N/A',
+                    'email' => Auth::user()->email ?? 'N/A',
                     'jumlah' => $peminjam->total,
                 ];
             });

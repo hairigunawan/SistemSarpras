@@ -55,14 +55,14 @@
 
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input id="email" name="email" type="email" value="{{ old('email') }}" required
-            class="w-full border rounded-lg py-2.5 px-3 shadow-sm focus:bg-blue-50  transition">
+          <input id="email" name="email" type="email" placeholder="Email" value="{{ old('email') }}" required
+            class="w-full border rounded-lg py-2.5 text-sm px-3 shadow-sm focus:bg-blue-50  transition">
         </div>
 
         <div>
           <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-          <input id="password" name="password" type="password" required
-            class="w-full border rounded-lg py-2.5 px-3 shadow-sm focus:bg-blue-50  transition">
+          <input id="password" name="password" placeholder="Password" type="password"  required
+            class="w-full border rounded-lg py-2.5 text-sm px-3 shadow-sm focus:bg-blue-50  transition">
         </div>
 
         <div class="flex items-center justify-between text-sm">

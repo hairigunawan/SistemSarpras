@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Ruangan;
 use App\Models\Peminjaman;
 use App\Models\Proyektor;
+use App\Helpers\ProyektorStatusHelper;
 
 class AdminController extends Controller
 {
@@ -31,6 +32,9 @@ class AdminController extends Controller
         $ruanganPerbaikan = Ruangan::whereHas('status', function ($query) {
             $query->where('nama_status', 'Perbaikan');
         })->count();
+
+        // Perbarui status proyektor berdasarkan peminjaman aktif
+        ProyektorStatusHelper::updateProyektorStatus();
 
         // Statistik proyektor
         $proyektorTersedia = Proyektor::whereHas('status', function ($query) {

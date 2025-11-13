@@ -47,7 +47,9 @@
                     <td class="py-4 px-2 forn-medium text-sm text-gray-700">{{ $item->user->userRole->nama_role }}</td>
                     <td class="py-4 px-2 font-medium text-gray-700 text-sm">{{ $item->nama_peminjam ?? $item->user->name ?? 'N/A' }}</td>
                     <td class="py-4 px-2 forn-medium text-sm text-gray-700">
-                        @if($item->ruangan)
+                        @if($item->ruangan && $item->proyektor)
+                            {{ $item->ruangan->nama_ruangan }} & {{ $item->proyektor->nama_proyektor }}
+                        @elseif($item->ruangan)
                             {{ $item->ruangan->nama_ruangan }}
                         @elseif($item->proyektor)
                             {{ $item->proyektor->nama_proyektor }}

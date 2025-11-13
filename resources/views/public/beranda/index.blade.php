@@ -1,30 +1,19 @@
 @extends('layouts.guest')
 
-@section('title', 'Form Peminjaman Sarpras')
+@section('title', 'Sarpras')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen">
 
     {{-- Header Utama --}}
     <div class="text-center py-10">
-        <h2 class="text-4xl font-bold mb-2">Peminjaman Ruangan dan Proyektor</h2>
-        <p class="text-gray-600 text-sm mb-10">
-            Selamat datang di portal layanan peminjaman sarana prasarana<br>
-            Program Studi Teknologi Informasi Universitas XYZ.
-        </p>
-        @if (Auth::user() == null)
-            <a href="{{ route('login') }}" class="inline-block">
-                <button class="bg-[#179ACE] text-white px-6 py-2 font-medium rounded-md hover:bg-[#0E7CBA] transition">
-                    Ajukan Peminjaman
-                </button>
-            </a>
-        @else
-            <a href="{{ route('public.peminjaman.create.auth') }}" class="inline-block">
-                <button class="bg-[#179ACE] text-white px-6 py-2 font-medium rounded-md hover:bg-[#0E7CBA] transition">
-                    Ajukan Peminjaman
-                </button>
-            </a>
-        @endif
+
+        <h2 class="text-4xl font-bold mb-2">Peminjaman Ruangan Dan Proyektor</h2>
+        <p class="text-gray-600 text-sm mb-10">Selamat datang di portal layanan peminjaman sarana prasarana program studi teknologi informasi</p>
+
+        <a href="{{ route('public.peminjaman.create') }}" class="flex justify-center space-x-4">
+            <button class="bg-blue-600 text-white px-5 py-2 font-medium rounded-md hover:bg-blue-700">Ajukan Peminjaman</button>
+        </a>
     </div>
 
     {{-- Section Identitas --}}
@@ -170,3 +159,4 @@
 
 </div>
 @endsection
+

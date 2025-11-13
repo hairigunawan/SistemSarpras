@@ -25,6 +25,13 @@
       0 => 'BladeUI\\Icons\\BladeIconsServiceProvider',
     ),
   ),
+  'laravel-notification-channels/twilio' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'NotificationChannels\\Twilio\\TwilioProvider',
+    ),
+  ),
   'laravel/fortify' => 
   array (
     'providers' => 

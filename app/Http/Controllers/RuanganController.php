@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Log;
 
 class RuanganController extends Controller
 {
-
     public function index(Request $request)
     {
         $query = Ruangan::with('status', 'lokasi');
@@ -31,10 +30,8 @@ class RuanganController extends Controller
         $statuses = Status::all();
         $proyektors = Proyektor::with('status')->latest()->paginate(9);
 
-                        return view('sarpras.index', compact('ruangans', 'statuses', 'proyektors'));
+                        return view('admin.sarpras.index', compact('ruangans', 'statuses', 'proyektors'));
     }
-
-
 
 
     public function tambah_ruangan()
@@ -49,7 +46,7 @@ class RuanganController extends Controller
 
         $defaultStatusId = $defaultStatus->id_status;
 
-                return view('admin.sarpras.ruangan.tambah_ruangan', compact('statuses', 'lokasiList', 'defaultStatusId'));
+        return view('admin.sarpras.ruangan.tambah_ruangan', compact('statuses', 'lokasiList', 'defaultStatusId'));
     }
 
     public function store(Request $request)
@@ -78,7 +75,7 @@ class RuanganController extends Controller
 
         Ruangan::create($validated);
 
-                return redirect()->route('sarpras.index')
+                return redirect()->route('admin.sarpras.index')
             ->with('success', 'Ruangan berhasil ditambahkan.');
     }
 
@@ -123,7 +120,7 @@ class RuanganController extends Controller
 
         try {
             $ruangan->update($validated);
-            return redirect()->route('admin.sarpras.ruangan.lihat_ruangan', ['ruangan' => $ruangan->id_ruangan])->with('success', 'Ruangan berhasil diperbarui.');
+            return redirect()->route('admin.sarpras.index')->with('success', 'Ruangan berhasil diperbarui.');
         } catch (\Exception $e) {
             Log::error('Gagal memperbarui Ruangan: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal memperbarui Ruangan: ' . $e->getMessage())->withInput();

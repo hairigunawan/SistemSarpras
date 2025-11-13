@@ -16,9 +16,15 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!Auth::check() || !in_array(Auth::user()->userRole->nama_role, $roles)) {
+        if (!Auth::check()) {
             abort(403, 'ANDA TIDAK MEMILIKI AKSES.');
         }
+        
+        $user = Auth::user();
+        if (!$user || !$user->userRole || !in_array($user->userRole->nama_role, $roles)) {
+            abort(403, 'ANDA TIDAK MEMILIKI AKSES.');
+        }
+        
         return $next($request);
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Helpers\PeminjamanHelper;
 
 class PeminjamanController extends Controller
 {
@@ -23,17 +24,17 @@ class PeminjamanController extends Controller
             $query->where('status_peminjaman', $status);
         }
 
-        if ($request->has('search') && $request->search) {
+        if ($request->has('search') && $request->input('search')) {
             $query->where(function ($q) use ($request) {
                 $q->whereHas('ruangan', function ($qr) use ($request) {
-                    $qr->where('nama_ruangan', 'like', "%{$request->search}%");
+                    $qr->where('nama_ruangan', 'like', "%{$request->input('search')}%");
                 })->orWhereHas('proyektor', function ($qp) use ($request) {
-                    $qp->where('nama_proyektor', 'like', "%{$request->search}%");
+                    $qp->where('nama_proyektor', 'like', "%{$request->input('search')}%");
                 });
             });
         }
 
-        $role = Auth::user()->userRole->nama_role ?? '';
+        $role = optional(Auth::user()->userRole)->nama_role ?? '';
 
         $peminjaman = $query->latest()->get();
         return view('admin.peminjaman.index', compact('peminjaman', 'role', 'status'));
@@ -41,7 +42,7 @@ class PeminjamanController extends Controller
 
     public function lihat_peminjaman($id)
     {
-        $mainPeminjaman = Peminjaman::with(['ruangan', 'proyektor', 'user'])->findOrFail($id);
+        $mainPeminjaman = Peminjaman::with(['ruangan', 'proyektor', 'user', 'lokasi'])->findOrFail($id);
 
         $conflictingPeminjaman = Peminjaman::where(function ($query) use ($mainPeminjaman) {
             if ($mainPeminjaman->id_ruangan) {
@@ -124,7 +125,7 @@ class PeminjamanController extends Controller
             'jam_selesai' => $validatedData['jam_selesai'],
             'jumlah_peserta' => $validatedData['jumlah_peserta'],
             'jenis_kegiatan' => $validatedData['jenis_kegiatan'],
-            'nama_peminjam' => Auth::user()->nama,
+            'nama_peminjam' => Auth::user()->name,
             'email_peminjam' => Auth::user()->email,
             'nomor_whatsapp' => $validatedData['nomor_whatsapp'],
             'status_peminjaman' => 'Menunggu',
@@ -133,96 +134,14 @@ class PeminjamanController extends Controller
         return redirect()->route('admin.peminjaman.index')->with('success', 'Pengajuan peminjaman berhasil dikirim. Silakan tunggu konfirmasi dari admin.');
     }
 
-    public function approve($id)
-{
-    // Ambil data peminjaman yang akan disetujui
-    $approvedPeminjaman = Peminjaman::findOrFail($id);
-    $approvedPeminjaman->status_peminjaman = 'Disetujui';
-    $approvedPeminjaman->alasan_penolakan = null;
-    $approvedPeminjaman->save();
 
-    $isRuangan = $approvedPeminjaman->id_ruangan !== null;
-
-    $conflictingPeminjaman = Peminjaman::where('id_peminjaman', '!=', $id)
-        ->whereIn('status_peminjaman', ['Menunggu', 'Disetujui'])
-        ->where(function ($query) use ($approvedPeminjaman, $isRuangan) {
-            if ($isRuangan) {
-                $query->where('id_ruangan', $approvedPeminjaman->id_ruangan);
-            } else {
-                $query->where('id_proyektor', $approvedPeminjaman->id_proyektor);
-            }
-        })
-        ->where(function ($query) use ($approvedPeminjaman) {
-            // 🔹 Logika bentrok waktu
-            $query->where('tanggal_pinjam', '<=', $approvedPeminjaman->tanggal_kembali)
-                  ->where('tanggal_kembali', '>=', $approvedPeminjaman->tanggal_pinjam)
-                  ->where('jam_mulai', '<', $approvedPeminjaman->jam_selesai)
-                  ->where('jam_selesai', '>', $approvedPeminjaman->jam_mulai);
-        })
-        ->get();
-
-    // 🔹 Tolak semua peminjaman lain yang bentrok (hanya yang sama jenisnya)
-    foreach ($conflictingPeminjaman as $conflict) {
-        $conflict->update([
-            'status_peminjaman' => 'Ditolak',
-            'alasan_penolakan' => 'Jadwal bentrok dengan peminjaman lain yang telah disetujui.',
-        ]);
-    }
-
-    return redirect()->back()->with('success', 'Peminjaman berhasil disetujui.');
-}
-
-
-    public function reject(Request $request, $id)
-    {
-        $request->validate([
-            'alasan_penolakan' => 'required|string|max:500',
-        ]);
-
-        $peminjaman = Peminjaman::findOrFail($id);
-        $peminjaman->status_peminjaman = 'Ditolak';
-        $peminjaman->alasan_penolakan = $request->alasan_penolakan;
-        $peminjaman->save();
-
-        return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil ditolak.');
-    }
-
-    public function complete($id)
-    {
-        $peminjaman = Peminjaman::findOrFail($id);
-        $peminjaman->update(['status_peminjaman' => 'Selesai']);
-
-        $sarprasId = $peminjaman->id_ruangan ?? $peminjaman->id_proyektor;
-        $isRuangan = $peminjaman->id_ruangan !== null;
-                $idStatusTersedia = Status::firstOrCreate(['nama_status' => 'Tersedia'])->id_status;
-
-        if ($isRuangan) {
-            Ruangan::where('id_ruangan', $sarprasId)->update(['id_status' => $idStatusTersedia]);
-        } else {
-            Proyektor::where('id_proyektor', $sarprasId)->update(['id_status' => $idStatusTersedia]);
-        }
-
-        return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil diselesaikan.');
-    }
 
     public function riwayat()
     {
         $userId = Auth::id();
         $peminjaman = Peminjaman::where('id_akun', $userId)->with(['ruangan', 'proyektor'])->latest()->get();
-        return view('public.peminjaman.riwayat', compact('peminjaman'));
+        return view('admin.peminjaman.riwayat', compact('peminjaman'));
     }
-
-    public function create()
-    {
-        $ruanganTersedia = Ruangan::where('id_status', Status::where('nama_status', 'Tersedia')->first()->id_status)->get();
-        $proyektorTersedia = Proyektor::where('id_status', Status::where('nama_status', 'Tersedia')->first()->id_status)->get();
-
-        $selectedSarprasType = request('sarpras_type');
-        $selectedSarprasId = request('sarpras_id');
-
-        return view('public.peminjaman.create', compact('ruanganTersedia', 'proyektorTersedia', 'selectedSarprasType', 'selectedSarprasId'));
-    }
-
 
     public function approvedDates($type, $idSarpras)
     {

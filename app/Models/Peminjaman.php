@@ -15,6 +15,8 @@ class Peminjaman extends Model
         'id_akun',
         'id_ruangan',
         'id_proyektor',
+        'id_lokasi',
+        'id_status',
         'nama_peminjam',
         'email_peminjam',
         'nomor_whatsapp',
@@ -23,7 +25,6 @@ class Peminjaman extends Model
         'tanggal_kembali',
         'jam_mulai',
         'jam_selesai',
-        'status_peminjaman',
         'jenis_kegiatan',
         'alasan_penolakan',
     ];
@@ -60,5 +61,10 @@ class Peminjaman extends Model
             return $this->belongsTo(Proyektor::class, 'id_proyektor', 'id_proyektor');
         }
         return null; // Atau throw exception jika tidak ada
+    }
+
+    public function lokasi()
+    {
+        return $this->belongsTo(Lokasi::class, 'id_lokasi', 'id_lokasi');
     }
 }

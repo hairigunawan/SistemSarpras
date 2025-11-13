@@ -17,6 +17,7 @@ class Feedback extends Model
         'id_proyektor',
         'id_peminjaman',
         'isi_feedback',
+        'id_akun',
     ];
 
     public function ruangan()
@@ -32,5 +33,10 @@ class Feedback extends Model
     public function peminjaman()
     {
         return $this->belongsTo(Peminjaman::class, 'id_peminjaman', 'id_peminjaman');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_akun', 'id_akun');
     }
 }
