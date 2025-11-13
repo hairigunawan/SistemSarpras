@@ -6,18 +6,8 @@
     <title>@yield('title', 'SIMPERSITE')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <style>
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
+</head>
+<body class="bg-gray-100 text-gray-800">
         @keyframes slideOutRight {
             from {
                 transform: translateX(0);

@@ -13,6 +13,25 @@ use Illuminate\Support\Facades\Log;
 
 class RuanganController extends Controller
 {
+    public function index(Request $request)
+    {
+        $query = Ruangan::with('status', 'lokasi');
+
+        if ($request->has('nama_status') && $request->nama_status) {
+            $statusId = Status::where('nama_status', $request->nama_status)->value('id_status');
+            $query->where('id_status', $statusId);
+        }
+
+        if ($request->has('search') && $request->search) {
+            $query->where('nama_ruangan', 'like', '%' . $request->search . '%');
+        }
+
+        $ruangans = $query->latest()->paginate(9);
+        $statuses = Status::all();
+        $proyektors = Proyektor::with('status')->latest()->paginate(9);
+
+                        return view('admin.sarpras.index', compact('ruangans', 'statuses', 'proyektors'));
+    }
 
 
     public function tambah_ruangan()
@@ -56,7 +75,7 @@ class RuanganController extends Controller
 
         Ruangan::create($validated);
 
-        return redirect()->route('admin.sarpras.index')
+                return redirect()->route('admin.sarpras.index')
             ->with('success', 'Ruangan berhasil ditambahkan.');
     }
 

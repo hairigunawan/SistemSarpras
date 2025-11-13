@@ -4,211 +4,388 @@ namespace App\Http\Controllers;
 
 use App\Models\Peminjaman;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class PrioritasController extends Controller
 {
-    /**
-     * Menampilkan hasil perhitungan prioritas peminjaman ruangan.
-     */
-    public function indexRuangan()
+    // === 1️⃣ PRIORITAS PEMINJAMAN RUANGAN ===
+    public function ruangan()
     {
-        $peminjamans = Peminjaman::with(['ruangan', 'user'])
-            ->whereHas('sarpras', fn($q) => $q->where('tipe', 'Ruangan'))
-            ->get();
+        $peminjaman = Peminjaman::whereNotNull('id_ruangan')->get();
 
-        if ($peminjamans->isEmpty()) {
-            return back()->with('warning', 'Tidak ada data peminjaman ruangan untuk dihitung.');
-        }
+        // Ambil kriteria dari database dan normalisasi nama_kriteria
+        $dbKriteria = DB::table('kriteria')->get();
 
-        // Contoh matriks AHP antar kriteria
-        $A = [
-            [1,   3,   5],
-            [1 / 3, 1,   2],
-            [1 / 5, 1 / 2, 1],
-        ];
-
-        // Hitung bobot dengan AHP
-        $ahp = $this->hitungAHP($A);
-
-        // Hitung hasil SAW
-        $hasil = $this->hitungSAW($peminjamans, $ahp['weights']);
-
-        // Simpan hasil ke database
-        foreach ($hasil as $index => $item) {
-            $peminjaman = Peminjaman::find($item['id']);
-            if ($peminjaman) {
-                $peminjaman->update([
-                    'nilai_prioritas' => $item['nilai'],
-                    'peringkat' => $index + 1,
-                ]);
-            }
-        }
-
-        return view('admin.prioritas.ruangan', [
-            'hasil' => $hasil,
-            'weights' => $ahp['weights'],
-            'cr' => $ahp['cr'],
-        ]);
-    }
-    public function indexProyektor()
-    {
-        $peminjamans = Peminjaman::with(['proyektor', 'user'])
-            ->whereHas('proyektor', fn($q) => $q->where('tipe', 'proyektor'))
-            ->get();
-
-        if ($peminjamans->isEmpty()) {
-            return back()->with('warning', 'Tidak ada data peminjaman ruangan untuk dihitung.');
-        }
-
-        // Contoh matriks AHP antar kriteria
-        $A = [
-            [1,   3,   5],
-            [1 / 3, 1,   2],
-            [1 / 5, 1 / 2, 1],
-        ];
-
-        // Hitung bobot dengan AHP
-        $ahp = $this->hitungAHP($A);
-
-        // Hitung hasil SAW
-        $hasil = $this->hitungSAW($peminjamans, $ahp['weights']);
-
-        // Simpan hasil ke database
-        foreach ($hasil as $index => $item) {
-            $peminjaman = Peminjaman::find($item['id']);
-            if ($peminjaman) {
-                $peminjaman->update([
-                    'nilai_prioritas' => $item['nilai'],
-                    'peringkat' => $index + 1,
-                ]);
-            }
-        }
-
-        return view('admin.prioritas.ruangan', [
-            'hasil' => $hasil,
-            'weights' => $ahp['weights'],
-            'cr' => $ahp['cr'],
-        ]);
-    }
-
-    /**
-     * Fungsi umum untuk menghitung bobot AHP.
-     */
-    private function hitungAHP(array $matrix)
-    {
-        $n = count($matrix);
-        $col_sum = array_fill(0, $n, 0);
-
-        // Hitung total kolom
-        for ($i = 0; $i < $n; $i++) {
-            for ($j = 0; $j < $n; $j++) {
-                $col_sum[$j] += $matrix[$i][$j];
-            }
-        }
-
-        // Normalisasi dan hitung bobot
-        $norm = [];
-        for ($i = 0; $i < $n; $i++) {
-            for ($j = 0; $j < $n; $j++) {
-                $norm[$i][$j] = ($col_sum[$j] == 0) ? 0 : $matrix[$i][$j] / $col_sum[$j];
-            }
-        }
-
-        $weights = [];
-        for ($i = 0; $i < $n; $i++) {
-            $weights[$i] = array_sum($norm[$i]) / $n;
-        }
-
-        // Hitung Consistency Ratio (CR)
-        $λmax = 0;
-        for ($i = 0; $i < $n; $i++) {
-            $row_sum = 0;
-            for ($j = 0; $j < $n; $j++) {
-                $row_sum += $matrix[$i][$j] * $weights[$j];
-            }
-            $λmax += $row_sum / ($weights[$i] ?: 1);
-        }
-        $λmax /= $n;
-
-        $CI = ($n > 1) ? (($λmax - $n) / ($n - 1)) : 0;
-        $RI = [0, 0, 0.58, 0.90, 1.12, 1.24]; // Random Index
-        $CR = ($n <= 5) ? ($CI / $RI[$n]) : 0;
-
-        if ($CR > 0.1) {
-            Session::flash('warning', '⚠️ Rasio Konsistensi (CR) = ' . round($CR, 3) . ' > 0.1. Bobot kriteria mungkin tidak konsisten.');
-        }
-
-        return [
-            'weights' => $weights,
-            'cr' => round($CR, 4),
-        ];
-    }
-
-    /**
-     * Fungsi umum untuk menghitung prioritas SAW.
-     */
-    private function hitungSAW($data, $bobot)
-    {
-        // Ubah data ke array nilai numerik (misal: lama peminjaman, urgensi, dll)
-        $alternatif = [];
-        foreach ($data as $d) {
-            $alternatif[] = [
-                'id' => $d->id,
-                'nama_peminjam' => $d->user->name ?? 'Tidak diketahui',
-                'ruangan' => $d->ruangan->nama_ruangan ?? '-',
-                'kriteria' => [
-
-                    $lama_peminjaman = ($d->tanggal_kembali - $d->tanggal_pinjam) - ($d->jam_selesai - $d->jam_mulai),
-                    $lama_peminjaman ?? 1,
-                    $d->kepentingan ?? 1,
-                    $d->frekuensi ?? 1,
-                ],
+        $kriteria = [];
+        foreach ($dbKriteria as $k) {
+            $key = $this->normalizeKriteriaKey($k->nama_kriteria);
+            $kriteria[$key] = [
+                'tipe' => strtolower(trim($k->tipe))
             ];
         }
 
-        // Normalisasi (benefit criteria)
-        $transpose = [];
-        foreach ($alternatif as $alt) {
-            foreach ($alt['kriteria'] as $i => $val) {
-                $transpose[$i][] = $val;
+        if (count($kriteria) == 0) {
+            return view('admin.prioritas.ruangan', [
+                'peminjaman' => $peminjaman,
+                'pairwiseMatrix' => [],
+                'normalizedMatrix' => [],
+                'bobotAkhir' => [],
+                'cr' => 0,
+                'kriteria' => [],
+                'hasil' => [],
+                'alternatif' => [],
+            ]);
+        }
+
+        $ahp = $this->hitungBobotAHP($peminjaman, $kriteria);
+        $bobot = $ahp['bobotAkhir'];
+        $orderedKeys = $ahp['keys'] ?? array_keys($kriteria);
+
+        // Susun ulang kriteria sesuai orderedKeys agar tampilannya sinkron
+        $kriteriaOrdered = [];
+        foreach ($orderedKeys as $key) {
+            // jika kriteria dari DB tidak punya tipe (safety), beri default benefit
+            $kriteriaOrdered[$key] = $kriteria[$key] ?? ['tipe' => 'benefit'];
+        }
+
+        // sinkronisasi bobot dengan kriteria (index-safe) mengikuti orderedKeys
+        foreach ($orderedKeys as $idx => $key) {
+            $kriteriaOrdered[$key]['bobot'] = round($bobot[$idx] ?? 0, 3);
+        }
+
+        // hitung SAW menggunakan kriteria terurut
+        [$hasil, $alternatif] = $this->hitungSAW($peminjaman, $kriteriaOrdered);
+
+        return view('admin.prioritas.ruangan', [
+            'peminjaman' => $peminjaman,
+            'pairwiseMatrix' => $ahp['pairwiseMatrix'],
+            'normalizedMatrix' => $ahp['normalizedMatrix'],
+            'bobotAkhir' => $ahp['bobotAkhir'],
+            'cr' => $ahp['cr'],
+            'kriteria' => $kriteriaOrdered,
+            'hasil' => $hasil,
+            'alternatif' => $alternatif,
+        ]);
+    }
+
+    // === 2️⃣ PRIORITAS PEMINJAMAN PROYEKTOR ===
+    public function proyektor()
+    {
+        $peminjaman = Peminjaman::whereNotNull('id_proyektor')->get();
+
+        $dbKriteria = DB::table('kriteria')->get();
+
+        $kriteria = [];
+        foreach ($dbKriteria as $k) {
+            $key = $this->normalizeKriteriaKey($k->nama_kriteria);
+            $kriteria[$key] = [
+                'tipe' => strtolower(trim($k->tipe))
+            ];
+        }
+
+        if (count($kriteria) == 0) {
+            return view('admin.prioritas.proyektor', [
+                'peminjaman' => $peminjaman,
+                'pairwiseMatrix' => [],
+                'normalizedMatrix' => [],
+                'bobotAkhir' => [],
+                'cr' => 0,
+                'kriteria' => [],
+                'hasil' => [],
+                'alternatif' => [],
+            ]);
+        }
+
+        $ahp = $this->hitungBobotAHP($peminjaman, $kriteria);
+        $bobot = $ahp['bobotAkhir'];
+        $orderedKeys = $ahp['keys'] ?? array_keys($kriteria);
+
+        $kriteriaOrdered = [];
+        foreach ($orderedKeys as $key) {
+            $kriteriaOrdered[$key] = $kriteria[$key] ?? ['tipe' => 'benefit'];
+        }
+
+        foreach ($orderedKeys as $idx => $key) {
+            $kriteriaOrdered[$key]['bobot'] = round($bobot[$idx] ?? 0, 3);
+        }
+
+        [$hasil, $alternatif] = $this->hitungSAW($peminjaman, $kriteriaOrdered);
+
+        return view('admin.prioritas.proyektor', [
+            'peminjaman' => $peminjaman,
+            'pairwiseMatrix' => $ahp['pairwiseMatrix'],
+            'normalizedMatrix' => $ahp['normalizedMatrix'],
+            'bobotAkhir' => $ahp['bobotAkhir'],
+            'cr' => $ahp['cr'],
+            'kriteria' => $kriteriaOrdered,
+            'hasil' => $hasil,
+            'alternatif' => $alternatif,
+        ]);
+    }
+
+    // === 3️⃣ TAMBAH, SIMPAN, DAN HAPUS KRITERIA ===
+    public function tambahKriteria()
+    {
+        return view('kriteria.tambah_kruang');
+    }
+
+    public function storeKriteria(Request $request)
+    {
+        $validated = $request->validate([
+            'nama_kriteria' => 'required|string|max:100',
+            'tipe' => 'required|in:benefit,cost',
+        ]);
+
+        DB::table('kriteria')->insert([
+            'nama_kriteria' => $validated['nama_kriteria'],
+            'tipe' => $validated['tipe'],
+        ]);
+
+        return redirect()->route('admin.prioritas.ruangan')
+            ->with('success', 'Kriteria baru berhasil ditambahkan.');
+    }
+
+    public function deleteKriteria($nama)
+    {
+        DB::table('kriteria')->where('nama_kriteria', $nama)->delete();
+        return back()->with('success', 'Kriteria berhasil dihapus.');
+    }
+
+    // === 4️⃣ HITUNG BOBOT AHP (OTOMATIS & SESUAI EXCEL) ===
+    private function hitungBobotAHP($data, $kriteria)
+    {
+        // original keys (from provided kriteria array)
+        $origKeys = array_keys($kriteria);
+        $n = count($origKeys);
+
+        if ($n === 1) {
+            return [
+                'pairwiseMatrix' => [[1]],
+                'normalizedMatrix' => [[1]],
+                'bobotAkhir' => [1],
+                'cr' => 0,
+                'keys' => $origKeys,
+            ];
+        }
+
+        // === priority order (Excel reference). Semakin awal = semakin penting.
+        $priorityOrder = [
+            'jenis_kegiatan',
+            'jumlah_peserta',
+            'pengajuan',
+            'durasi'
+        ];
+
+        // Build orderedKeys: take those in priorityOrder first (in that order), then append any other keys
+        $orderedKeys = [];
+        foreach ($priorityOrder as $p) {
+            if (in_array($p, $origKeys)) $orderedKeys[] = $p;
+        }
+        foreach ($origKeys as $k) {
+            if (!in_array($k, $orderedKeys)) $orderedKeys[] = $k;
+        }
+
+        $keys = $orderedKeys;
+        $n = count($keys);
+
+        // build priorityRank using canonical priorityOrder positions (lower = more important)
+        $priorityRank = [];
+        foreach ($keys as $k) {
+            $pos = array_search($k, $priorityOrder);
+            if ($pos === false) $pos = count($priorityOrder); // new keys get lowest priority
+            $priorityRank[$k] = $pos;
+        }
+
+        // === build pairwise matrix (rows = keys order, cols = keys order)
+        $matrix = array_fill(0, $n, array_fill(0, $n, 1.0));
+        for ($i = 0; $i < $n; $i++) {
+            for ($j = 0; $j < $n; $j++) {
+                if ($i === $j) {
+                    $matrix[$i][$j] = 1.0;
+                    continue;
+                }
+                // diff in rank
+                $diff = abs($priorityRank[$keys[$i]] - $priorityRank[$keys[$j]]);
+                $ratio = 1 + $diff; // difference 0 ->1, diff1->2, diff2->3, etc
+
+                // If row i is higher priority (smaller rank number) than col j => row vs col = ratio (big)
+                if ($priorityRank[$keys[$i]] < $priorityRank[$keys[$j]]) {
+                    $matrix[$i][$j] = $ratio;
+                } else {
+                    $matrix[$i][$j] = 1 / $ratio;
+                }
             }
         }
 
-        $normalized = [];
-        foreach ($alternatif as $alt) {
-            $nilai = [];
-            foreach ($alt['kriteria'] as $i => $val) {
-                $max = max($transpose[$i]);
-                $nilai[$i] = ($max == 0) ? 0 : $val / $max;
-            }
-            $normalized[] = $nilai;
+        // === normalize columns ===
+        $sumKolom = array_fill(0, $n, 0.0);
+        for ($j = 0; $j < $n; $j++) {
+            for ($i = 0; $i < $n; $i++) $sumKolom[$j] += $matrix[$i][$j];
         }
 
-        // Hitung nilai akhir
+        $normal = array_fill(0, $n, array_fill(0, $n, 0.0));
+        for ($i = 0; $i < $n; $i++) {
+            for ($j = 0; $j < $n; $j++) {
+                $normal[$i][$j] = $matrix[$i][$j] / max($sumKolom[$j], 1e-9);
+            }
+        }
+
+        // === bobot = rata-rata baris ===
+        $bobot = [];
+        for ($i = 0; $i < $n; $i++) {
+            $bobot[$i] = array_sum($normal[$i]) / $n;
+        }
+
+        // normalize bobot
+        $total = array_sum($bobot);
+        if ($total <= 0) $total = 1;
+        foreach ($bobot as &$b) $b = $b / $total;
+
+        // consistency check
+        $lambdaMax = 0.0;
+        for ($i = 0; $i < $n; $i++) {
+            $temp = 0.0;
+            for ($j = 0; $j < $n; $j++) $temp += $matrix[$i][$j] * $bobot[$j];
+            $lambdaMax += ($temp / max($bobot[$i], 1e-9));
+        }
+        $lambdaMax /= $n;
+
+        $ci = ($lambdaMax - $n) / max($n - 1, 1);
+        $riList = [0, 0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45];
+        $ri = $riList[$n] ?? end($riList);
+        $cr = ($ri > 0) ? $ci / $ri : 0;
+
+        return [
+            'pairwiseMatrix' => $matrix,
+            'normalizedMatrix' => $normal,
+            'bobotAkhir' => $bobot,
+            'cr' => round($cr, 3),
+            'keys' => $keys, // ordered keys used in matrix
+        ];
+    }
+
+    // === 5️⃣ HITUNG SAW ===
+    private function hitungSAW($data, $kriteria)
+    {
+        $alternatif = [];
+
+        foreach ($data as $p) {
+            $alt = [
+                'nama' => $p->nama_peminjam ?? 'Tidak Diketahui',
+            ];
+
+            foreach ($kriteria as $key => $v) {
+                $alt[$key] = $this->nilaiSkala($p, $key);
+            }
+
+            $alternatif[] = $alt;
+        }
+
+        $maxMin = [];
+        foreach ($kriteria as $key => $val) {
+            $nilai = array_column($alternatif, $key);
+            if (empty($nilai)) {
+                $max = 1;
+                $min = 1;
+            } else {
+                $max = max($nilai);
+                $min = min($nilai);
+            }
+            $maxMin[$key] = [
+                'max' => $max,
+                'min' => $min,
+            ];
+        }
+
         $hasil = [];
-        foreach ($alternatif as $i => $alt) {
-            $nilai_akhir = 0;
-            foreach ($bobot as $j => $w) {
-                $nilai_akhir += $normalized[$i][$j] * $w;
+        foreach ($alternatif as $alt) {
+            $total = 0;
+            foreach ($kriteria as $key => $val) {
+
+                $nilaiAlt = max($alt[$key] ?? 0, 0.0001);
+                $maxVal   = max($maxMin[$key]['max'] ?? 0, 0.0001);
+                $minVal   = max($maxMin[$key]['min'] ?? 0, 0.0001);
+
+                $r = ($val['tipe'] === 'benefit')
+                    ? ($nilaiAlt / $maxVal)
+                    : ($minVal / $nilaiAlt);
+
+                $total += ($val['bobot'] ?? 0) * $r;
             }
 
             $hasil[] = [
-                'id' => $alt['id'],
-                'nama_peminjam' => $alt['nama_peminjam'],
-                'ruangan' => $alt['ruangan'],
-                'nilai' => round($nilai_akhir, 4),
+                'nama' => $alt['nama'],
+                'nilai' => round($total, 4),
             ];
         }
 
-        // Urutkan descending
-        $hasil = collect($hasil)->sortByDesc('nilai')->values()->all();
+        usort($hasil, fn($a, $b) => $b['nilai'] <=> $a['nilai']);
+        foreach ($hasil as $i => &$h) $h['ranking'] = $i + 1;
 
-        // Tambahkan peringkat
-        foreach ($hasil as $index => &$item) {
-            $item['peringkat'] = $index + 1;
+        return [$hasil, $alternatif];
+    }
+
+    // === 6️⃣ KONVERSI NILAI SKALA ===
+    private function nilaiSkala($p, $key)
+    {
+        switch ($key) {
+            case 'jenis_kegiatan':
+                $jenis = strtolower($p->jenis_kegiatan ?? '');
+                if (str_contains($jenis, 'seminar pkl')) return 5;
+                if (str_contains($jenis, 'seminar tugas akhir')) return 5;
+                if (str_contains($jenis, 'bimbingan')) return 4;
+                if (str_contains($jenis, 'praktikum')) return 3;
+                if (str_contains($jenis, 'materi')) return 3;
+                return 1;
+
+            case 'jumlah_peserta':
+                $j = $p->jumlah_peserta ?? 0;
+                if ($j > 100) return 5;
+                if ($j > 50) return 4;
+                if ($j > 25) return 3;
+                if ($j > 10) return 2;
+                return 1;
+
+            case 'durasi':
+                $durasiJam = 0;
+                if ($p->jam_mulai && $p->jam_selesai) {
+                    $durasiJam = max(1, (strtotime($p->jam_selesai) - strtotime($p->jam_mulai)) / 3600);
+                }
+                if ($durasiJam <= 2) return 5;
+                if ($durasiJam <= 4) return 4;
+                if ($durasiJam <= 6) return 3;
+                if ($durasiJam <= 8) return 2;
+                return 1;
+
+            case 'pengajuan':
+                $tanggalPinjam = strtotime($p->tanggal_pinjam);
+                $tanggalPengajuan = strtotime($p->created_at);
+                $selisihHari = max(1, ($tanggalPinjam - $tanggalPengajuan) / (3600 * 24));
+
+                if ($selisihHari >= 10) return 5;
+                if ($selisihHari >= 7) return 4;
+                if ($selisihHari >= 4) return 3;
+                if ($selisihHari >= 2) return 2;
+                return 1;
+
+            default:
+                return 3;
         }
+    }
 
-        return $hasil;
+    /**
+     * Normalisasi / mapping nama_kriteria dari DB ke key canonical that is recognized in nilaiSkala() and priorityOrder.
+     */
+    private function normalizeKriteriaKey($raw)
+    {
+        $s = strtolower(trim($raw));
+        $s_single = preg_replace('/\s+/', ' ', $s);
+
+        if (strpos($s_single, 'kegiatan') !== false) return 'jenis_kegiatan';
+        if (strpos($s_single, 'jumlah peserta') !== false || strpos($s_single, 'jumlah') !== false || strpos($s_single, 'peserta') !== false) return 'jumlah_peserta';
+        if (strpos($s_single, 'durasi') !== false) return 'durasi';
+        if (strpos($s_single, 'pengajuan') !== false || strpos($s_single, 'ajuan') !== false) return 'pengajuan';
+
+        return str_replace(' ', '_', $s_single);
     }
 }

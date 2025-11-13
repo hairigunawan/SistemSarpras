@@ -24,17 +24,17 @@ class PeminjamanController extends Controller
             $query->where('status_peminjaman', $status);
         }
 
-        if ($request->has('search') && $request->search) {
+        if ($request->has('search') && $request->input('search')) {
             $query->where(function ($q) use ($request) {
                 $q->whereHas('ruangan', function ($qr) use ($request) {
-                    $qr->where('nama_ruangan', 'like', "%{$request->search}%");
+                    $qr->where('nama_ruangan', 'like', "%{$request->input('search')}%");
                 })->orWhereHas('proyektor', function ($qp) use ($request) {
-                    $qp->where('nama_proyektor', 'like', "%{$request->search}%");
+                    $qp->where('nama_proyektor', 'like', "%{$request->input('search')}%");
                 });
             });
         }
 
-        $role = Auth::user()->userRole->nama_role ?? '';
+        $role = optional(Auth::user()->userRole)->nama_role ?? '';
 
         $peminjaman = $query->latest()->get();
         return view('admin.peminjaman.index', compact('peminjaman', 'role', 'status'));
@@ -66,121 +66,75 @@ class PeminjamanController extends Controller
         return view('admin.peminjaman.lihat_peminjaman', compact('mainPeminjaman', 'candidates'));
     }
 
-    public function reject(Request $request, $id)
+    public function store(Request $request)
     {
-        $request->validate([
-            'alasan_penolakan' => 'required|string|max:500',
+        $validatedData = $request->validate([
+            'id_ruangan' => 'nullable|exists:ruangans,id_ruangan',
+            'id_proyektor' => 'nullable|exists:proyektors,id_proyektor',
+            'tanggal_pinjam' => 'required|date|after_or_equal:today',
+            'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required|after:jam_mulai',
+            'nomor_whatsapp' => 'required|string|max:15',
+            'jumlah_peserta' => 'required|integer|min:1',
+            'jenis_kegiatan' => 'required|string|max:500',
         ]);
 
-        $peminjaman = Peminjaman::findOrFail($id);
-        $peminjaman->status_peminjaman = 'Ditolak';
-        $peminjaman->alasan_penolakan = $request->alasan_penolakan;
-        $peminjaman->save();
-
-        return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil ditolak.');
-    }
-
-    public function complete($id)
-    {
-        $peminjaman = Peminjaman::findOrFail($id);
-        $peminjaman->update(['status_peminjaman' => 'Selesai']);
-
-        // Update status sumber daya menggunakan helper
-        PeminjamanHelper::updateResourceStatus($peminjaman, 'Selesai');
-
-        return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil diselesaikan.');
-    }
-
-    public function approve($id)
-    {
-        $peminjaman = Peminjaman::findOrFail($id);
-
-        // Cek apakah peminjaman sudah disetujui atau selesai
-        if ($peminjaman->status_peminjaman === 'Disetujui' || $peminjaman->status_peminjaman === 'Selesai') {
-            return redirect()->route('admin.peminjaman.index')->with('error', 'Peminjaman tidak dapat disetujui karena status sudah: ' . $peminjaman->status_peminjaman);
+        if (empty($validatedData['id_ruangan']) && empty($validatedData['id_proyektor'])) {
+            return back()->withErrors(['id_sarpras' => 'Pilih salah satu Ruangan atau Proyektor.'])->withInput();
+        }
+        if (!empty($validatedData['id_ruangan']) && !empty($validatedData['id_proyektor'])) {
+            return back()->withErrors(['id_sarpras' => 'Hanya boleh memilih satu Ruangan atau Proyektor.'])->withInput();
         }
 
-        // Cek konflik dengan peminjaman lain YANG SUDAH DISETUJUI menggunakan helper
-        $conflictRequest = new \stdClass();
-        $conflictRequest->tanggal_pinjam = $peminjaman->tanggal_pinjam;
-        $conflictRequest->tanggal_kembali = $peminjaman->tanggal_kembali;
-        $conflictRequest->jam_mulai = $peminjaman->jam_mulai;
-        $conflictRequest->jam_selesai = $peminjaman->jam_selesai;
+        $isRuangan = !empty($validatedData['id_ruangan']);
 
-        if ($peminjaman->id_ruangan) {
-            $conflictRequest->id_ruangan = $peminjaman->id_ruangan;
-        } else {
-            $conflictRequest->id_proyektor = $peminjaman->id_proyektor;
-        }
-
-        // Cek apakah ada konflik dengan peminjaman yang sudah disetujui
-        if (PeminjamanHelper::checkConflict($conflictRequest, $peminjaman)) {
-            $conflictItems = [];
-            if ($peminjaman->id_ruangan) {
-                $conflictItems[] = 'Ruangan';
+        $isBentrok = Peminjaman::where(function ($query) use ($validatedData, $isRuangan) {
+            if ($isRuangan) {
+                $query->where('id_ruangan', $validatedData['id_ruangan']);
+            } else {
+                $query->where('id_proyektor', $validatedData['id_proyektor']);
             }
-            if ($peminjaman->id_proyektor) {
-                $conflictItems[] = 'Proyektor';
-            }
-            $bentrokMessage = implode(' dan ', $conflictItems) . ' peminjaman ditolak karena bentrok dengan peminjam yang sudah disetujui';
+        })
+            ->whereIn('status_peminjaman', ['Disetujui', 'Menunggu'])
+            ->where(function ($query) use ($validatedData) {
+                $pinjam_mulai = "{$validatedData['tanggal_pinjam']} {$validatedData['jam_mulai']}";
+                $pinjam_selesai = "{$validatedData['tanggal_kembali']} {$validatedData['jam_selesai']}";
 
-            // Tambahkan alasan penolakan ke peminjaman
-            $peminjaman->alasan_penolakan = $bentrokMessage;
-            $peminjaman->status_peminjaman = 'Ditolak';
-            $peminjaman->save();
-
-            return back()->withErrors(['bentrok' => $bentrokMessage])->withInput();
-        }
-
-        // Cari peminjaman lain dengan sumber daya yang sama yang memiliki konflik waktu
-        $conflictingPins = Peminjaman::where('id_peminjaman', '!=', $id)
-            ->where('status_peminjaman', 'Menunggu')
-            ->where(function ($query) use ($peminjaman) {
-                // Filter berdasarkan jenis sumber daya
-                if ($peminjaman->id_ruangan) {
-                    $query->where('id_ruangan', $peminjaman->id_ruangan);
-                } else {
-                    $query->where('id_proyektor', $peminjaman->id_proyektor);
-                }
-            })
-            ->where(function ($timeQuery) use ($peminjaman) {
-                // Pengecekan konflik waktu yang lebih komprehensif
-                $timeQuery->where(function ($subQuery) use ($peminjaman) {
-                    $subQuery->where('tanggal_pinjam', '<=', $peminjaman->tanggal_kembali)
-                             ->where('tanggal_kembali', '>=', $peminjaman->tanggal_pinjam)
-                             ->where('jam_mulai', '<', $peminjaman->jam_selesai)
-                             ->where('jam_selesai', '>', $peminjaman->jam_mulai);
+                $query->where(function ($q) use ($pinjam_mulai) {
+                    $q->whereRaw("CONCAT(tanggal_kembali, ' ', jam_selesai) > ?", [$pinjam_mulai]);
+                })->where(function ($q) use ($pinjam_selesai) {
+                    $q->whereRaw("CONCAT(tanggal_pinjam, ' ', jam_mulai) < ?", [$pinjam_selesai]);
                 });
             })
-            ->get();
+            ->exists();
 
-        // Jika ada peminjaman lain yang konflik, otomatis ditolak
-        if ($conflictingPins->count() > 0) {
-            foreach ($conflictingPins as $conflictingPin) {
-                $conflictingPin->status_peminjaman = 'Ditolak';
-                $conflictingPin->alasan_penolakan = 'Peminjaman ditolak karena sumber daya sudah dipinjam pada jam yang sama';
-                $conflictingPin->save();
-            }
+        if ($isBentrok) {
+            return back()->withErrors([
+                'tanggal_pinjam' => 'Jadwal yang Anda pilih bentrok dengan peminjaman lain. Silakan pilih tanggal atau jam yang berbeda.'
+            ])->withInput();
         }
 
-        // Jika tidak ada konflik, setujui peminjaman
-        $peminjaman->status_peminjaman = 'Disetujui';
-        $peminjaman->save();
+        Peminjaman::create([
+            'id_akun' => Auth::id(),
+            'id_ruangan' => $validatedData['id_ruangan'] ?? null,
+            'id_proyektor' => $validatedData['id_proyektor'] ?? null,
+            'tanggal_pinjam' => $validatedData['tanggal_pinjam'],
+            'tanggal_kembali' => $validatedData['tanggal_kembali'],
+            'jam_mulai' => $validatedData['jam_mulai'],
+            'jam_selesai' => $validatedData['jam_selesai'],
+            'jumlah_peserta' => $validatedData['jumlah_peserta'],
+            'jenis_kegiatan' => $validatedData['jenis_kegiatan'],
+            'nama_peminjam' => Auth::user()->name,
+            'email_peminjam' => Auth::user()->email,
+            'nomor_whatsapp' => $validatedData['nomor_whatsapp'],
+            'status_peminjaman' => 'Menunggu',
+        ]);
 
-        // Update status sumber daya menggunakan helper
-        PeminjamanHelper::updateResourceStatus($peminjaman, 'Disetujui');
-
-        // Otomatis menolak peminjaman yang konflik
-        $rejectedCount = PeminjamanHelper::autoRejectConflictingPeminjaman($peminjaman);
-
-        // Tambahkan informasi penolakan otomatis ke pesan sukses
-        $successMessage = 'Peminjaman berhasil disetujui.';
-        if ($rejectedCount > 0) {
-            $successMessage .= " Otomatis menolak {$rejectedCount} peminjaman yang konflik.";
-        }
-
-        return redirect()->route('admin.peminjaman.index')->with('success', $successMessage);
+        return redirect()->route('admin.peminjaman.index')->with('success', 'Pengajuan peminjaman berhasil dikirim. Silakan tunggu konfirmasi dari admin.');
     }
+
+
 
     public function riwayat()
     {

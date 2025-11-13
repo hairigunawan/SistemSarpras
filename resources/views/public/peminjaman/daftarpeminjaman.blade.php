@@ -28,7 +28,7 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">No</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Nama Peminjam</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Sarana/Prasarana</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Keperluan</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Kegiatan</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Tanggal Peminjaman</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Tanggal Pengembalian</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Jam</th>
@@ -64,7 +64,9 @@
               <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" title="{{ $item->jenis_kegiatan }}">{{ $item->jenis_kegiatan }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d M Y') }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($item->tanggal_kembali)->format('d M Y') }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $item->jam_mulai }} - {{ $item->jam_selesai }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                {{ $item->jam_mulai ?? '-' }} - {{ $item->jam_selesai ?? '-' }}
+              </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 @if($item->status_peminjaman == 'Menunggu')
                   <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
@@ -104,7 +106,6 @@
         </table>
       </div>
     </div>
-
   </div>
 </div>
 @endsection
