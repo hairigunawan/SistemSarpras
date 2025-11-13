@@ -14,10 +14,17 @@ use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\ProyektorController;
 use App\Http\Controllers\SarprasController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\PageController;
+/*
+|--------------------------------------------------------------------------
+| Rute untuk Publik (Tidak Perlu Login)
+|--------------------------------------------------------------------------
+*/
+Route::get('/', [PageController::class, 'beranda'])->name('home');
+Route::get('/tentang-kami', [PageController::class, 'tentangKami'])->name('tentang.kami');
 
 
-
-Route::get('/', [PublicController::class, 'index'])->name('public.beranda.index');
+Route::get('/public', [PublicController::class, 'index'])->name('public.beranda.index');
 
 // Form peminjaman publik
 Route::middleware(['auth'])->group(function () {
@@ -129,3 +136,6 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
         Route::delete('/{feedback}', [FeedbackController::class, 'destroy'])->name('destroy');
     });
 });
+
+
+
