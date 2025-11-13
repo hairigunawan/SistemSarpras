@@ -82,6 +82,13 @@
       0 => 'Carbon\\Laravel\\ServiceProvider',
     ),
   ),
+  'netflie/laravel-notification-whatsapp' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'NotificationChannels\\WhatsApp\\WhatsAppServiceProvider',
+    ),
+  ),
   'nunomaduro/collision' => 
   array (
     'providers' => 

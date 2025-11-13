@@ -15,14 +15,17 @@ use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\PrioritasController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\ProyektorController;
-
+use App\Http\Controllers\PageController;
 /*
 |--------------------------------------------------------------------------
 | Rute untuk Publik (Tidak Perlu Login)
 |--------------------------------------------------------------------------
 */
+Route::get('/', [PageController::class, 'beranda'])->name('home');
+Route::get('/tentang-kami', [PageController::class, 'tentangKami'])->name('tentang.kami');
 
-Route::get('/', [PublicController::class, 'index'])->name('public.beranda.index');
+
+Route::get('/public', [PublicController::class, 'index'])->name('public.beranda.index');
 
 // Form peminjaman publik
 Route::get('/peminjaman-public/create', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create');
@@ -144,3 +147,6 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
 
     Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('peminjaman.riwayat');
 });
+
+
+
