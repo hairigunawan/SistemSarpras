@@ -34,6 +34,9 @@ Route::get('/public/halaman-sarpras', [PublicController::class, 'halamansarpras'
 Route::get('public//halaman-sarpras/{type}/{id}', [PublicController::class, 'detail_sarpras'])
     ->name('public.sarana_perasarana.detail_sarpras');
 
+Route::get('/api/peminjaman/approved-dates/{type}/{idSarpras}', [PeminjamanController::class, 'approvedDates'])
+    ->name('api.peminjaman.approvedDates');
+
 
 // Autentikasi
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
@@ -49,7 +52,9 @@ Route::middleware(['auth'])->post('/logout', [LoginController::class, 'logout'])
 
 
 
-Route::middleware(['auth', 'role:Admin'])->group(function () {
+use App\Http\Middleware\CountPeminjamanHariIni;
+
+Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(function () {
 
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard.index');
 
@@ -69,10 +74,11 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
         // Peminjaman
         Route::get('/peminjaman/index', [PeminjamanController::class, 'index'])->name('admin.peminjaman.index');
         Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('admin.peminjaman.riwayat');
-        Route::get('/peminjaman/{id}', [PeminjamanController::class, 'lihat_peminjaman'])->name('admin.peminjaman.lihat_peminjaman');
-        Route::patch('/peminjaman/{id}/approve', [PeminjamanController::class, 'approve'])->name('peminjaman.approve');
-        Route::patch('/peminjaman/{id}/reject', [PeminjamanController::class, 'reject'])->name('peminjaman.reject');
-        Route::patch('/peminjaman/{id}/complete', [PeminjamanController::class, 'complete'])->name('peminjaman.complete');
+        Route::get('/peminjaman/{id_peminjaman}', [PeminjamanController::class, 'lihat_peminjaman'])->name('admin.peminjaman.lihat_peminjaman');
+        Route::get('/peminjaman/{id_peminjaman}/reject', [PeminjamanController::class, 'showRejectForm'])->name('peminjaman.reject.form');
+        Route::post('/peminjaman/{id_peminjaman}/approve', [PeminjamanController::class, 'approve'])->name('peminjaman.approve');
+        Route::post('/peminjaman/{id_peminjaman}/reject', [PeminjamanController::class, 'reject'])->name('peminjaman.reject');
+        Route::post('/peminjaman/{id_peminjaman}/complete', [PeminjamanController::class, 'complete'])->name('peminjaman.complete');
 
         // Prioritas, kriteria dan Jadwal
         Route::prefix('prioritas')->group(function () {
@@ -88,13 +94,12 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
             Route::post('/jadwal/import', [JadwalController::class, 'importStore'])->name('admin.jadwal.import.store');
             Route::get('/jadwal/export', [JadwalController::class, 'export'])->name('admin.jadwal.export');
 
-            Route::get('/kriteria/tambah', [App\Http\Controllers\PrioritasController::class, 'tambahKriteria'])
-            ->name('admin.kriteria.tambah_kruang');
-             // Simpan kriteria baru
-            Route::post('/kriteria/store', [App\Http\Controllers\PrioritasController::class, 'storeKriteria'])
-            ->name('admin.prioritas.storeKriteria');
+            Route::get('/kriteria/tambah', [PrioritasController::class, 'tambahKriteria'])
+                ->name('admin.kriteria.tambah_kruang');
+            // Simpan kriteria baru
+            Route::post('/kriteria/store', [PrioritasController::class, 'storeKriteria'])
+                ->name('admin.prioritas.storeKriteria');
             Route::delete('/prioritas/hapus-kriteria/{nama}', [PrioritasController::class, 'deleteKriteria'])->name('prioritas.hapusKriteria');
-
         });
 
         //Sarpras
@@ -141,6 +146,3 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
         Route::delete('/{feedback}', [FeedbackController::class, 'destroy'])->name('destroy');
     });
 });
-
-
-

@@ -10,9 +10,10 @@ class Laporan extends Model
     use HasFactory;
     protected $primaryKey = 'id_laporan';
     protected $fillable = [
-        'priode',
+        'periode',
         'sarpras_terbanyak',
-        'ruang_tersering',
+        'ruangan_tersering',
+        'jam_selesai',
         'file_laporan',
     ];
 

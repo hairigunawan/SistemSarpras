@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class RuanganController extends Controller
 {
@@ -37,7 +38,9 @@ class RuanganController extends Controller
     public function tambah_ruangan()
     {
         $statuses = Status::all();
-        $lokasiList = Lokasi::pluck('nama_lokasi', 'id_lokasi');
+        $lokasiList = Lokasi::select('nama_lokasi')
+            ->groupBy('nama_lokasi')
+            ->pluck('nama_lokasi');
         $defaultStatus = Status::where('nama_status', 'Tersedia')->first();
 
         if (!$defaultStatus) {

@@ -69,9 +69,6 @@ class PeminjamanHelper
      */
     public static function updateResourceStatus($peminjaman, $status)
     {
-        $sarprasId = $peminjaman->id_ruangan ?? $peminjaman->id_proyektor;
-        $isRuangan = $peminjaman->id_ruangan !== null;
-
         if ($status === 'Disetujui') {
             $namaStatus = 'Dipakai';
         } elseif ($status === 'Selesai') {
@@ -82,10 +79,14 @@ class PeminjamanHelper
 
         $idStatus = Status::where('nama_status', $namaStatus)->first()->id_status;
 
-        if ($isRuangan) {
-            Ruangan::where('id_ruangan', $sarprasId)->update(['id_status' => $idStatus]);
-        } else {
-            Proyektor::where('id_proyektor', $sarprasId)->update(['id_status' => $idStatus]);
+        // Update status ruangan jika ada
+        if ($peminjaman->id_ruangan) {
+            Ruangan::where('id_ruangan', $peminjaman->id_ruangan)->update(['id_status' => $idStatus]);
+        }
+
+        // Update status proyektor jika ada
+        if ($peminjaman->id_proyektor) {
+            Proyektor::where('id_proyektor', $peminjaman->id_proyektor)->update(['id_status' => $idStatus]);
         }
     }
 

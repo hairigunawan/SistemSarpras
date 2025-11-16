@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Tambahkan middleware global untuk cURL configuration
         $middleware->web()->append(CurlConfigMiddleware::class);
+        $middleware->web()->append(\App\Http\Middleware\CountPeminjamanHariIni::class); // Tambahkan middleware ini
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Tangani exception di sini jika perlu

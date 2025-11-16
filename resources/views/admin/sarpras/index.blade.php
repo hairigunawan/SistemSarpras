@@ -48,7 +48,7 @@
 
                     <!-- Tombol Tambah Sarpras -->
                     <button id="btn-tambah-sarpras"
-                        class="bg-[#179ACE] hover:bg-[#0F6A8F] text-white px-6 py-2.5 border border-gray-200 rounded-lg text-sm font-normal transition flex items-center gap-2">
+                        class="bg-[#179ACE] hover:bg-[#0F6A8F] text-white px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-normal transition flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -117,8 +117,8 @@
                         </div>
 
                         <div class="p-5">
-                            <h2 class="text-lg font-bold text-gray-800">{{ $item->nama_proyektor }}</h2>
-                            <p class="text-sm text-gray-500 mb-3">Merk: {{ $item->merk }}</p>
+                            <h2 class="text-lg font-bold  text-gray-800">{{ $item->nama_proyektor }}</h2>
+                            <p class="text-sm text-gray-500 mb-8">Merk: {{ $item->merk }}</p>
 
                             <div class="flex justify-between items-center mb-4">
                                 <span class="text-sm font-medium
@@ -129,7 +129,6 @@
                                 </span>
                                 <span class="text-sm text-gray-500 italic">Proyektor</span>
                             </div>
-
                             <a href="{{ route('sarpras.proyektor.lihat_proyektor', $item->id_proyektor) }}"
                                 class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-2 border border-gray-200 rounded-lg text-sm font-normal transition">
                                 Lihat Detail

@@ -13,7 +13,7 @@
             @if(request('jenis'))
                 <input type="hidden" name="nama" value="{{ request('nama') }}">
             @endif
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari sarpras..." class="w-full md:w-64 px-4 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari peminjam" class="w-full md:w-64 px-4 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300">
         </form>
     </div>
 

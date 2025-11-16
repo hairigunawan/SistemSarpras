@@ -191,7 +191,7 @@ class PublicController extends Controller
         // Menyiapkan data untuk disimpan
         $dataToSave = [
             'id_akun' => Auth::id(),
-            'lokasi_id' => $request->lokasi_id,
+            'id_lokasi' => $request->lokasi_id,
             'tanggal_pinjam' => $request->tanggal_pinjam,
             'tanggal_kembali' => $request->tanggal_kembali,
             'jam_mulai' => $request->jam_mulai,

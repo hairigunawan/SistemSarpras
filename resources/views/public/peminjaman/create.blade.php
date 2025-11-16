@@ -110,6 +110,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
                                     Pilih Sarana/Prasarana
                                 </label>
+                                <p class="text-sm text-gray-500 mb-3">Anda dapat memilih ruangan, proyektor, atau keduanya sekaligus.</p>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label for="id_ruangan" class="block text-sm font-medium text-gray-700 mb-2">
@@ -150,9 +151,14 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div id="selected-sarpras-info" class="mt-3 p-3 bg-blue-50 rounded-lg hidden">
+                                    <p class="text-sm text-blue-800">
+                                        <strong>Sarpras yang dipilih:</strong> <span id="sarpras-list"></span>
+                                    </p>
+                                </div>
                             </div>
 
-                        
+
                             <div>
                                 <label for="jumlah_peserta" class="block text-sm font-medium text-gray-700 mb-2">
                                     Jumlah Peserta
@@ -315,7 +321,14 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const proyektorSelect = document.getElementById('id_proyektor');
+        const ruanganSelect = document.getElementById('id_ruangan');
         const lokasiProyektorContainer = document.getElementById('lokasi_proyektor_container');
+        const form = document.getElementById('peminjamanForm');
+        const selectedSarprasInfo = document.getElementById('selected-sarpras-info');
+        const sarprasList = document.getElementById('sarpras-list');
+
+        // Menyimpan state peminjaman yang sudah diajukan
+        let submittedPins = [];
 
         function toggleLokasiProyektor() {
             if (proyektorSelect.value) {
@@ -325,10 +338,97 @@
             }
         }
 
-        proyektorSelect.addEventListener('change', toggleLokasiProyektor);
+        function updateSelectedSarprasInfo() {
+            const selectedRuangan = ruanganSelect.options[ruanganSelect.selectedIndex].text;
+            const selectedProyektor = proyektorSelect.options[proyektorSelect.selectedIndex].text;
+            
+            let sarprasText = '';
+            
+            if (ruanganSelect.value && proyektorSelect.value) {
+                sarprasText = `${selectedRuangan} dan ${selectedProyektor}`;
+            } else if (ruanganSelect.value) {
+                sarprasText = selectedRuangan;
+            } else if (proyektorSelect.value) {
+                sarprasText = selectedProyektor;
+            }
+            
+            if (sarprasText) {
+                sarprasList.textContent = sarprasText;
+                selectedSarprasInfo.classList.remove('hidden');
+            } else {
+                selectedSarprasInfo.classList.add('hidden');
+            }
+        }
+
+        function checkDuplicatePeminjaman() {
+            const tanggalPinjam = document.getElementById('tanggal_pinjam').value;
+            const jamMulai = document.getElementById('jam_mulai').value;
+            const jamSelesai = document.getElementById('jam_selesai').value;
+            const selectedRuangan = ruanganSelect.value;
+            const selectedProyektor = proyektorSelect.value;
+
+            // Cek apakah sudah ada peminjaman dengan kombinasi yang sama
+            const isDuplicate = submittedPins.some(pin =>
+                pin.tanggalPinjam === tanggalPinjam &&
+                pin.jamMulai === jamMulai &&
+                pin.jamSelesai === jamSelesai &&
+                ((pin.selectedRuangan && selectedRuangan) || (pin.selectedProyektor && selectedProyektor))
+            );
+
+            if (isDuplicate) {
+                alert('Anda sudah mengajukan peminjaman untuk waktu yang sama. Silakan hapus peminjaman sebelumnya atau pilih waktu yang berbeda.');
+                return true;
+            }
+
+            return false;
+        }
+
+        function addSubmittedPin() {
+            const tanggalPinjam = document.getElementById('tanggal_pinjam').value;
+            const jamMulai = document.getElementById('jam_mulai').value;
+            const jamSelesai = document.getElementById('jam_selesai').value;
+            const selectedRuangan = ruanganSelect.value;
+            const selectedProyektor = proyektorSelect.value;
+
+            if (tanggalPinjam && jamMulai && jamSelesai && (selectedRuangan || selectedProyektor)) {
+                submittedPins.push({
+                    tanggalPinjam,
+                    jamMulai,
+                    jamSelesai,
+                    selectedRuangan,
+                    selectedProyektor
+                });
+            }
+        }
+
+        proyektorSelect.addEventListener('change', function() {
+            toggleLokasiProyektor();
+            updateSelectedSarprasInfo();
+        });
+
+        ruanganSelect.addEventListener('change', updateSelectedSarprasInfo);
+
+        // Tambahkan event listener untuk validasi sebelum submit
+        form.addEventListener('submit', function(e) {
+            // Cek apakah minimal satu sarpras dipilih
+            if (!ruanganSelect.value && !proyektorSelect.value) {
+                e.preventDefault();
+                alert('Pilih minimal satu Ruangan atau Proyektor.');
+                return;
+            }
+
+            if (checkDuplicatePeminjaman()) {
+                e.preventDefault();
+                return;
+            }
+
+            // Tambahkan peminjaman ke daftar yang sudah diajukan
+            addSubmittedPin();
+        });
 
         // Initial check on page load
         toggleLokasiProyektor();
+        updateSelectedSarprasInfo();
     });
 </script>
 @endpush

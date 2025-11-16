@@ -1,6 +1,5 @@
-<nav class="bg-white border-b border-gray-200 py-3">
+<nav class="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur border-b border-gray-200 py-3">
     <div class="flex mx-5 justify-between items-center">
-
         <div class="flex gap-2 items-center">
             <div class="flex items-center gap-2.5">
                 <img src="{{ asset('storage/images/TI.png') }}" alt="Logo TI" class="w-10 h-10 object-contain">

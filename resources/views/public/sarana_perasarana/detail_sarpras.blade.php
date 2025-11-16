@@ -125,8 +125,8 @@
                 Silakan login untuk dapat memberikan feedback.
               </p>
               <a href="{{ route('login') }}"
-                 class="inline-flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white font-semibold px-5 py-2.5 rounded-lg transition duration-200 shadow-sm">
-                <i class="fa-solid fa-right-to-bracket mr-2"></i> Login untuk Berikan Feedback
+                 class="inline-flex items-center justify-center bg-gray-600 text-sm hover:bg-gray-700 text-white font-normal px-4 py-1.5 rounded transition duration-200 shadow-sm">
+                <i class="fa-solid fa-right-to-bracket mr-2"></i>Berikan Feedback
               </a>
             @endif
 
@@ -162,4 +162,14 @@
     </div>
   </div>
 </div>
+
+<!-- Bagian Kalender -->
+<div class="max-w-6xl mx-auto px-6 lg:px-8 mt-10">
+    <div class="bg-white border border-gray-200 rounded-2xl p-8">
+        <h3 class="text-2xl font-bold text-gray-800 mb-6">Jadwal Peminjaman</h3>
+        <div id="calendar"></div>
+    </div>
+</div>
+
 @endsection
+
