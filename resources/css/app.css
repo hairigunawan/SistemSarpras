@@ -24,3 +24,30 @@ div {
 .animate-fade-in {
     animation: fade-in 0.3s ease-out;
 }
+
+/* FullCalendar styles */
+#calendar {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.fc {
+    font-family: inherit;
+}
+
+.fc-button {
+    background-color: #179ACE !important;
+    border-color: #179ACE !important;
+}
+
+.fc-button:hover {
+    background-color: #1484b3 !important;
+}
+
+.fc-button-active {
+    background-color: #1484b3 !important;
+}
+
+.fc-event {
+    cursor: pointer;
+}

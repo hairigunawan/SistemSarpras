@@ -10,9 +10,10 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
+import '@fullcalendar/core/locales/id';
+
 window.Swal = Swal;
 window.FullCalendar = { Calendar, dayGridPlugin, timeGridPlugin, interactionPlugin };
-
 
 window.Alpine = Alpine;
 Alpine.start();
