@@ -17,8 +17,8 @@
             <h1 class="text-3xl md:text-4xl font-bold mb-2">
                 Sistem Informasi Sarana dan Prasarana
             </h1>
-            <p class="text-lg opacity-90">
-                Monitor dan kelola fasilitas pendukung pembelajaran
+            <br class="text-lg opacity-90">
+                SIMPERSITE hadir sebagai solusi inovatif untuk pengelolaan peminjaman ruangandan proyektor yang digunakan<br>oleh civitas Jurusan Teknologi Informasi.</br>
             </p>
         </div>
     </div>
@@ -95,165 +95,93 @@
                 </div>
             </div>
         </div>
-
-        <!-- Jadwal Ruangan Terpakai -->
-        <div class="mb-12">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    <h2 class="text-2xl font-bold text-gray-800">Jadwal Ruangan Terpakai</h2>
-                </div>
-                @if(isset($labs) && count($labs) > 0)
-                    <span class="bg-blue-100 text-gray-600 text-sm font-medium px-3 py-1 rounded-full">
-                        {{ count($labs) }} ruangan aktif
-                    </span>
-                @endif
-            </div>
-
-            @if(isset($labs) && count($labs) > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($labs as $lab)
-                        <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
-                            <!-- Header -->
-                            <div class="bg-gradient-to-r from-red-500 to-red-600 p-4 text-white">
-                                <div class="flex items-center justify-between">
-                                    <h4 class="text-lg font-bold">{{ $lab['nama'] }}</h4>
-                                    <span class="bg-white/20 backdrop-blur px-2 py-1 text-xs rounded-full font-medium">
-                                        Terpakai
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Content -->
-                            <div class="p-5">
-                                <div class="space-y-3">
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 text-gray-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                        </svg>
-                                        <div>
-                                            <span class="text-sm text-gray-500">Kelas</span>
-                                            <p class="font-semibold text-gray-800">{{ $lab['kelas'] }}</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 text-gray-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                                        </svg>
-                                        <div>
-                                            <span class="text-sm text-gray-500">Mata Kuliah</span>
-                                            <p class="font-semibold text-gray-800">{{ $lab['matkul'] }}</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 text-gray-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <div>
-                                            <span class="text-sm text-gray-500">Waktu</span>
-                                            <p class="font-semibold text-gray-800">{{ $lab['waktu'] }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Action Button -->
-                                <div class="mt-4 pt-4 border-t border-gray-100">
-                                    <button class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-sm">
-                                        Lihat Detail
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="bg-white rounded-xl border border-gray-200 p-8 text-center">
-                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                    </svg>
-                    <h3 class="text-lg font-medium text-gray-600 mb-2">Tidak ada ruangan terpakai</h3>
-                    <p class="text-gray-400 text-sm">Semua ruangan saat ini tersedia untuk digunakan</p>
-                </div>
-            @endif
-        </div>
     </div>
 </div>
 @endsection
 
 @push('scripts')
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var fetchUrl = `/api/peminjaman/approved-dates/all/all`; // Mengambil semua peminjaman tanpa filter awal
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'id',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            events: function(fetchInfo, successCallback, failureCallback) {
-                fetch(fetchUrl)
-                    .then(response => response.json())
-                    .then(data => {
-                        var events = [];
-                        for (const date in data.approvedDetails) {
-                            data.approvedDetails[date].forEach(peminjaman => {
-                                events.push({
-                                    title: `${peminjaman.jenis_kegiatan} (${peminjaman.jam_mulai}-${peminjaman.jam_selesai})`,
-                                    start: `${peminjaman.tanggal_pinjam}T${peminjaman.jam_mulai}:00`,
-                                    end: `${peminjaman.tanggal_kembali}T${peminjaman.jam_selesai}:00`,
-                                    color: '#179ACE', // Warna untuk tanggal yang disetujui
-                                    extendedProps: {
-                                        peminjam_nama: peminjaman.peminjam_nama,
-                                        jenis_kegiatan: peminjaman.jenis_kegiatan,
-                                        jam_mulai: peminjaman.jam_mulai,
-                                        jam_selesai: peminjaman.jam_selesai,
-                                        jumlah_peserta: peminjaman.jumlah_peserta,
-                                        sarpras_id: peminjaman.id_sarpras, // Asumsi ada id_sarpras di objek peminjaman
-                                        sarpras_type: sarprasType // Menggunakan sarprasType dari scope luar
-                                    }
-                                });
-                            });
-                        }
-                        successCallback(events);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching approved dates:', error);
-                        failureCallback(error);
-                    });
-            },
-            eventClick: function(info) {
-                var sarprasId = info.event.extendedProps.sarpras_id;
-                var sarprasType = info.event.extendedProps.sarpras_type;
-                if (sarprasId && sarprasType) {
-                    window.location.href = `/sarana-prasarana/detail/${sarprasType}/${sarprasId}`;
-                } else {
-                    Swal.fire({
-                        title: info.event.title,
-                        html: `
-                            <p><strong>Peminjam:</strong> ${info.event.extendedProps.peminjam_nama}</p>
-                            <p><strong>Kegiatan:</strong> ${info.event.extendedProps.jenis_kegiatan}</p>
-                            <p><strong>Waktu:</strong> ${info.event.extendedProps.jam_mulai} - ${info.event.extendedProps.jam_selesai}</p>
-                            <p><strong>Jumlah Peserta:</strong> ${info.event.extendedProps.jumlah_peserta}</p>
-                        `,
-                        icon: 'info',
-                        confirmButtonText: 'Tutup'
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
+<script>
+// Jalankan ketika DOM siap
+document.addEventListener("DOMContentLoaded", () => {
+    const calendarEl = document.getElementById("calendar");
+    if (!calendarEl) return; // aman
+
+    const sarprasType = calendarEl.dataset.sarprasType ?? null; // jika pakai
+    const fetchUrl = `/api/peminjaman/approved-dates/all/all`;
+
+    const calendar = new Calendar(calendarEl, {
+        plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+        initialView: "dayGridMonth",
+        locale: "id",
+        headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+        },
+
+        events: async (info, success, failure) => {
+            try {
+                const res = await fetch(fetchUrl);
+                const data = await res.json();
+
+                const events = [];
+
+                for (const date in data.approvedDetails) {
+                    data.approvedDetails[date].forEach((p) => {
+                        events.push({
+                            title: `${p.jenis_kegiatan} (${p.jam_mulai}-${p.jam_selesai})`,
+                            start: `${p.tanggal_pinjam}T${p.jam_mulai}:00`,
+                            end: `${p.tanggal_kembali}T${p.jam_selesai}:00`,
+                            color: "#179ACE",
+                            extendedProps: {
+                                peminjam_nama: p.peminjam_nama,
+                                jenis_kegiatan: p.jenis_kegiatan,
+                                jam_mulai: p.jam_mulai,
+                                jam_selesai: p.jam_selesai,
+                                jumlah_peserta: p.jumlah_peserta,
+                                sarpras_id: p.id_sarpras,
+                                sarpras_type: sarprasType,
+                            },
+                        });
                     });
                 }
+
+                success(events);
+            } catch (error) {
+                console.error("Error fetching approved dates:", error);
+                failure(error);
             }
-        });
-        calendar.render();
+        },
+
+        eventClick(info) {
+            const id = info.event.extendedProps.sarpras_id;
+            const type = info.event.extendedProps.sarpras_type;
+
+            if (id && type) {
+                window.location.href = `/sarana-prasarana/detail/${type}/${id}`;
+                return;
+            }
+
+            Swal.fire({
+                title: info.event.title,
+                html: `
+                    <p><strong>Peminjam:</strong> ${info.event.extendedProps.peminjam_nama}</p>
+                    <p><strong>Kegiatan:</strong> ${info.event.extendedProps.jenis_kegiatan}</p>
+                    <p><strong>Waktu:</strong> ${info.event.extendedProps.jam_mulai} - ${info.event.extendedProps.jam_selesai}</p>
+                    <p><strong>Jumlah Peserta:</strong> ${info.event.extendedProps.jumlah_peserta}</p>
+                `,
+                icon: "info",
+                confirmButtonText: "Tutup",
+            });
+        },
     });
+
+    calendar.render();
+});
+
 </script>
 @endpush
 

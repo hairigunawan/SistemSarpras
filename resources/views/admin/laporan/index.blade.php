@@ -10,9 +10,21 @@
             <h1 class="text-2xl font-semibold text-gray-800">Laporan</h1>
             <p class="text-sm text-gray-500">Analisis dan statistik sistem</p>
         </div>
+            <!-- Filter Periode -->
+            <div class="flex items-center gap-4">
+                <label for="periode" class="text-sm font-medium text-gray-700">Filter Periode:</label>
+                <select id="periode" name="periode" onchange="updateFilters()" class="p-2 text-sm text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="perbulan" {{ $periode == 'perbulan' ? 'selected' : '' }}>Perbulan</option>
+                    <option value="persemester" {{ $periode == 'persemester' ? 'selected' : '' }}>Persemester</option>
+                </select>
+            </div>
+            <form id="filterForm" method="GET" action="{{ route('laporan.index') }}" class="hidden">
+                <input type="hidden" id="statusInput" name="status" value="">
+                <input type="hidden" id="periodeInput" name="periode" value="">
+            </form>
         <div class="flex gap-3">
             <a href="{{ route('laporan.pdf', ['periode' => $periode]) }}"
-               class="flex items-center gap-2 px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
+               class="flex items-center gap-2 px-4 py-1.5 text-white text-sm bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
                 <!-- Download Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 10.5L12 15m0 0l4.5-4.5M12 15V3" />
@@ -21,7 +33,7 @@
             </a>
 
             <a href="{{ route('laporan.excel', ['periode' => $periode]) }}"
-               class="flex items-center gap-2 px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
+               class="flex items-center gap-2 px-4 py-1.5 text-white text-sm bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
                 <!-- File Spreadsheet Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5h7.5M8.25 9h7.5M8.25 13.5h7.5M4.5 19.5h15M4.5 3h15a1.5 1.5 0 011.5 1.5v18a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 22.5v-18A1.5 1.5 0 014.5 3z" />
@@ -29,23 +41,6 @@
                 Export Excel
             </a>
         </div>
-    </div>
-
-    <!-- Filter Status & Periode -->
-    <div class="flex items-center gap-6 mb-6">
-        <!-- Filter Periode -->
-        <div class="flex items-center gap-4">
-            <label for="periode" class="text-sm font-medium text-gray-700">Filter Periode:</label>
-            <select id="periode" name="periode" onchange="updateFilters()" class="p-2 text-sm text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="perbulan" {{ $periode == 'perbulan' ? 'selected' : '' }}>Perbulan</option>
-                <option value="persemester" {{ $periode == 'persemester' ? 'selected' : '' }}>Persemester</option>
-            </select>
-        </div>
-
-        <form id="filterForm" method="GET" action="{{ route('laporan.index') }}" class="hidden">
-            <input type="hidden" id="statusInput" name="status" value="">
-            <input type="hidden" id="periodeInput" name="periode" value="">
-        </form>
     </div>
 
     <!-- Statistik Cards -->
@@ -107,7 +102,7 @@
                 @forelse($peminjamTeratas as $index => $peminjam)
                 <li class="flex items-center justify-between pb-2 border-b border-gray-200 last:border-b-0">
                     <div class="flex items-center gap-3">
-                        <div class="flex items-center justify-center text-white bg-gray-900 rounded-full w-7 h-7 text-sm font-bold">
+                        <div class="flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full text-sm font-bold shadow-md">
                             {{ $index + 1 }}
                         </div>
                         <div>
@@ -133,12 +128,12 @@
                 @forelse($sarprasTerpopuler as $index => $sarpras)
                 <li class="flex items-center justify-between pb-2 border-b border-gray-200 last:border-b-0">
                     <div class="flex items-center gap-3">
-                        <div class="flex items-center justify-center text-white bg-gray-900 rounded-full w-7 h-7 text-sm font-bold">
+                        <div class="flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full text-sm font-bold shadow-md">
                             {{ $index + 1 }}
                         </div>
                         <div>
                             <p class="font-semibold text-gray-800">{{ $sarpras['nama'] }}</p>
-                            <p class="text-sm text-gray-500">{{ $sarpras['lokasi'] }}</p>
+                            <p class="text-sm text-gray-500">{{ $sarpras['lokasi' ?? 'merk_'] }}</p>
                         </div>
                     </div>
                     <span class="text-sm text-gray-700">{{ $sarpras['jumlah'] }} Peminjaman</span>
@@ -155,10 +150,10 @@
     function updateFilters() {
         const status = document.getElementById('status').value;
         const periode = document.getElementById('periode').value;
-        
+
         document.getElementById('statusInput').value = status;
         document.getElementById('periodeInput').value = periode;
-        
+
         document.getElementById('filterForm').submit();
     }
 </script>

@@ -114,6 +114,7 @@
                                     alt="Tidak Ada Gambar"
                                     class="w-full h-full object-cover">
                             @endif
+
                         </div>
 
                         <div class="p-5">

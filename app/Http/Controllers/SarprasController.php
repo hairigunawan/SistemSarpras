@@ -13,7 +13,7 @@ class SarprasController extends Controller
     /**
      * Menampilkan halaman index sarpras dengan data ruangan dan proyektor.
      */
-    public function index(Request $request)
+    public function index(Request $request , $type = null, $id = null)
     {
         // Query untuk ruangan
         $ruanganQuery = Ruangan::with('status', 'lokasi');

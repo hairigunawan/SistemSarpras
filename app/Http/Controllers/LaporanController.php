@@ -142,7 +142,7 @@ class LaporanController extends Controller
                 $proyektor = Proyektor::find($item->id_proyektor);
                 return [
                     'nama' => $proyektor->nama_proyektor ?? 'N/A',
-                    'lokasi' => $proyektor->lokasi->nama_lokasi ?? 'N/A',
+                    'lokasi' => $proyektor->merk ?? 'N/A',
                     'jumlah' => $item->total,
                     'type' => 'proyektor',
                 ];

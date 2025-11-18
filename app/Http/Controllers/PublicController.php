@@ -260,7 +260,23 @@ class PublicController extends Controller
     {
         $userId = Auth::id();
         $peminjaman = Peminjaman::where('id_akun', $userId)->with(['ruangan', 'proyektor'])->latest()->get();
-        return view('public.peminjaman.daftarpeminjaman', compact('peminjaman'));
+
+        $labs = Peminjaman::with(['ruangan'])
+            ->where('status_peminjaman', 'Disetujui')
+            ->whereNotNull('id_ruangan')
+            ->latest('tanggal_pinjam')
+            ->take(3)
+            ->get()
+            ->map(function ($peminjaman) {
+                return [
+                    'nama' => $peminjaman->ruangan->nama_ruangan ?? 'N/A',
+                    'kelas' => $peminjaman->nama_peminjam ?? 'N/A',
+                    'matkul' => $peminjaman->jenis_kegiatan ?? 'N/A',
+                    'waktu' => $peminjaman->jam_mulai . ' - ' . $peminjaman->jam_selesai,
+                ];
+            })->toArray();
+
+        return view('public.peminjaman.daftarpeminjaman', compact('peminjaman', 'labs'));
     }
 
     public function halamansarpras(Request $request)

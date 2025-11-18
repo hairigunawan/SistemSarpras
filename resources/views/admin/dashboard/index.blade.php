@@ -7,20 +7,14 @@
     <!-- Kartu Statistik Utama -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <!-- Total Akun -->
-        <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+        <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-blue-100 text-sm font-medium mb-1">Total Akun</p>
                     <p class="text-3xl text-white font-bold">{{ $jumlah_akun ?? 0 }}</p>
-                    <div class="mt-2 flex items-center text-xs text-blue-100">
-                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span>Semua pengguna terdaftar</span>
-                    </div>
                 </div>
                 <div class="bg-white bg-opacity-20 p-3 rounded-lg backdrop-blur-sm">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                     </svg>
                 </div>
@@ -28,20 +22,14 @@
         </div>
 
         <!-- Total Sarpras -->
-        <div class="bg-gradient-to-br from-purple-600 to-purple-700 p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+        <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-purple-100 text-sm font-medium mb-1">Total Sarpras</p>
                     <p class="text-3xl text-white font-bold">{{ $jumlah_sarpras ?? 0 }}</p>
-                    <div class="mt-2 flex items-center text-xs text-purple-100">
-                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span>Ruangan dan Proyektor</span>
-                    </div>
                 </div>
                 <div class="bg-white bg-opacity-20 p-3 rounded-lg backdrop-blur-sm">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                     </svg>
                 </div>
@@ -50,20 +38,14 @@
 
         <!-- Peminjaman Menunggu -->
         <a href="{{ route('admin.peminjaman.index', ['status' => 'Menunggu']) }}" class="block group">
-            <div class="bg-gradient-to-br from-yellow-500 to-orange-600 p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+            <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-yellow-100 text-sm font-medium mb-1">Peminjaman Menunggu</p>
                         <p class="text-3xl text-white font-bold">{{ $peminjaman_menunggu ?? 0 }}</p>
-                        <div class="mt-2 flex items-center text-xs text-yellow-100">
-                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Perlu persetujuan</span>
-                        </div>
                     </div>
                     <div class="bg-white bg-opacity-20 p-3 rounded-lg backdrop-blur-sm group-hover:bg-opacity-30 transition-all">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
@@ -73,20 +55,14 @@
 
         <!-- Peminjaman Disetujui -->
         <a href="{{ route('admin.peminjaman.index', ['status' => 'disetujui']) }}" class="block group">
-            <div class="bg-gradient-to-br from-green-500 to-green-600 p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+            <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-green-100 text-sm font-medium mb-1">Peminjaman Disetujui</p>
                         <p class="text-3xl text-white font-bold">{{ $peminjaman_disetujui ?? 0 }}</p>
-                        <div class="mt-2 flex items-center text-xs text-green-100">
-                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Aktif saat ini</span>
-                        </div>
                     </div>
                     <div class="bg-white bg-opacity-20 p-3 rounded-lg backdrop-blur-sm group-hover:bg-opacity-30 transition-all">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
@@ -96,7 +72,7 @@
     </div>
 
     <!-- Grafik Statistik Peminjaman dengan Opsi Periode -->
-    <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-lg">
+    <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
                 <h3 class="text-xl font-semibold text-gray-800 mb-2">Statistik Peminjaman</h3>
@@ -105,29 +81,18 @@
 
             <!-- Periode Toggle Buttons -->
             <div class="flex gap-2 flex-wrap">
-                <a href="{{ route('admin.dashboard', ['periode' => 'minggu']) }}" 
+                <a href="{{ route('admin.dashboard', ['periode' => 'minggu']) }}"
                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 {{ $periode === 'minggu' ? 'bg-blue-500 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     Minggu Ini
                 </a>
-                <a href="{{ route('admin.dashboard', ['periode' => 'bulan']) }}" 
+                <a href="{{ route('admin.dashboard', ['periode' => 'bulan']) }}"
                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 {{ $periode === 'bulan' ? 'bg-blue-500 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     Bulan Ini
                 </a>
-                <a href="{{ route('admin.dashboard', ['periode' => 'semester']) }}" 
+                <a href="{{ route('admin.dashboard', ['periode' => 'semester']) }}"
                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 {{ $periode === 'semester' ? 'bg-blue-500 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     Semester Ini
                 </a>
-            </div>
-        </div>
-
-        <div class="flex justify-end mb-4 gap-2">
-            <div class="flex items-center gap-2">
-                <div class="w-4 h-4 bg-blue-500 rounded"></div>
-                <span class="text-sm text-gray-600">Ruangan</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="w-4 h-4 bg-green-500 rounded"></div>
-                <span class="text-sm text-gray-600">Proyektor</span>
             </div>
         </div>
 
@@ -140,16 +105,16 @@
     <!-- Row untuk Top Sarpras dan Top Peminjam -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Top Sarpras Terpopuler -->
-        <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-lg">
+        <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
             <div class="mb-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Sarpras Terpopuler</h3>
                 <p class="text-sm text-gray-500">Top 3 berdasarkan periode: <span class="font-medium text-gray-700">
                     @if($periode === 'minggu')
-                        Minggu Ini
+                        <p class="text-sm text-gray-500">{{ $periodeLabel ?? 'Data Statistik' }}</p>
                     @elseif($periode === 'bulan')
-                        Bulan Ini
+                        <p class="text-sm text-gray-500">{{ $periodeLabel ?? 'Data Statistik' }}</p>
                     @else
-                        Semester Ini
+                        <p class="text-sm text-gray-500">{{ $periodeLabel ?? 'Data Statistik' }}</p>
                     @endif
                 </span></p>
             </div>
@@ -157,9 +122,6 @@
             <!-- Ruangan -->
             <div class="mb-6">
                 <h4 class="font-medium text-gray-700 mb-4 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                    </svg>
                     Ruangan
                 </h4>
                 <div class="space-y-3">
@@ -194,26 +156,23 @@
             <!-- Proyektor -->
             <div>
                 <h4 class="font-medium text-gray-700 mb-4 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                    </svg>
                     Proyektor
                 </h4>
                 <div class="space-y-3">
                     @forelse($topSarpras['proyektor'] ?? [] as $index => $proyektor)
-                        <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                             <div class="flex items-center gap-3">
-                                <span class="flex items-center justify-center w-8 h-8 bg-purple-500 text-white rounded-full text-sm font-bold shadow-md">
+                                <span class="flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full text-sm font-bold shadow-md">
                                     {{ $index + 1 }}
                                 </span>
                                 <div>
                                     <span class="text-gray-700 font-medium">{{ $proyektor['nama'] }}</span>
-                                    <div class="w-full bg-purple-200 rounded-full h-2 mt-1">
-                                        <div class="bg-purple-500 h-2 rounded-full" style="width: {{ $proyektor['jumlah'] * 20 }}%"></div>
+                                    <div class="w-full bg-blue-200 rounded-full h-2 mt-1">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: {{ $proyektor['jumlah'] * 20 }}%"></div>
                                     </div>
                                 </div>
                             </div>
-                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
+                            <span class="bg-blue-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
                                 {{ $proyektor['jumlah'] }} x
                             </span>
                         </div>
@@ -230,7 +189,7 @@
         </div>
 
         <!-- Top Peminjam -->
-        <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-lg">
+        <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
             <div class="mb-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Top Peminjam</h3>
                 <p class="text-sm text-gray-500">3 peminjam terbanyak berdasarkan periode: <span class="font-medium text-gray-700">
@@ -287,7 +246,7 @@
     </div>
 
     <!-- Kartu Aksi Cepat -->
-    <div class="bg-gradient-to-br from-gray-700 to-gray-800 p-6 rounded-xl shadow-lg">
+    <div class="bg-gradient-to-tl from-blue-600 to-blue-700 p-6 rounded-xl shadow-lg">
         <h3 class="text-lg font-medium text-white mb-6 flex items-center">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -314,7 +273,7 @@
             <a href="{{ route('sarpras.proyektor.tambah_proyektor') }}" class="group">
                 <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-purple-200 group-hover:transform group-hover:scale-105">
                     <div class="flex flex-col items-center text-center">
-                        <div class="bg-purple-100 p-4 rounded-full group-hover:bg-purple-200 transition-colors mb-4">
+                        <div class="bg-blue-100 p-4 rounded-full group-hover:bg-blue-200 transition-colors mb-4">
                             <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg>
@@ -364,7 +323,7 @@
 <script>
     // Data untuk chart peminjaman
     const chartData = @json($chartData ?? []);
-    
+
     // Extract data untuk Chart.js
     const labels = chartData.map(item => item.label);
     const ruanganData = chartData.map(item => item.ruangan);

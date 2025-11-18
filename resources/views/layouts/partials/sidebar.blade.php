@@ -111,8 +111,16 @@
                 </li>
         </nav>
     </div>
-
-    <div class="text-xs text-gray-400">
-        <p>© 2025 SIMPERSITE</p>
+    <div class="grid text-xs text-gray-700 gap-y-3">
+        <form method="POST" action="{{ route('logout') }}">
+        @csrf
+            <button type="submit"
+            class="flex w-full items-center px-4 rounded-xl py-2 text-sm hover:border hover:border-gray-300 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                </svg>Logout
+            </button>
+        </form>
+        <p class="text-gray-500">© 2025 SIMPERSITE</p>
     </div>
 </aside>
