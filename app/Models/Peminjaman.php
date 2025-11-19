@@ -25,6 +25,7 @@ class Peminjaman extends Model
         'tanggal_kembali',
         'jam_mulai',
         'jam_selesai',
+        'status_peminjaman',
         'jenis_kegiatan',
         'alasan_penolakan',
     ];

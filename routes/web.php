@@ -67,12 +67,22 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
         Route::resource('akun', AkunController::class)->names('admin.akun');
 
         // Peminjaman
-        Route::get('/peminjaman/index', [PeminjamanController::class, 'index'])->name('admin.peminjaman.index');
+
+        Route::get('/peminjaman', [PeminjamanController::class, 'index'])->name('admin.peminjaman.index');
         Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('admin.peminjaman.riwayat');
-        Route::get('/peminjaman/{id}', [PeminjamanController::class, 'lihat_peminjaman'])->name('admin.peminjaman.lihat_peminjaman');
-        Route::patch('/peminjaman/{id}/approve', [PeminjamanController::class, 'approve'])->name('peminjaman.approve');
-        Route::patch('/peminjaman/{id}/reject', [PeminjamanController::class, 'reject'])->name('peminjaman.reject');
-        Route::patch('/peminjaman/{id}/complete', [PeminjamanController::class, 'complete'])->name('peminjaman.complete');
+        Route::get('/peminjaman/{id}', [PeminjamanController::class, 'lihat_peminjaman'])
+            ->name('admin.peminjaman.lihat_peminjaman');
+
+        Route::patch('/peminjaman/{id}/approve', [PeminjamanController::class, 'approve'])
+            ->name('peminjaman.approve');
+        Route::patch('/peminjaman/{id}/reject', [PeminjamanController::class, 'reject'])
+            ->name('peminjaman.reject');
+        Route::patch('/peminjaman/{id}/complete', [PeminjamanController::class, 'complete'])
+            ->name('peminjaman.complete');
+
+        /* API TANGGAL APPROVED */
+        Route::get('/peminjaman/approved/{type}/{idSarpras}', [PeminjamanController::class, 'approvedDates'])
+            ->name('admin.peminjaman.approved');
 
         // Prioritas, kriteria dan Jadwal
         Route::prefix('prioritas')->group(function () {
@@ -95,6 +105,8 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
             ->name('admin.prioritas.storeKriteria');
             Route::delete('/prioritas/hapus-kriteria/{nama}', [PrioritasController::class, 'deleteKriteria'])->name('prioritas.hapusKriteria');
 
+
+            
         });
 
         //Sarpras
@@ -140,6 +152,14 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
         Route::post('/store', [FeedbackController::class, 'store'])->name('store');
         Route::delete('/{feedback}', [FeedbackController::class, 'destroy'])->name('destroy');
     });
+    
+    // test wa
+    Route::get('/test-wa', function () {
+    return \App\Services\FonnteService::sendMessage(
+        '6285878335598',    // nomor kamu sendiri
+        'Test WA dari Laravel - Berhasil! 🎉'
+    );
+});
 });
 
 
