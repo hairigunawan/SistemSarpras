@@ -3,22 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Peminjaman;
+use Illuminate\Http\Request;
 use App\Models\Ruangan;
 use App\Models\Proyektor;
-use App\Models\Status;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Helpers\PeminjamanHelper;
+use App\Services\FonnteService;
 
 class PeminjamanController extends Controller
 {
-    // ... (Fungsi index, show, dan lainnya tetap sama) ...
 
     public function index(Request $request)
     {
         $status = $request->get('status', 'all');
+
         $query = Peminjaman::with(['user', 'ruangan', 'proyektor']);
 
         if ($status !== 'all') {
@@ -35,18 +35,21 @@ class PeminjamanController extends Controller
                 })->orWhereHas('user', function ($qu) use ($search) {
                     $qu->where('nama', 'like', "%{$search}%");
                 })->orWhere('nama_peminjam', 'like', "%{$search}%");
+
             });
         }
 
         $role = optional(Auth::user()->userRole)->nama_role ?? '';
-
         $peminjaman = $query->latest()->get();
+
         return view('admin.peminjaman.index', compact('peminjaman', 'role', 'status'));
     }
 
+
     public function lihat_peminjaman($id)
     {
-        $mainPeminjaman = Peminjaman::with(['ruangan', 'proyektor', 'user', 'lokasi'])->findOrFail($id);
+        $mainPeminjaman = Peminjaman::with(['ruangan', 'proyektor', 'user'])
+            ->findOrFail($id);
 
         // Ambil semua peminjaman yang konflik (termasuk yang sudah disetujui)
         $conflictingPeminjaman = Peminjaman::where(function ($query) use ($mainPeminjaman) {
@@ -62,125 +65,97 @@ class PeminjamanController extends Controller
                 $query->where('tanggal_kembali', '>=', $mainPeminjaman->tanggal_pinjam);
                 $query->where('jam_mulai', '<', $mainPeminjaman->jam_selesai);
                 $query->where('jam_selesai', '>', $mainPeminjaman->jam_mulai);
+
             })
             ->with(['ruangan', 'proyektor', 'user', 'lokasi'])
             ->get();
 
         $candidates = collect([$mainPeminjaman])->merge($conflictingPeminjaman);
 
-        return view('admin.peminjaman.lihat_peminjaman', compact('mainPeminjaman', 'candidates'));
+
+        return view('admin.peminjaman.lihat_peminjaman', [
+            'mainPeminjaman' => $mainPeminjaman,
+            'rankedPeminjaman' => $conflictingPeminjaman
+        ]);
     }
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'id_ruangan' => 'nullable|exists:ruangans,id_ruangan',
-            'id_proyektor' => 'nullable|exists:proyektors,id_proyektor',
-            'tanggal_pinjam' => 'required|date|after_or_equal:today',
-            'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
-            'jam_mulai' => 'required',
-            'jam_selesai' => 'required|after:jam_mulai',
-            'nomor_whatsapp' => 'required|string|max:15',
-            'jumlah_peserta' => 'required|integer|min:1',
-            'jenis_kegiatan' => 'required|string|max:500',
+        $validated = $request->validate([
+            'id_ruangan'       => 'nullable|exists:ruangans,id_ruangan',
+            'id_proyektor'     => 'nullable|exists:proyektors,id_proyektor',
+            'tanggal_pinjam'   => 'required|date|after_or_equal:today',
+            'tanggal_kembali'  => 'required|date|after_or_equal:tanggal_pinjam',
+            'jam_mulai'        => 'required|date_format:H:i',
+            'jam_selesai'      => 'required|date_format:H:i|after:jam_mulai',
+            'nomor_whatsapp'   => 'required|string|max:20',
+            'jumlah_peserta'   => 'required|integer|min:1',
+            'jenis_kegiatan'   => 'required|string|max:500',
         ]);
 
-        if (empty($validatedData['id_ruangan']) && empty($validatedData['id_proyektor'])) {
-            return back()->withErrors(['id_sarpras' => 'Pilih minimal satu Ruangan atau Proyektor.'])->withInput();
+
+        // Ubah 08 → 628 (WAJIB)
+        $validated['nomor_whatsapp'] = preg_replace('/^0/', '62', $validated['nomor_whatsapp']);
+
+        // HARUS PILIH SATU SARPRAS
+        if (empty($validated['id_ruangan']) && empty($validated['id_proyektor'])) {
+            return back()->withErrors([
+                'id_sarpras' => 'Pilih ruangan atau proyektor.'
+            ])->withInput();
         }
 
-        $isRuangan = !empty($validatedData['id_ruangan']);
+        if (!empty($validated['id_ruangan']) && !empty($validated['id_proyektor'])) {
+            return back()->withErrors([
+                'id_sarpras' => 'Hanya boleh memilih salah satu sarpras.'
+            ]);
+        }
 
-        $isBentrok = Peminjaman::where(function ($query) use ($validatedData, $isRuangan) {
-            if ($isRuangan) {
-                $query->where('id_ruangan', $validatedData['id_ruangan']);
-            } else {
-                $query->where('id_proyektor', $validatedData['id_proyektor']);
-            }
-        })
-            ->whereIn('status_peminjaman', ['Disetujui', 'Menunggu'])
-            ->where(function ($query) use ($validatedData) {
-                $pinjam_mulai = "{$validatedData['tanggal_pinjam']} {$validatedData['jam_mulai']}";
-                $pinjam_selesai = "{$validatedData['tanggal_kembali']} {$validatedData['jam_selesai']}";
+        $isRuangan = !empty($validated['id_ruangan']);
 
-                $query->where(function ($q) use ($pinjam_mulai) {
-                    $q->whereRaw("CONCAT(tanggal_kembali, ' ', jam_selesai) > ?", [$pinjam_mulai]);
-                })->where(function ($q) use ($pinjam_selesai) {
-                    $q->whereRaw("CONCAT(tanggal_pinjam, ' ', jam_mulai) < ?", [$pinjam_selesai]);
-                });
+        // CHECK BENTROK
+        $isBentrok = Peminjaman::where(function ($q) use ($validated, $isRuangan) {
+                if ($isRuangan) {
+                    $q->where('id_ruangan', $validated['id_ruangan']);
+                } else {
+                    $q->where('id_proyektor', $validated['id_proyektor']);
+                }
+            })
+            ->whereIn('status_peminjaman', ['Menunggu', 'Disetujui'])
+            ->where(function ($q) use ($validated) {
+                $start = "{$validated['tanggal_pinjam']} {$validated['jam_mulai']}";
+                $end   = "{$validated['tanggal_kembali']} {$validated['jam_selesai']}";
+                $q->whereRaw("CONCAT(tanggal_kembali,' ',jam_selesai) > ?", [$start])
+                    ->whereRaw("CONCAT(tanggal_pinjam,' ',jam_mulai) < ?", [$end]);
             })
             ->exists();
 
         if ($isBentrok) {
-            return back()->withErrors([
-                'tanggal_pinjam' => 'Jadwal yang Anda pilih bentrok dengan peminjaman lain. Silakan pilih tanggal atau jam yang berbeda.'
-            ])->withInput();
+            $this->sendWaToPeminjam(
+                $validated['nomor_whatsapp'],
+                "❌ Peminjaman Gagal\nJadwal bentrok dengan peminjaman lain."
+            );
+
+            return back()->withErrors(['tanggal' => 'Jadwal bentrok.'])->withInput();
         }
 
         Peminjaman::create([
-            'id_akun' => Auth::id(),
-            'id_ruangan' => $validatedData['id_ruangan'] ?? null,
-            'id_proyektor' => $validatedData['id_proyektor'] ?? null,
-            'tanggal_pinjam' => $validatedData['tanggal_pinjam'],
-            'tanggal_kembali' => $validatedData['tanggal_kembali'],
-            'jam_mulai' => $validatedData['jam_mulai'],
-            'jam_selesai' => $validatedData['jam_selesai'],
-            'jumlah_peserta' => $validatedData['jumlah_peserta'],
-            'jenis_kegiatan' => $validatedData['jenis_kegiatan'],
-            'nama_peminjam' => Auth::user()->name,
-            'email_peminjam' => Auth::user()->email,
-            'nomor_whatsapp' => $validatedData['nomor_whatsapp'],
+            'id_akun'         => Auth::id(),
+            'id_ruangan'      => $validated['id_ruangan'],
+            'id_proyektor'    => $validated['id_proyektor'],
+            'tanggal_pinjam'  => $validated['tanggal_pinjam'],
+            'tanggal_kembali' => $validated['tanggal_kembali'],
+            'jam_mulai'       => $validated['jam_mulai'],
+            'jam_selesai'     => $validated['jam_selesai'],
+            'jumlah_peserta'  => $validated['jumlah_peserta'],
+            'jenis_kegiatan'  => $validated['jenis_kegiatan'],
+            'nama_peminjam'   => Auth::user()->name,
+            'email_peminjam'  => Auth::user()->email,
+            'nomor_whatsapp'  => $validated['nomor_whatsapp'],
             'status_peminjaman' => 'Menunggu',
         ]);
 
-        return redirect()->route('admin.peminjaman.index')->with('success', 'Pengajuan peminjaman berhasil dikirim. Silakan tunggu konfirmasi dari admin.');
-    }
-
-
-
-    public function riwayat()
-    {
-        $userId = Auth::id();
-        $peminjaman = Peminjaman::where('id_akun', $userId)->with(['ruangan', 'proyektor'])->latest()->get();
-        return view('admin.peminjaman.riwayat', compact('peminjaman'));
-    }
-
-    public function approvedDates($type, $idSarpras)
-    {
-        $query = Peminjaman::with('user');
-
-        if ($type === 'ruangan') {
-            $query->where('id_ruangan', $idSarpras);
-        } elseif ($type === 'proyektor') {
-            $query->where('id_proyektor', $idSarpras);
-        } else if ($type !== 'all' || $idSarpras !== 'all') { // Hanya kembalikan error jika bukan 'all/all' dan bukan type yang valid
-            return response()->json(['error' => 'Invalid type or ID specified.'], 400);
-        }
-
-        $approved = $query->where('status_peminjaman', 'Disetujui')
-            ->get(['id_peminjaman', 'id_akun', 'nama_peminjam', 'tanggal_pinjam', 'tanggal_kembali', 'jam_mulai', 'jam_selesai', 'jenis_kegiatan', 'jumlah_peserta', 'id_ruangan', 'id_proyektor']) // Pastikan id_ruangan dan id_proyektor selalu diambil
-            ->map(fn($p) => [
-                'id_peminjaman' => $p->id_peminjaman,
-                'id_akun' => $p->id_akun,
-                'peminjam_nama' => $p->nama_peminjam ?? optional($p->user)->name,
-                'tanggal_pinjam' => $p->tanggal_pinjam,
-                'tanggal_kembali' => $p->tanggal_kembali,
-                'jam_mulai' => Carbon::parse($p->jam_mulai)->format('H:i'),
-                'jam_selesai' => Carbon::parse($p->jam_selesai)->format('H:i'),
-                'jenis_kegiatan' => $p->jenis_kegiatan,
-                'jumlah_peserta' => $p->jumlah_peserta,
-                'id_sarpras' => $p->id_ruangan ?? $p->id_proyektor,
-                'sarpras_type' => $p->id_ruangan ? 'ruangan' : ($p->id_proyektor ? 'proyektor' : null), // Menambahkan sarpras_type
-            ]);
-
-        $grouped = [];
-        foreach ($approved as $item) {
-            $key = $item['tanggal_pinjam'];
-            if (!isset($grouped[$key])) $grouped[$key] = [];
-            $grouped[$key][] = $item;
-        }
-
-        return response()->json(['approvedDetails' => $grouped]);
+        return redirect()->route('admin.peminjaman.index')
+            ->with('success', 'Pengajuan dikirim.');
     }
 
     public function approve(Request $request, $id)
@@ -214,6 +189,16 @@ class PeminjamanController extends Controller
 
             // Otomatis tolak peminjaman yang konflik
             PeminjamanHelper::autoRejectConflictingPeminjaman($peminjaman);
+
+            // Kirim notifikasi WhatsApp
+            $sarpras = $peminjaman->ruangan->nama_ruangan ?? $peminjaman->proyektor->nama_proyektor ?? 'Tidak Diketahui';
+            $this->sendWaToPeminjam(
+                $peminjaman->nomor_whatsapp,
+                "✅ Pengajuan Disetujui\n"
+                    . "Sarpras: $sarpras\n"
+                    . "Tanggal: {$peminjaman->tanggal_pinjam} - {$peminjaman->tanggal_kembali}\n"
+                    . "Waktu: {$peminjaman->jam_mulai} - {$peminjaman->jam_selesai}\n"
+            );
 
             // Log untuk debugging
             Log::info('Peminjaman approved', [
@@ -278,6 +263,13 @@ class PeminjamanController extends Controller
             $peminjaman->status_peminjaman = 'Ditolak';
             $peminjaman->alasan_penolakan = $validatedData['alasan_penolakan'];
             $peminjaman->save();
+
+            // Kirim notifikasi WhatsApp
+            $this->sendWaToPeminjam(
+                $peminjaman->nomor_whatsapp,
+                "❌ Pengajuan Ditolak\n"
+                    . "Alasan: {$validatedData['alasan_penolakan']}\n"
+            );
 
             // Log untuk debugging
             Log::info('Peminjaman rejected', [
@@ -344,6 +336,16 @@ class PeminjamanController extends Controller
                 PeminjamanHelper::updateResourceStatus($peminjaman, 'Selesai');
             }
 
+            // Kirim notifikasi WhatsApp
+            $sarpras = $peminjaman->ruangan->nama_ruangan ?? $peminjaman->proyektor->nama_proyektor ?? 'Tidak Diketahui';
+            $this->sendWaToPeminjam(
+                $peminjaman->nomor_whatsapp,
+                "✅ Peminjaman Selesai\n"
+                    . "Sarpras: $sarpras\n"
+                    . "Tanggal: {$peminjaman->tanggal_pinjam} - {$peminjaman->tanggal_kembali}\n"
+                    . "Waktu: {$peminjaman->jam_mulai} - {$peminjaman->jam_selesai}\n"
+            );
+
             // Log untuk debugging
             Log::info('Peminjaman completed', [
                 'id_peminjaman' => $peminjaman->id_peminjaman,
@@ -386,5 +388,30 @@ class PeminjamanController extends Controller
     {
         $peminjaman = Peminjaman::findOrFail($id_peminjaman);
         return view('admin.peminjaman.reject_form', compact('peminjaman'));
+    }
+
+    /**
+     * Mengirim notifikasi WhatsApp ke peminjam.
+     *
+     * @param string $nomor_whatsapp
+     * @param string $message
+     * @return void
+     */
+    private function sendWaToPeminjam(string $nomor_whatsapp, string $message): void
+    {
+        try {
+            FonnteService::sendMessage($nomor_whatsapp, $message);
+            Log::info('WhatsApp notification sent', [
+                'to' => $nomor_whatsapp,
+                'message' => $message
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to send WhatsApp notification', [
+                'to' => $nomor_whatsapp,
+                'message' => $message,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
     }
 }

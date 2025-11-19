@@ -70,7 +70,6 @@
                     @error('id_status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 
-
                 <!-- Gambar -->
                 <div>
                     <label for="gambar" class="block text-sm font-medium text-gray-700">Gambar</label>

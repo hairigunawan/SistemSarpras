@@ -25,9 +25,7 @@
 
 
     <div class="container mx-auto px-4 md:px-6 py-8">
-        <!-- Layout 2 Kolom: Kalender (1/4) + Konten (3/4) -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
-            <!-- Kalender Compact Modern (1/4) -->
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-smtransition-all duration-300 sticky top-4">
                     <!-- Header Kalender -->
@@ -74,7 +72,7 @@
                     <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-6 md:p-8 text-white">
                         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div class="flex items-center gap-4">
-                                <div class="hidden md:block border-l-4 border-white h-24"></div>
+                                <div class="hidden md:block border-l-2 border-white h-24"></div>
                                 <div class="text-center md:text-left">
                                     <h2 class="text-2xl md:text-3xl font-bold mb-2">Teknologi Informasi</h2>
                                     <p class="text-blue-100 text-sm mb-2">Politeknik Negeri Tanah Laut</p>
@@ -93,31 +91,31 @@
                     <!-- Quick Stats dengan Design Modern -->
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 p-4 md:p-6 bg-gradient-to-br from-gray-50 to-blue-50">
                         <div class="group bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                            <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-blue-600 to-blue-800 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
-                                {{ ($RuanganTersedia ?? 0)}}
+                            <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-gray-600 to-gray-800 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
+                                {{-- {{ ($Ruangan ?? 0)}}  masih belum --}}
                             </div>
                             <p class="text-xs md:text-sm text-gray-600 mt-1 font-medium">Total Ruangan</p>
                         </div>
                         <div class="group bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                            <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-blue-600 to-blue-800 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
+                            <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-gray-600 to-gray-800 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
                                 {{ ($ProyektorTersedia ?? 0) + ($ProyektorTerpakai ?? 0) + ($ProyektorPerbaikan ?? 0) }}
                             </div>
                             <p class="text-xs md:text-sm text-gray-600 mt-1 font-medium">Total Proyektor</p>
                         </div>
                         <div class="group bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                            <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-green-600 to-green-800 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
+                            <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-gray-600 to-gray-800 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
                                 {{ $RuanganTersedia ?? 0 }}
                             </div>
                             <p class="text-xs md:text-sm text-gray-600 mt-1 font-medium">Ruangan Tersedia</p>
                         </div>
                         <div class="group bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                            <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-green-600 to-green-800 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
+                            <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-gray-600 to-gray-800 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
                                 {{ $ProyektorTersedia ?? 0 }}
                             </div>
                             <p class="text-xs md:text-sm text-gray-600 mt-1 font-medium">Proyektor Tersedia</p>
                         </div>
                         <div class="group bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                            <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-orange-600 to-red-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
+                            <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-gray-600 to-gray-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
                                 {{ ($RuanganTerpakai ?? 0) + ($ProyektorTerpakai ?? 0) }}
                             </div>
                             <p class="text-xs md:text-sm text-gray-600 mt-1 font-medium">Terpakai</p>
@@ -128,19 +126,49 @@
         </div>
 
         <!-- Catatan Penting -->
-        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-[#179ACE] p-4 rounded-r-xl shadow-sm">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <svg class="w-5 h-5 text-[#179ACE] mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+        <div class="mt-20">
+            <div>
+                <h2 class="text-2xl font-bold text-center text-gray-700 mb-6">Informasi</h2>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mx-10">
+                <div class="bg-blue-10 p-4 rounded-lg border border-gray-300 shadow-sm">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="font-bold text-center text-gray-700 mb-1">Apa itu SIMPERSITE</h4>
+                            <p class="text-sm text-center text-gray-700">
+                                Sistem ini menampilkan data real-time ketersediaan sarana dan prasarana di Jurusan Teknologi Informasi.
+                                Untuk peminjaman atau reservasi, silakan hubungi bagian administrasi atau gunakan sistem booking online.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <div class="ml-3">
-                    <h4 class="font-bold text-blue-900 mb-1">Informasi Penting</h4>
-                    <p class="text-sm text-blue-800">
-                        Sistem ini menampilkan data real-time ketersediaan sarana dan prasarana di Jurusan Teknologi Informasi.
-                        Untuk peminjaman atau reservasi, silakan hubungi bagian administrasi atau gunakan sistem booking online.
-                    </p>
+                <div class="bg-blue-10 p-4 rounded-lg border border-gray-300 shadow-sm">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="font-bold text-center text-gray-700 mb-1">Cara Meminjam</h4>
+                            <p class="text-sm text-center text-gray-700">
+                                Sistem ini menampilkan data real-time ketersediaan sarana dan prasarana di Jurusan Teknologi Informasi.
+                                Untuk peminjaman atau reservasi, silakan hubungi bagian administrasi atau gunakan sistem booking online.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-blue-10 p-4 rounded-lg border border-gray-300 shadow-sm">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="font-bold text-center text-gray-700 mb-1">Fitur yang disediakan</h4>
+                            <p class="text-sm text-center text-gray-700">
+                                Sistem ini menampilkan data real-time ketersediaan sarana dan prasarana di Jurusan Teknologi Informasi.
+                                Untuk peminjaman atau reservasi, silakan hubungi bagian administrasi atau gunakan sistem booking online.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
