@@ -45,10 +45,14 @@ return [
     ],
 
     'whatsapp' => [
-    'token' => env('EAASuZBf54mZBMBPZB3M6HKc1bgS2KQeVCMTCJzOX0jH8qmhtJufa78UwRHJlW77NCZCaXrkEdBzUrhDXZCjSUQPAvxtKGZBCZBlWOCqyVhbOgtQkNudbpfcNjcvSz7Ar35UtKqqDQ5h5bNHI5VjXGOojik0ZBW5jZAcYxV4HkXsBVpzZBfNtcdXapLGxAGcLL64POrqZCxGP9T0QL7apb5RYKkSc80LfEeKPgSvhAhWS7CIZCY3e62XUY2ZCt3Fc2JcQZA3BHayRuxMhZAS50RXc2TW7ZAt4eu4H'),
-    'phone_id' => env('819120471293431'),
-    'api_url' => env('https://graph.facebook.com/v16.0/')
-],
+        'token' => env('WHATSAPP_TOKEN'),
+        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'api_url' => env('WHATSAPP_API_URL', 'https://graph.facebook.com/v19.0/'),
+    ],
+
+    'fonnte' => [
+        'token' => env('FONNTE_TOKEN'),
+    ],
 
 
 ];

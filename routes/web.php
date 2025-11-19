@@ -80,6 +80,8 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
 
         Route::patch('/peminjaman/{id}/approve', [PeminjamanController::class, 'approve'])
             ->name('peminjaman.approve');
+        Route::get('/peminjaman/{id}/reject/create', [PeminjamanController::class, 'showRejectForm'])
+            ->name('admin.peminjaman.reject.create');
         Route::patch('/peminjaman/{id}/reject', [PeminjamanController::class, 'reject'])
             ->name('peminjaman.reject');
         Route::patch('/peminjaman/{id}/complete', [PeminjamanController::class, 'complete'])

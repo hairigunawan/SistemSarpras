@@ -115,7 +115,7 @@
                 </div>
                 @if(isset($labs) && count($labs) > 0)
                     <span class="bg-gradient-to-r from-red-500 to-red-600 text-white text-[10px] font-medium px-5 py-1 rounded-xl">
-                        {{ count($labs) }} ruangan aktif
+                        {{ count($labs) }} ruangan Terpakai
                     </span>
                 @endif
             </div>

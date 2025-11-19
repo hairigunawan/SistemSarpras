@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    const fetchUrl = `/api/peminjaman/approved-dates/all/all`;
+    const fetchUrl = window.approvedDatesApiUrl;
     const { Calendar, dayGridPlugin, interactionPlugin } = window.FullCalendar;
 
     const calendar = new Calendar(calendarEl, {
@@ -28,9 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
         fixedWeekCount: false,
         dayMaxEvents: 2,
 
-        /* ================================
-            PEWARNAAN TANGGAL OTOMATIS
-           ================================ */
         eventDidMount(info) {
             const dateStr = info.event.startStr.split('T')[0];
 
@@ -53,9 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         },
 
-        /* ================================
-              LOAD EVENT DARI API
-           ================================ */
         events: async (info, success, failure) => {
             try {
                 const res = await fetch(fetchUrl);
@@ -67,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data.approvedDetails) {
                     for (const date in data.approvedDetails) {
                         data.approvedDetails[date].forEach((p) => {
-                            const type = p.sarpras_type || (p.id_ruangan ? 'ruangan' : 'proyektor');
+                            const type = p.sarpras_type;
 
                             events.push({
                                 title: `${p.jenis_kegiatan}`,
@@ -78,12 +72,12 @@ document.addEventListener("DOMContentLoaded", () => {
                                 color: type === "ruangan" ? "#3b82f6" : "#22c55e",
 
                                 extendedProps: {
-                                    peminjam_nama: p.peminjam_nama || p.nama_peminjam || "N/A",
+                                    peminjam_nama: p.nama_peminjam || "N/A",
                                     jenis_kegiatan: p.jenis_kegiatan,
                                     jam_mulai: p.jam_mulai,
                                     jam_selesai: p.jam_selesai,
                                     jumlah_peserta: p.jumlah_peserta,
-                                    sarpras_id: p.id_sarpras || p.id_ruangan || p.id_proyektor,
+                                    sarpras_id: p.id_sarpras,
                                     sarpras_type: type,
                                 },
                             });
@@ -98,9 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         },
 
-        /* ================================
-                 KETIKA EVENT DIKLIK
-           ================================ */
         eventClick(info) {
             const id = info.event.extendedProps.sarpras_id;
             const type = info.event.extendedProps.sarpras_type;

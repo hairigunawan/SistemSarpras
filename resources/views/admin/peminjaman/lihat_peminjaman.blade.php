@@ -47,6 +47,7 @@
                     @if ($mainPeminjaman->status_peminjaman == 'Menunggu')
                     <form action="{{ route('peminjaman.approve', $mainPeminjaman->id_peminjaman) }}" method="POST" class="inline">
                         @csrf
+                        @method('PATCH')
                         <button type="submit"
                             onclick="return confirm('Apakah Anda yakin ingin menyetujui peminjaman ini?')"
                             class="flex items-center gap-2 px-4 py-2 text-sm bg-green-100 text-green-700 font-medium rounded-lg hover:bg-green-200 transition border border-green-200">
@@ -56,7 +57,7 @@
                             <span>Setujui</span>
                         </button>
                     </form>
-                    <a href="{{ route('peminjaman.reject.form', $mainPeminjaman->id_peminjaman) }}"
+                    <a href="{{ route('admin.peminjaman.reject.create', $mainPeminjaman->id_peminjaman) }}"
                        class="flex items-center gap-2 px-4 py-2 text-sm bg-red-100 text-red-700 font-medium rounded-lg hover:bg-red-200 transition border border-red-200">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
                             <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
@@ -66,6 +67,7 @@
                 @elseif ($mainPeminjaman->status_peminjaman == 'Disetujui')
                     <form action="{{ route('peminjaman.complete', $mainPeminjaman->id_peminjaman) }}" method="POST">
                         @csrf
+                        @method('PATCH')
                         <button type="submit"
                             onclick="return confirm('Apakah Anda yakin ingin menyelesaikan peminjaman ini?')"
                             class="flex items-center gap-2 px-4 py-2 text-sm bg-indigo-100 text-indigo-700 font-medium rounded-lg hover:bg-indigo-200 transition border border-indigo-200">
@@ -109,7 +111,6 @@
             </div>
 
             <span class="px-3 py-1 rounded-full text-sm font-medium
-<<<<<<< HEAD
                 @if($mainPeminjaman->status_peminjaman == 'Menunggu')
                     bg-yellow-100 text-yellow-800
                 @elseif($mainPeminjaman->status_peminjaman == 'Disetujui')
@@ -122,16 +123,6 @@
                     bg-gray-100 text-gray-800
                 @endif">
                 {{ $mainPeminjaman->status_peminjaman == 'Menunggu' ? 'Menunggu Konfirmasi' : $mainPeminjaman->status_peminjaman }}
-=======
-                @if($mainPeminjaman->status_peminjaman=='Menunggu') bg-yellow-100 text-yellow-800
-                @elseif($mainPeminjaman->status_peminjaman=='Disetujui') bg-green-100 text-green-800
-                @elseif($mainPeminjaman->status_peminjaman=='Selesai') bg-blue-100 text-blue-800
-                @elseif($mainPeminjaman->status_peminjaman=='Ditolak') bg-red-100 text-red-800
-                @else bg-gray-100 text-gray-800 @endif">
-                {{ $mainPeminjaman->status_peminjaman == 'Menunggu'
-                    ? 'Menunggu Konfirmasi'
-                    : $mainPeminjaman->status_peminjaman }}
->>>>>>> b57eeaed03e63d04e7878bccdf1c40802deab873
             </span>
         </div>
     </div>
@@ -209,7 +200,7 @@
         </div>
     </div>
 
-<<<<<<< HEAD
+
     <!-- Peminjaman Konflik -->
     @if (!empty($candidates ?? []) && count($candidates) > 1)
     <div class="px-6 py-4 border-t border-gray-200">
@@ -236,12 +227,6 @@
                 </div>
             </div>
         </div>
-=======
-    <!-- PEMINJAMAN BENTROK -->
-    @if (!empty($rankedPeminjaman) && count($rankedPeminjaman) > 0)
-    <div class="px-6 py-4 border-t border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Peminjaman Bentrok</h3>
->>>>>>> b57eeaed03e63d04e7878bccdf1c40802deab873
 
         <div class="overflow-x-auto rounded-lg border border-gray-200">
             <table class="min-w-full divide-y divide-gray-200">
@@ -257,7 +242,7 @@
                 </thead>
 
                 <tbody class="bg-white divide-y divide-gray-200">
-<<<<<<< HEAD
+
                     @foreach ($candidates as $index => $candidate)
                         <tr class="hover:bg-gray-50 {{ $candidate->id_peminjaman == $mainPeminjaman->id_peminjaman ? 'bg-blue-50' : '' }}">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $index + 1 }}</td>
@@ -278,25 +263,10 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ \Carbon\Carbon::parse($candidate->tanggal_pinjam)->format('d M Y') }}<br>
                                 {{ $candidate->jam_mulai }} - {{ $candidate->jam_selesai }}
-=======
-                    @foreach ($rankedPeminjaman as $item)
-                        @php $p = $item['peminjaman']; @endphp
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm text-gray-500">{{ $loop->iteration }}</td>
-
-                            <td class="px-6 py-4 text-sm font-medium text-gray-900">
-                                {{ $p->nama_peminjam ?? ($p->user->name ?? 'N/A') }}
-                            </td>
-
-                            <td class="px-6 py-4 text-sm text-gray-500">
-                                {{ \Carbon\Carbon::parse($p->tanggal_pinjam)->format('d M Y') }}<br>
-                                {{ $p->jam_mulai }} - {{ $p->jam_selesai }}
->>>>>>> b57eeaed03e63d04e7878bccdf1c40802deab873
                             </td>
 
                             <td class="px-6 py-4">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-<<<<<<< HEAD
                                     @if($candidate->status_peminjaman == 'Menunggu')
                                         bg-yellow-100 text-yellow-800
                                     @elseif($candidate->status_peminjaman == 'Disetujui')
@@ -310,14 +280,6 @@
                                     @endif
                                     ">
                                     {{ $candidate->status_peminjaman == 'Menunggu' ? 'Menunggu Konfirmasi' : $candidate->status_peminjaman }}
-=======
-                                    @if($p->status_peminjaman=='Menunggu') bg-yellow-100 text-yellow-800
-                                    @elseif($p->status_peminjaman=='Disetujui') bg-green-100 text-green-800
-                                    @elseif($p->status_peminjaman=='Selesai') bg-blue-100 text-blue-800
-                                    @elseif($p->status_peminjaman=='Ditolak') bg-red-100 text-red-800
-                                    @else bg-gray-100 text-gray-800 @endif">
-                                    {{ $p->status_peminjaman }}
->>>>>>> b57eeaed03e63d04e7878bccdf1c40802deab873
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -337,8 +299,6 @@
 
 </div>
 
-<<<<<<< HEAD
-=======
 <!-- MODAL TOLAK -->
 <div id="rejectModal"
      class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity">
@@ -420,6 +380,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-
->>>>>>> b57eeaed03e63d04e7878bccdf1c40802deab873
 @endsection

@@ -68,7 +68,7 @@
 
             <!-- Informasi Jurusan (3/4) -->
             <div class="lg:col-span-2">
-                <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-md hover:shadow-sm transition-shadow duration-300">
+                <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-sm transition-shadow duration-300">
                     <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-6 md:p-8 text-white">
                         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div class="flex items-center gap-4">
@@ -92,13 +92,13 @@
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 p-4 md:p-6 bg-gradient-to-br from-gray-50 to-blue-50">
                         <div class="group bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                             <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-gray-600 to-gray-800 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
-                                {{-- {{ ($Ruangan ?? 0)}}  masih belum --}}
+                                {{ $totalRuangan }}
                             </div>
                             <p class="text-xs md:text-sm text-gray-600 mt-1 font-medium">Total Ruangan</p>
                         </div>
                         <div class="group bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                             <div class="text-2xl md:text-3xl font-bold bg-gradient-to-br from-gray-600 to-gray-800 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
-                                {{ ($ProyektorTersedia ?? 0) + ($ProyektorTerpakai ?? 0) + ($ProyektorPerbaikan ?? 0) }}
+                                {{ $totalProyektor }}
                             </div>
                             <p class="text-xs md:text-sm text-gray-600 mt-1 font-medium">Total Proyektor</p>
                         </div>
@@ -136,10 +136,9 @@
                         <div class="flex-shrink-0">
                         </div>
                         <div class="ml-3">
-                            <h4 class="font-bold text-center text-gray-700 mb-1">Apa itu SIMPERSITE</h4>
+                            <h4 class="font-bold text-center text-gray-700 mb-3">Apa itu SIMPERSITE</h4>
                             <p class="text-sm text-center text-gray-700">
-                                Sistem ini menampilkan data real-time ketersediaan sarana dan prasarana di Jurusan Teknologi Informasi.
-                                Untuk peminjaman atau reservasi, silakan hubungi bagian administrasi atau gunakan sistem booking online.
+                                SIMPERSITE (Sistem Manajemen Peminjaman Sarana dan Prasarana Terintegrasi) adalah sebuah platform digital yang dirancang untuk mengelola proses peminjaman ruangan dan proyektor secara lebih cepat, tertib, dan terorganisir. Sistem ini membantu lembaga atau sekolah dalam mendata ketersediaan sarana, mencatat jadwal penggunaan, serta memastikan setiap peminjaman dilakukan secara transparan.
                             </p>
                         </div>
                     </div>
@@ -149,10 +148,9 @@
                         <div class="flex-shrink-0">
                         </div>
                         <div class="ml-3">
-                            <h4 class="font-bold text-center text-gray-700 mb-1">Cara Meminjam</h4>
+                            <h4 class="font-bold text-center text-gray-700 mb-3">Cara Meminjam</h4>
                             <p class="text-sm text-center text-gray-700">
-                                Sistem ini menampilkan data real-time ketersediaan sarana dan prasarana di Jurusan Teknologi Informasi.
-                                Untuk peminjaman atau reservasi, silakan hubungi bagian administrasi atau gunakan sistem booking online.
+                                Proses peminjaman pada SIMPERSITE dilakukan secara sederhana dan terstruktur. Pengguna cukup melakukan login ke dalam sistem, kemudian memilih jenis sarpras yang ingin dipinjam, seperti ruangan atau proyektor. Setelah itu pengguna dapat melihat jadwal ketersediaan, mengisi formulir peminjaman, menentukan waktu penggunaan, dan mengirimkan permintaan peminjaman.
                             </p>
                         </div>
                     </div>
@@ -162,10 +160,9 @@
                         <div class="flex-shrink-0">
                         </div>
                         <div class="ml-3">
-                            <h4 class="font-bold text-center text-gray-700 mb-1">Fitur yang disediakan</h4>
+                            <h4 class="font-bold text-center text-gray-700 mb-3">Fitur yang disediakan</h4>
                             <p class="text-sm text-center text-gray-700">
-                                Sistem ini menampilkan data real-time ketersediaan sarana dan prasarana di Jurusan Teknologi Informasi.
-                                Untuk peminjaman atau reservasi, silakan hubungi bagian administrasi atau gunakan sistem booking online.
+                                SIMPERSITE menyediakan berbagai fitur yang mendukung pengelolaan sarpras secara menyeluruh. Beberapa fitur utamanya meliputi peminjaman ruangan dan proyektor, pencatatan jadwal, menampilkan status ketersediaan secara real time, serta manajemen persetujuan peminjaman oleh admin. Selain itu, sistem ini juga dilengkapi dengan fitur notifikasi, pengelolaan data lokasi dan jenis sarpras, riwayat peminjaman, serta pengelolaan umpan balik (feedback) dari pengguna untuk meningkatkan kualitas layanan.
                             </p>
                         </div>
                     </div>
@@ -177,6 +174,9 @@
 @endsection
 
 @push('scripts')
+    <script>
+        window.approvedDatesApiUrl = "{{ route('api.peminjaman.approvedDates', ['type' => 'all', 'idSarpras' => 'all']) }}";
+    </script>
     @vite(['resources/js/calender.js'])
 @endpush
 

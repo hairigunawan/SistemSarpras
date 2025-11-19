@@ -22,6 +22,8 @@ class PublicController extends Controller
      */
     public function index()
     {
+        $totalRuangan = Ruangan::count();
+        $totalProyektor = Proyektor::count();
         $idStatusTersedia = Status::where('nama_status', 'Tersedia')->first()->id_status ?? null;
         $idStatusDipinjam = Status::where('nama_status', 'Dipinjam')->first()->id_status ?? null;
         $idStatusPerbaikan = Status::where('nama_status', 'Perbaikan')->first()->id_status ?? null;
@@ -56,7 +58,9 @@ class PublicController extends Controller
             'ProyektorTersedia',
             'ProyektorTerpakai',
             'ProyektorPerbaikan',
-            'labs'
+            'labs',
+            'totalRuangan',
+            'totalProyektor',
         ));
     }
 

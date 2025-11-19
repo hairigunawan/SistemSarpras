@@ -8,7 +8,7 @@ class FonnteService
 {
     public static function sendMessage($target, $message)
     {
-        $token = env('FONNTE_TOKEN');
+        $token = config('services.fonnte.token');
 
         return Http::withHeaders([
             'Authorization' => $token

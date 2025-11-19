@@ -47,9 +47,9 @@
                     <label for="lokasi_id" class="block text-sm font-medium text-gray-700">Lokasi</label>
                     <select name="lokasi_id" id="lokasi_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                         <option value="">Pilih Lokasi</option>
-                        @foreach($lokasiList as $id => $lokasi)
-                            <option value="{{ $id }}" {{ old('lokasi_id') == $id ? 'selected' : '' }}>
-                                {{ $lokasi }}
+                        @foreach($lokasiList as $lokasiId => $lokasiNama)
+                            <option value="{{ $lokasiId }}" {{ old('lokasi_id') == $lokasiId ? 'selected' : '' }}>
+                                {{ $lokasiNama }}
                             </option>
                         @endforeach
                     </select>

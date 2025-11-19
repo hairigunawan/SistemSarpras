@@ -15,7 +15,7 @@ class WhatsappService
     {
         $this->token = config('services.whatsapp.token');
         $this->phoneNumberId = config('services.whatsapp.phone_number_id');
-        $this->apiUrl = "https://graph.facebook.com/v19.0/{$this->phoneNumberId}/messages";
+        $this->apiUrl = config('services.whatsapp.api_url') . "{$this->phoneNumberId}/messages";
     }
 
     public function sendMessage(string $to, string $message)

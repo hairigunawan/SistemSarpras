@@ -60,12 +60,16 @@
         </div>
 
         <!-- GRID SARPRAS -->
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 p-6">
+        <!-- GRID SARPRAS -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 p-4">
+
             <!-- Menampilkan data ruangan -->
             @if(isset($ruangans))
                 @foreach ($ruangans as $item)
-                    <div class="bg-white rounded-xl border hover:shadow-sm transition overflow-hidden">
-                        <div class="h-48 w-full">
+                    <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
+
+                        <!-- Gambar stabil -->
+                        <div class="w-full aspect-[4/3] overflow-hidden">
                             @if($item->gambar)
                                 <img src="{{ asset('storage/' . str_replace('public/', '', $item->gambar)) }}"
                                     alt="{{ $item->nama_ruangan }}"
@@ -77,22 +81,22 @@
                             @endif
                         </div>
 
-                        <div class="p-5">
+                        <div class="p-3">
                             <h2 class="text-lg font-bold text-gray-800">{{ $item->nama_ruangan }}</h2>
-                            <p class="text-sm text-gray-500 mb-3">{{ $item->lokasi->nama_lokasi ?? '-' }}</p>
+                            <p class="text-xs font-medium text-gray-500 mb-3">{{ $item->lokasi->nama_lokasi ?? '-' }}</p>
 
                             <div class="flex justify-between items-center mb-4">
                                 <span class="text-sm font-medium
                                     {{ $item->status->nama_status == 'Tersedia' ? 'text-green-600' :
-                                       ($item->status->nama_status == 'Dipakai' ? 'text-yellow-600' :
-                                       ($item->status->nama_status == 'Diperbaiki' ? 'text-orange-600' : 'text-red-600')) }}">
+                                    ($item->status->nama_status == 'Dipakai' ? 'text-yellow-600' :
+                                    ($item->status->nama_status == 'Diperbaiki' ? 'text-orange-600' : 'text-red-600')) }}">
                                     {{ $item->status->nama_status }}
                                 </span>
-                                <span class="text-sm text-gray-500 italic">Ruangan</span>
+                                <span class="text-sm text-gray-500">Ruangan</span>
                             </div>
 
                             <a href="{{ route('sarpras.ruangan.lihat_ruangan', $item->id_ruangan) }}"
-                                class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-2 border border-gray-200 rounded-lg text-sm font-normal transition">
+                            class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-1.5 border border-gray-200 rounded-lg text-xs font-normal transition">
                                 Lihat Detail
                             </a>
                         </div>
@@ -103,41 +107,45 @@
             <!-- Menampilkan data proyektor -->
             @if(isset($proyektors))
                 @foreach ($proyektors as $item)
-                    <div class="bg-white rounded-xl border hover:shadow-sm transition overflow-hidden">
-                        <div class="h-48 w-full">
+                    <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
+
+                        <!-- Gambar stabil -->
+                        <div class="w-full aspect-[4/3] overflow-hidden">
                             @if($item->gambar)
                                 <img src="{{ asset('storage/' . str_replace('public/', '', $item->gambar)) }}"
                                     alt="{{ $item->nama_proyektor }}"
-                                    class="w-full h-full object-cover">
+                                    class="w-full h-full object-cover border-b-2 border-gray-200">
                             @else
                                 <img src="https://via.placeholder.com/400x250?text=Tidak+Ada+Gambar"
                                     alt="Tidak Ada Gambar"
                                     class="w-full h-full object-cover">
                             @endif
-
                         </div>
 
-                        <div class="p-5">
-                            <h2 class="text-lg font-bold  text-gray-800">{{ $item->nama_proyektor }}</h2>
-                            <p class="text-sm text-gray-500 mb-8">Merk: {{ $item->merk }}</p>
+                        <div class="p-3">
+                            <h2 class="text-lg font-bold text-gray-800">{{ $item->nama_proyektor }}</h2>
+                            <p class="text-xs font-medium text-gray-500 mb-3">{{ $item->merk ?? '-' }}</p>
 
                             <div class="flex justify-between items-center mb-4">
                                 <span class="text-sm font-medium
                                     {{ $item->status->nama_status == 'Tersedia' ? 'text-green-600' :
-                                       ($item->status->nama_status == 'Dipakai' ? 'text-yellow-600' :
-                                       ($item->status->nama_status == 'Diperbaiki' ? 'text-orange-600' : 'text-red-600')) }}">
+                                    ($item->status->nama_status == 'Dipakai' ? 'text-yellow-600' :
+                                    ($item->status->nama_status == 'Diperbaiki' ? 'text-orange-600' : 'text-red-600')) }}">
                                     {{ $item->status->nama_status }}
                                 </span>
-                                <span class="text-sm text-gray-500 italic">Proyektor</span>
+                                <span class="text-sm text-gray-500">Proyektor</span>
                             </div>
-                            <a href="{{ route('sarpras.proyektor.lihat_proyektor', $item->id_proyektor) }}"
-                                class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-2 border border-gray-200 rounded-lg text-sm font-normal transition">
+
+                            <a href="{{ route('sarpras.ruangan.lihat_ruangan', $item->id_proyektor) }}"
+                            class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-1.5 border border-gray-200 rounded-lg text-xs font-normal transition">
                                 Lihat Detail
                             </a>
                         </div>
+
                     </div>
                 @endforeach
             @endif
+
         </div>
     </div>
 </div>
@@ -157,13 +165,13 @@
                 Tambah Ruangan
             </a>
             <a href="{{ route('sarpras.proyektor.tambah_proyektor') }}"
-                class="text-gray-700 py-2 rounded-lg transition border border-gray-300">
+                class="text-white py-2 rounded-lg bg-green-500 hover:bg-green-600 transition border border-gray-300">
                 Tambah Proyektor
             </a>
         </div>
 
         <button id="btn-tutup-modal"
-            class="mt-5 text-gray-500 hover:text-gray-700 text-sm font-medium">
+            class="mt-5 text-gray-500 hover:text-gray-700 px-4 py-1.5 text-sm font-medium">
             Batal
         </button>
     </div>

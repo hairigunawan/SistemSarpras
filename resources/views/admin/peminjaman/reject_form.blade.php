@@ -20,6 +20,7 @@
     <div class="px-6 py-8">
         <form action="{{ route('peminjaman.reject', $peminjaman->id_peminjaman) }}" method="POST">
             @csrf
+            @method('PATCH')
 
             <!-- Informasi Peminjaman -->
             <div class="mb-8">

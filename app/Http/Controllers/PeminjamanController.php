@@ -191,14 +191,19 @@ class PeminjamanController extends Controller
             PeminjamanHelper::autoRejectConflictingPeminjaman($peminjaman);
 
             // Kirim notifikasi WhatsApp
-            $sarpras = $peminjaman->ruangan->nama_ruangan ?? $peminjaman->proyektor->nama_proyektor ?? 'Tidak Diketahui';
-            $this->sendWaToPeminjam(
-                $peminjaman->nomor_whatsapp,
-                "✅ Pengajuan Disetujui\n"
-                    . "Sarpras: $sarpras\n"
-                    . "Tanggal: {$peminjaman->tanggal_pinjam} - {$peminjaman->tanggal_kembali}\n"
-                    . "Waktu: {$peminjaman->jam_mulai} - {$peminjaman->jam_selesai}\n"
-            );
+            $sarpras = 'Tidak Diketahui';
+            if ($peminjaman->ruangan) {
+                $sarpras = $peminjaman->ruangan->nama_ruangan;
+            } elseif ($peminjaman->proyektor) {
+                $sarpras = $peminjaman->proyektor->nama_proyektor;
+            }
+
+            $message = "✅ Pengajuan Disetujui\n"
+                . "Sarpras: $sarpras\n"
+                . "Tanggal: {$peminjaman->tanggal_pinjam} - {$peminjaman->tanggal_kembali}\n"
+                . "Waktu: {$peminjaman->jam_mulai} - {$peminjaman->jam_selesai}\n";
+
+            $this->sendWaToPeminjam($peminjaman->nomor_whatsapp, $message);
 
             // Log untuk debugging
             Log::info('Peminjaman approved', [
@@ -413,5 +418,44 @@ class PeminjamanController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
         }
+    }
+
+    public function approvedDates($type, $idSarpras)
+    {
+        $query = Peminjaman::where('status_peminjaman', 'Disetujui');
+
+        if ($type !== 'all') {
+            if ($type === 'ruangan') {
+                $query->where('id_ruangan', $idSarpras);
+            } elseif ($type === 'proyektor') {
+                $query->where('id_proyektor', $idSarpras);
+            }
+        }
+
+        $approvedPeminjaman = $query->get();
+
+        $approvedDetails = [];
+        foreach ($approvedPeminjaman as $peminjaman) {
+            $date = $peminjaman->tanggal_pinjam;
+            if (!isset($approvedDetails[$date])) {
+                $approvedDetails[$date] = [];
+            }
+            $approvedDetails[$date][] = [
+                'id_peminjaman' => $peminjaman->id_peminjaman,
+                'nama_peminjam' => $peminjaman->nama_peminjam,
+                'jenis_kegiatan' => $peminjaman->jenis_kegiatan,
+                'tanggal_pinjam' => $peminjaman->tanggal_pinjam,
+                'tanggal_kembali' => $peminjaman->tanggal_kembali,
+                'jam_mulai' => $peminjaman->jam_mulai,
+                'jam_selesai' => $peminjaman->jam_selesai,
+                'jumlah_peserta' => $peminjaman->jumlah_peserta,
+                'sarpras_type' => $peminjaman->id_ruangan ? 'ruangan' : 'proyektor',
+                'id_sarpras' => $peminjaman->id_ruangan ?? $peminjaman->id_proyektor,
+            ];
+        }
+
+        Log::info('Approved Dates API Response', ['approvedDetails' => $approvedDetails]); // Tambahkan logging
+
+        return response()->json(['approvedDetails' => $approvedDetails]);
     }
 }
