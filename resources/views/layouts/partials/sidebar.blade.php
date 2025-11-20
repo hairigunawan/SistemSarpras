@@ -3,8 +3,8 @@
             <div>
                 <div class="flex items-center gap-2 mb-10">
             <div class="flex items-center gap-2">
-                <img src="{{ asset('storage/images/TI.png') }}" alt="Logo TI" class="w-8 h-8 object-contain">
-                <img src="{{ asset('storage/images/politala.png') }}" alt="Logo Politala" class="w-8 h-8 object-contain">
+                <img src="{{ asset('storage/images/TI.png') }}" alt="Logo TI" class="object-contain w-8 h-8">
+                <img src="{{ asset('storage/images/politala.png') }}" alt="Logo Politala" class="object-contain w-8 h-8">
             </div>
             <h1 class="text-xl font-semibold text-gray-800">SIMPERSITE.</h1>
         </div>
@@ -93,7 +93,7 @@
                         </summary>
 
                         <!-- Submenu -->
-                        <ul class="ml-8 mt-2 mb-3 space-y-1">
+                        <ul class="mt-2 mb-3 ml-8 space-y-1">
                             <li>
                                 <a href="{{ Route('admin.prioritas.ruangan') }}"
                                     class="{{ request()->is('admin.prioritas.ruangan*') || request()->routeIs('admin.prioritas.ruangan') ? 'block text-sm pl-5 bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
@@ -106,6 +106,13 @@
                                     Proyektor
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('admin.prioritas.bobot.index') }}"
+                                    class="{{ request()->routeIs('admin.prioritas.bobot.*') ? 'block text-sm pl-5 bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded'
+                                    : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
+                                    Bobot
+                                </a>
+                            </li>
                         </ul>
                     </details>
                 </li>
@@ -115,8 +122,8 @@
         <form method="POST" action="{{ route('logout') }}">
         @csrf
             <button type="submit"
-            class="flex w-full items-center px-4 rounded-xl py-2 text-sm hover:border hover:border-gray-300 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            class="flex items-center w-full px-4 py-2 text-sm transition rounded-xl hover:border hover:border-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
                 </svg>Logout
             </button>

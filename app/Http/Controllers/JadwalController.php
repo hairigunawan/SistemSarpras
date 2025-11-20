@@ -67,8 +67,21 @@ class JadwalController extends Controller
 
         $jadwal->update($request->all());
 
-        return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil diperbarui');
+        return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil diperbarui');
     }
+
+    //import excel
+    public function importStore(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xls,xlsx'
+    ]);
+
+    Excel::import(new JadwalImport, $request->file('file'));
+
+    return redirect()->route('admin.jadwal.index')
+        ->with('success', 'Data jadwal berhasil di-import!');
+}
 
 
     // Hapus data
@@ -77,6 +90,6 @@ class JadwalController extends Controller
         $jadwal = Jadwal::findOrFail($id);
         $jadwal->delete();
 
-        return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil dihapus');
+        return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil dihapus');
     }
 }

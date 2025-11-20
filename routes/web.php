@@ -14,7 +14,7 @@ use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\ProyektorController;
 use App\Http\Controllers\SarprasController;
 use App\Http\Controllers\FeedbackController;
-use App\Http\Controllers\PageController;
+use App\Http\Controllers\BobotController;
 /*
 |--------------------------------------------------------------------------
 | Rute untuk Publik (Tidak Perlu Login)
@@ -99,10 +99,21 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
             Route::post('/ruangan/hitung', [PrioritasController::class, 'hitungRuangan'])->name('admin.prioritas.ruangan.hitung');
             Route::get('/hasil', [PrioritasController::class, 'hasil'])->name('admin.prioritas.hasil');
 
-            //Jadwal
+            // Bobot
+            Route::prefix('bobot')->name('admin.prioritas.bobot.')->group(function () {
+                Route::get('/', [BobotController::class, 'index'])->name('index');
+                Route::get('/create', [BobotController::class, 'create'])->name('create');
+                Route::get('/{id}/edit', [BobotController::class, 'edit'])->name('edit');
+                Route::post('/', [BobotController::class, 'store'])->name('store');
+                Route::put('/{id}', [BobotController::class, 'update'])->name('update');
+                Route::delete('/{id}', [BobotController::class, 'destroy'])->name('destroy');
+            });
+
+        //Jadwal
             Route::get('/jadwal', [JadwalController::class, 'index'])->name('admin.jadwal.index');
             Route::resource('jadwal', JadwalController::class)->except(['show'])->names('admin.jadwal');
-            Route::post('/jadwal/import', [JadwalController::class, 'importStore'])->name('admin.jadwal.import.store');
+            Route::post('/jadwal/import', [JadwalController::class, 'importStore'])
+                ->name('admin.jadwal.import.store');
             Route::get('/jadwal/export', [JadwalController::class, 'export'])->name('admin.jadwal.export');
 
             Route::get('/kriteria/tambah', [PrioritasController::class, 'tambahKriteria'])
@@ -111,7 +122,6 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
             Route::post('/kriteria/store', [PrioritasController::class, 'storeKriteria'])
                 ->name('admin.prioritas.storeKriteria');
             Route::delete('/prioritas/hapus-kriteria/{nama}', [PrioritasController::class, 'deleteKriteria'])->name('prioritas.hapusKriteria');
-
         });
 
         //Sarpras

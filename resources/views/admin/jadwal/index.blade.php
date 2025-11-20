@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="p-6">
+
+<div class="p-6 bg-white rounded-lg">
     <div class="flex items-center justify-between mb-6">
         <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-800">
             📅 Daftar Jadwal
@@ -19,7 +20,7 @@
 
             {{-- Tombol Tambah --}}
             <a href="{{ route('admin.jadwal.create') }}"
-               class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
+               class="px-4 py-2 text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700">
                + Tambah Jadwal
             </a>
         </div>
@@ -57,9 +58,9 @@
                         <td class="px-4 py-2">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
                         <td class="px-4 py-2">{{ $jadwal->ruangan }}</td>
                         <td class="px-4 py-2">{{ $jadwal->daya_tampung }}</td>
-                        <td class="px-4 py-2 flex justify-center gap-2">
+                        <td class="flex justify-center gap-2 px-4 py-2">
                             <a href="{{ route('admin.jadwal.edit', $jadwal->id_jadwal) }}"
-                               class="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500">Edit</a>
+                               class="px-3 py-1 text-white bg-yellow-400 rounded hover:bg-yellow-500">Edit</a>
                             <form action="{{ route('admin.jadwal.destroy', $jadwal->id_jadwal) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
                                 @csrf
                                 @method('DELETE')
