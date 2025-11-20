@@ -6,6 +6,22 @@
 <div class="bg-gray-50 text-gray-900">
     <!-- Header -->
     <header class="pt-6 bg-white">
+                <!-- Global Alert -->
+    @if(session('error'))
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="p-4 rounded-lg bg-red-100 border border-red-300 text-red-700 shadow-sm">
+                {{ session('error') }}
+            </div>
+        </div>
+    @endif
+
+    @if(session('success'))
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+            <div class="p-4 rounded-lg bg-green-100 border border-green-300 text-green-700 shadow-sm">
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
 
@@ -110,25 +126,52 @@
                             </p>
                         </div>
 
-                        <!-- Actions -->
                         <div class="flex justify-between pt-4 border-t border-blue-100">
-
                             <a href="{{ route('sarpras.ruangan.edit_ruangan', $ruangan->id_ruangan) }}"
-                               class="px-10 py-1.5 text-sm font-medium text-blue-700 bg-blue-300 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+                               class="px-12 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
                                 Edit
                             </a>
 
-                            <form action="{{ route('sarpras.ruangan.destroy', $ruangan->id_ruangan) }}"
-                                  method="POST"
-                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus ruangan ini?')">
-                                @csrf
-                                @method('DELETE')
+                            <button 
+                                type="button"
+                                onclick="openModal('{{ $ruangan->id_ruangan }}')"
+                                class="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Hapus
+                            </button>
 
-                                <button type="submit"
-                                        class="inline-flex items-center justify-center rounded-md border border-red-300 bg-white px-8 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 transition-colors">
-                                    Hapus
-                                </button>
-                            </form>
+                            <!-- Modal Konfirmasi -->
+                            <div id="modal-{{ $ruangan->id_ruangan }}" 
+                                class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+                                <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm text-center">
+                                    <h2 class="text-lg font-semibold text-gray-800 mb-2">Konfirmasi Hapus</h2>
+                                    <p class="text-sm text-gray-600 mb-4">
+                                        Apakah Anda yakin ingin menghapus ruangan <b>{{ $ruangan->nama_ruangan }}</b>?
+                                    </p>
+
+                                    <form action="{{ route('sarpras.ruangan.destroy', $ruangan->id_ruangan) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <div class="flex justify-center gap-3 mt-4">
+                                            <button type="button" 
+                                                    onclick="closeModal('{{ $ruangan->id_ruangan }}')"
+                                                    class="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700">
+                                                Batal
+                                            </button>
+
+                                            <button type="submit"
+                                                    class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700">
+                                                Hapus
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -137,3 +180,17 @@
     </main>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function openModal(id) {
+        document.getElementById('modal-' + id).classList.remove('hidden');
+        document.getElementById('modal-' + id).classList.add('flex');
+    }
+
+    function closeModal(id) {
+        document.getElementById('modal-' + id).classList.add('hidden');
+        document.getElementById('modal-' + id).classList.remove('flex');
+    }
+</script>
+@endpush

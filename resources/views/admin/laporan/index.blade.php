@@ -25,7 +25,6 @@
         <div class="flex gap-3">
             <a href="{{ route('laporan.pdf', ['periode' => $periode]) }}"
                class="flex items-center gap-2 px-4 py-1.5 text-white text-sm bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
-                <!-- Download Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 10.5L12 15m0 0l4.5-4.5M12 15V3" />
                 </svg>
@@ -34,7 +33,6 @@
 
             <a href="{{ route('laporan.excel', ['periode' => $periode]) }}"
                class="flex items-center gap-2 px-4 py-1.5 text-white text-sm bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
-                <!-- File Spreadsheet Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5h7.5M8.25 9h7.5M8.25 13.5h7.5M4.5 19.5h15M4.5 3h15a1.5 1.5 0 011.5 1.5v18a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 22.5v-18A1.5 1.5 0 014.5 3z" />
                 </svg>
@@ -45,20 +43,19 @@
 
     <!-- Statistik Cards -->
     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div class="flex items-center justify-between p-5 text-white bg-gray-800 rounded-xl">
+        <div class="flex items-center justify-between p-5 text-white bg-gradient-to-l from-blue-500 to-blue-600 rounded-xl">
             <div>
                 <p class="text-sm text-gray-300">Total Peminjaman</p>
                 <h2 class="text-3xl font-bold">{{ $totalPeminjaman }}</h2>
             </div>
             <div class="p-3 bg-green-600 rounded-lg">
-                <!-- Clipboard Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 2.25h6a2.25 2.25 0 012.25 2.25v15a2.25 2.25 0 01-2.25 2.25H9A2.25 2.25 0 016.75 19.5v-15A2.25 2.25 0 019 2.25z" />
                 </svg>
             </div>
         </div>
 
-        <div class="flex items-center justify-between p-5 text-white bg-gray-800 rounded-xl">
+        <div class="flex items-center justify-between p-5 text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl">
             <div>
                 <p class="text-sm text-gray-300">Peminjaman Hari Ini</p>
                 <h2 class="text-3xl font-bold">{{ $PeminjamanHariIni }}</h2>
@@ -71,15 +68,15 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-between p-5 text-white bg-gray-800 rounded-xl">
+        <div class="flex items-center justify-between p-5 text-white bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl">
             <div>
                 <p class="text-sm text-gray-300">Waktu Rata-Rata Peminjaman</p>
                 <h2 class="text-3xl font-bold">{{ number_format($waktuRataRata, 1) }} jam</h2>
             </div>
-            <div class="p-3 bg-yellow-500 rounded-lg">
+            <div class="flex p-3 bg-yellow-500 rounded-lg items-center">
                 <!-- Clock Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l3 3m6 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                 </svg>
             </div>
         </div>

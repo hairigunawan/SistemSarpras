@@ -84,6 +84,16 @@ class ProyektorController extends Controller
     {
         $proyektor = Proyektor::findOrFail($id);
 
+        $statuspeminjam = Status::where('nama_status', 'Dipinjam')->value('id_status');
+
+        if ($proyektor->id_status === $statuspeminjam) {
+            return back()->with('error', 'Proyektor sedang dipinjam dan tidak dapat dihapus.');
+        }
+
+        if ($proyektor->peminjamans()->exists()) {
+            return back()->with('error', 'Proyektor memiliki riwayat peminjaman dan tidak dapat dihapus.');
+        }
+
         if ($proyektor->gambar) {
             Storage::disk('public')->delete($proyektor->gambar);
         }

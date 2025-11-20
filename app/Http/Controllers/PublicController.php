@@ -24,6 +24,7 @@ class PublicController extends Controller
     {
         $totalRuangan = Ruangan::count();
         $totalProyektor = Proyektor::count();
+
         $idStatusTersedia = Status::where('nama_status', 'Tersedia')->first()->id_status ?? null;
         $idStatusDipinjam = Status::where('nama_status', 'Dipinjam')->first()->id_status ?? null;
         $idStatusPerbaikan = Status::where('nama_status', 'Perbaikan')->first()->id_status ?? null;
@@ -36,7 +37,7 @@ class PublicController extends Controller
         $ProyektorTerpakai = Proyektor::where('id_status', $idStatusDipinjam)->count();
         $ProyektorPerbaikan = Proyektor::where('id_status', $idStatusPerbaikan)->count();
 
-        $labs = Peminjaman::with(['ruangan'])
+        $p = Peminjaman::with(['ruangan'])
             ->where('status_peminjaman', 'Disetujui')
             ->whereNotNull('id_ruangan')
             ->latest('tanggal_pinjam')
@@ -58,7 +59,7 @@ class PublicController extends Controller
             'ProyektorTersedia',
             'ProyektorTerpakai',
             'ProyektorPerbaikan',
-            'labs',
+            'p',
             'totalRuangan',
             'totalProyektor',
         ));
@@ -262,10 +263,11 @@ class PublicController extends Controller
 
     public function daftarpeminjaman()
     {
-        $userId = Auth::id();
-        $peminjaman = Peminjaman::where('id_akun', $userId)->with(['ruangan', 'proyektor'])->latest()->get();
+        $peminjaman = Peminjaman::with(['ruangan', 'proyektor'])
+            ->latest()
+            ->get();
 
-        $labs = Peminjaman::with(['ruangan'])
+        $p = Peminjaman::with(['ruangan'])
             ->where('status_peminjaman', 'Disetujui')
             ->whereNotNull('id_ruangan')
             ->latest('tanggal_pinjam')
@@ -280,7 +282,7 @@ class PublicController extends Controller
                 ];
             })->toArray();
 
-        return view('public.peminjaman.daftarpeminjaman', compact('peminjaman', 'labs'));
+        return view('public.peminjaman.daftarpeminjaman', compact('peminjaman', 'p'));
     }
 
     public function halamansarpras(Request $request)
@@ -372,5 +374,27 @@ class PublicController extends Controller
     {
         $user = Auth::user();
         return view('public.profile.index', compact('user'));
+    }
+
+    public function riwayat_peminjaman(){
+
+        $peminjaman = Peminjaman::where('id_akun')->with(['ruangan', 'proyektor'])->latest()->get();
+
+        $p = Peminjaman::with(['ruangan'])
+            ->where('status_peminjaman', 'Disetujui')
+            ->whereNotNull('id_ruangan')
+            ->latest('tanggal_pinjam')
+            ->take(3)
+            ->get()
+            ->map(function ($peminjaman) {
+                return [
+                    'nama' => $peminjaman->ruangan->nama_ruangan ?? 'N/A',
+                    'kelas' => $peminjaman->nama_peminjam ?? 'N/A',
+                    'matkul' => $peminjaman->jenis_kegiatan ?? 'N/A',
+                    'waktu' => $peminjaman->jam_mulai . ' - ' . $peminjaman->jam_selesai,
+                ];
+            })->toArray();
+
+        return view('public.peminjaman.riwayat_peminjaman', compact('peminjaman', 'p'));
     }
 }

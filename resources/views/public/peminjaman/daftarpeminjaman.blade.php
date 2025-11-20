@@ -6,7 +6,7 @@
 <div class="bg-gray-50 text-gray-800">
   <div class="container mx-auto py-10 px-4">
     <!-- Hero -->
-    <div class="text-center mb-8">
+    <div class="text-center mb-16">
       <h2 class="text-2xl font-bold mb-2">Daftar Peminjaman Sarana dan Prasarana</h2>
       <p class="text-gray-600 text-sm mb-6">
         Berikut adalah daftar semua pengajuan peminjaman yang telah diajukan
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Tabel -->
-    <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden mb-16">
+    <div class="bg-white mx-20 shadow-sm rounded-lg border border-gray-200 overflow-hidden mb-16">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-blue-50">
@@ -28,9 +28,7 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">No</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Nama Peminjam</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Sarana/Prasarana</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Kegiatan</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Tanggal Peminjaman</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Tanggal Pengembalian</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Jam</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Status</th>
             </tr>
@@ -61,9 +59,7 @@
                   <span class="text-gray-500">N/A</span>
                 @endif
               </td>
-              <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" title="{{ $item->jenis_kegiatan }}">{{ $item->jenis_kegiatan }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d M Y') }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($item->tanggal_kembali)->format('d M Y') }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                 {{ $item->jam_mulai ?? '-' }} - {{ $item->jam_selesai ?? '-' }}
               </td>
@@ -109,84 +105,56 @@
     <!-- Jadwal Ruangan Terpakai -->
         <div class="mx-20">
             <div class="mb-12">
-            <div class="flex items-center mb-6 gap-4">
-                <div class="flex items-center">
+
+                <!-- Header -->
+                <div class="flex items-center mb-6 gap-4">
                     <h2 class="text-xl font-semibold text-gray-800">Jadwal Ruangan Terpakai</h2>
+
+                    @if(isset($p) && count($p) > 0)
+                        <span class="bg-gradient-to-r from-red-500 to-red-600 text-white text-[10px] font-medium px-5 py-1 rounded-xl">
+                            {{ count($p) }} Ruangan Terpakai
+                        </span>
+                    @endif
                 </div>
-                @if(isset($labs) && count($labs) > 0)
-                    <span class="bg-gradient-to-r from-red-500 to-red-600 text-white text-[10px] font-medium px-5 py-1 rounded-xl">
-                        {{ count($labs) }} ruangan Terpakai
-                    </span>
+
+                <!-- Tabel -->
+                @if(isset($p) && count($p) > 0)
+                    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-gray-50 border-b">
+                                <tr>
+                                    <th class="px-6 py-3 text-left font-semibold text-gray-700">Ruangan</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-gray-700">Kelas</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-gray-700">Mata Kuliah</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-gray-700">Waktu</th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach($p as $k)
+                                    <tr class="hover:bg-gray-50 transition">
+                                        <td class="px-6 py-4 font-medium text-gray-800">{{ $k['nama'] }}</td>
+                                        <td class="px-6 py-4 text-gray-700">{{ $k['kelas'] }}</td>
+                                        <td class="px-6 py-4 text-gray-700">{{ $k['matkul'] }}</td>
+                                        <td class="px-6 py-4 text-gray-700">{{ $k['waktu'] }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                <!-- Jika tidak ada data -->
+                @else
+                    <div class="bg-white rounded-xl border border-gray-200 p-8 text-center">
+                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-600 mb-2">Tidak ada ruangan terpakai</h3>
+                        <p class="text-gray-400 text-sm">Semua ruangan saat ini tersedia untuk digunakan</p>
+                    </div>
                 @endif
             </div>
-
-            @if(isset($labs) && count($labs) > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($labs as $lab)
-                        <div class="bg-white rounded-xl hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100">
-                            <!-- Header -->
-                            <div class="bg-gradient-to-r from-red-500 to-red-600 p-4 text-white">
-                                <div class="flex items-center justify-between">
-                                    <h4 class="text-lg font-bold">{{ $lab['nama'] }}</h4>
-                                    <span class="bg-white/20 backdrop-blur px-2 py-1 text-xs rounded-full font-medium">
-                                        Terpakai
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Content -->
-                            <div class="p-5">
-                                <div class="space-y-3">
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 text-gray-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                        </svg>
-                                        <div>
-                                            <span class="text-sm text-gray-500">Kelas</span>
-                                            <p class="font-semibold text-gray-800">{{ $lab['kelas'] }}</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 text-gray-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                                        </svg>
-                                        <div>
-                                            <span class="text-sm text-gray-500">Mata Kuliah</span>
-                                            <p class="font-semibold text-gray-800">{{ $lab['matkul'] }}</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 text-gray-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <div>
-                                            <span class="text-sm text-gray-500">Waktu</span>
-                                            <p class="font-semibold text-gray-800">{{ $lab['waktu'] }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Action Button -->
-                                <div class="mt-4 pt-4 border-t border-gray-100">
-                                    <button class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-sm">
-                                        Lihat Detail
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="bg-white rounded-xl border border-gray-200 p-8 text-center">
-                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                    </svg>
-                    <h3 class="text-lg font-medium text-gray-600 mb-2">Tidak ada ruangan terpakai</h3>
-                    <p class="text-gray-400 text-sm">Semua ruangan saat ini tersedia untuk digunakan</p>
-                </div>
-            @endif
         </div>
   </div>
 </div>

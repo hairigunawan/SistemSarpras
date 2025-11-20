@@ -46,9 +46,6 @@ class SarprasController extends Controller
         // Perbarui status proyektor berdasarkan peminjaman aktif
         ProyektorStatusHelper::updateProyektorStatus();
 
-        // Refresh data proyektor setelah status diperbarui
-        $proyektors = Proyektor::with('status')->latest()->paginate(9);
-
         $statuses = Status::all();
 
         return view('admin.sarpras.index', compact('ruangans', 'proyektors', 'statuses'));

@@ -41,7 +41,7 @@
                     <th class="p-3 border text-gray-700 font-medium">Nama</th>
                     <th class="p-3 border text-gray-700 font-medium">Email</th>
                     <th class="p-3 border text-gray-700 font-medium">Role</th>
-                    <th class="p-3 border text-gray-700 font-medium text-center">Aksi</th>
+                    <tr class="p-3 border text-gray-700 font-medium w-32 text-center">Aksi</tr>
                 </tr>
             </thead>
             <tbody>
@@ -49,10 +49,14 @@
                 <tr class="hover:bg-gray-50">
                     <td class="p-3 border text-sm">{{ $a->nama }}</td>
                     <td class="p-3 border text-sm">{{ $a->email }}</td>
-                    <td class="p-3 border text-sm">{{ $a->userRole->nama_role }}</td>
+                    <td class="p-3 border text-sm">{{ $a->userRole->nama_role ?? '-' }}</td>
                     <td class="p-3 border text-sm text-center">
-                        <a href="{{ route('admin.akun.lihat_akun', $a->$id) }}"
-                           class="text-blue-600 px-6 py-1.5 hover:rounded-lg hover:bg-blue-100">detail</a>
+                        <a href="{{ route('admin.akun.edit_akun', $a->id) }}"
+                           class="text-blue-600 px-6 py-1.5 hover:rounded-lg hover:bg-blue-100">Edit</a>
+                    </td>
+                    <td class="p-3 border text-sm text-center">
+                        <a href="{{ route('admin.akun.lihat_akun', $a->id) }}"
+                           class="text-blue-600 px-6 py-1.5 hover:rounded-lg hover:bg-blue-100">deatil</a>
                     </td>
                 </tr>
                 @endforeach

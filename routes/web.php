@@ -69,7 +69,12 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
         });
 
         // Akun
-        Route::resource('akun', AkunController::class)->names('admin.akun');
+        Route::get('/akun', [AkunController::class, 'index'])->name('admin.akun.index');
+        Route::get('/akun/tambah_akun/{id}', [AkunController::class, 'tambah_akun'])->name('admin.akun.tambah_akun');
+        Route::get('/akun/edit_akun', [AkunController::class, 'edit_akun'])->name('admin.akun.edit_akun');
+        Route::post('/akun/store/new', [AkunController::class, 'store'])->name('admin.akun.store.new');
+        Route::patch('/akun/store/{id}', [AkunController::class, 'update'])->name('admin.akun.update');
+        Route::get('/akun/lihat_akun/{id}', [AkunController::class, 'lihat_akun'])->name('admin.akun.lihat_akun');
 
         // Peminjaman
 
@@ -144,7 +149,7 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
     //Peminjaman
     Route::get('/peminjaman/create', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create.auth');
     Route::post('/peminjaman', [PeminjamanController::class, 'store'])->name('public.peminjaman.store.auth');
-    Route::get('/peminjaman/riwayat', [PeminjamanController::class, 'riwayat'])->name('peminjaman.riwayat');
+    Route::get('/peminjaman', [PeminjamanController::class, 'riwayat'])->name('public.peminjaman.riwayat_peminjaman');
 
     //Sarana dan Perasarana
     Route::get('/halaman-sarpras', [PublicController::class, 'halamansarpras'])->name('public.sarana_perasarana.halamansarpras');
@@ -162,7 +167,7 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
         Route::get('/test-wa', function () {
         return \App\Services\FonnteService::sendMessage(
             '6285878335598',    // nomor kamu sendiri
-            'Test WA dari Laravel - Berhasil! 🎉'
+            'Integrasi WA PBL kelompok 5'
         );
     });
 });

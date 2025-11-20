@@ -16,17 +16,17 @@ class AkunController extends Controller
      */
     public function index()
     {
-        $akuns = User::with('role')->latest()->paginate(10);
+        $akuns = User::with('userRole')->latest()->paginate(10);
         return view('admin.akun.index', compact('akuns'));
     }
 
     /**
      * Menampilkan form untuk membuat akun baru.
      */
-    public function create()
+    public function tambah_akun()
     {
         $roles = Role::all();
-        return view('admin.akun.create', compact('roles'));
+        return view('admin.akun.tambah_akun', compact('roles'));
     }
 
     /**
@@ -48,16 +48,16 @@ class AkunController extends Controller
             'role_id' => $request->role_id,
         ]);
 
-        return redirect()->route('akun.index')->with('success', 'Akun berhasil ditambahkan.');
+        return redirect()->route('admin.akun.index')->with('success', 'Akun berhasil ditambahkan.');
     }
 
     /**
      * Menampilkan form untuk mengedit akun.
      */
-    public function edit(User $akun)
+    public function edit_akun(User $akun)
     {
         $roles = Role::all();
-        return view('admin.akun.edit', compact('akun', 'roles'));
+        return view('admin.akun.edit_akun', compact('akun', 'roles'));
     }
 
     /**
@@ -82,13 +82,13 @@ class AkunController extends Controller
 
         $akun->save();
 
-        return redirect()->route('akun.index')->with('success', 'Akun berhasil diperbarui.');
+        return redirect()->route('admin.akun.index')->with('success', 'Akun berhasil diperbarui.');
     }
 
     /**
      * Menghapus akun dari database.
      */
-    public function destroy(User $akun)
+    public function hapus_akun(User $akun)
     {
         // Tambahkan validasi agar tidak bisa menghapus akun sendiri jika perlu
         if (Auth::check() && Auth::id() === $akun->id_akun) {
@@ -96,6 +96,13 @@ class AkunController extends Controller
         }
 
         $akun->delete();
-        return redirect()->route('akun.index')->with('success', 'Akun berhasil dihapus.');
+        return redirect()->route('admin.akun.index')->with('success', 'Akun berhasil dihapus.');
+    }
+    public function lihat_akun($id)
+    {
+        $u = User::with(['id_user'])
+            ->findOrFail($id);
+
+        return view('admin.akun.lihat_akun', compact('u'));
     }
 }

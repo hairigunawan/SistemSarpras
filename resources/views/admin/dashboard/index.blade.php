@@ -7,7 +7,7 @@
     <!-- Kartu Statistik Utama -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <!-- Total Akun -->
-        <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+        <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-blue-100 text-sm font-medium mb-1">Total Akun</p>
@@ -22,7 +22,7 @@
         </div>
 
         <!-- Total Sarpras -->
-        <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+        <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-purple-100 text-sm font-medium mb-1">Total Sarpras</p>
@@ -38,7 +38,7 @@
 
         <!-- Peminjaman Menunggu -->
         <a href="{{ route('admin.peminjaman.index', ['status' => 'Menunggu']) }}" class="block group">
-            <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+            <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-yellow-100 text-sm font-medium mb-1">Peminjaman Menunggu</p>
@@ -55,7 +55,7 @@
 
         <!-- Peminjaman Disetujui -->
         <a href="{{ route('admin.peminjaman.index', ['status' => 'disetujui']) }}" class="block group">
-            <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+            <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-green-100 text-sm font-medium mb-1">Peminjaman Disetujui</p>
@@ -71,6 +71,74 @@
         </a>
     </div>
 
+    <!-- Kartu Aksi Cepat -->
+    <div class="bg-gradient-to-tl from-blue-600 to-blue-700 p-6 rounded-xl shadow-lg">
+        <h3 class="text-lg font-medium text-white mb-6 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            Aksi Cepat
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Tambah Ruangan -->
+            <a href="{{ route('sarpras.ruangan.tambah_ruangan') }}" class="group">
+                <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-blue-200 group-hover:transform group-hover:scale-100">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="bg-blue-100 p-4 rounded-full group-hover:bg-blue-200 transition-colors mb-4">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-gray-800 font-medium">Tambah Ruangan</h3>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Tambah Proyektor -->
+            <a href="{{ route('sarpras.proyektor.tambah_proyektor') }}" class="group">
+                <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-purple-200 group-hover:transform group-hover:scale-100">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="bg-blue-100 p-4 rounded-full group-hover:bg-blue-200 transition-colors mb-4">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-gray-800 font-medium">Tambah Proyektor</h3>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Laporan PDF -->
+            <a href="{{ route('laporan.pdf') }}" class="group">
+                <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-red-200 group-hover:transform group-hover:scale-100">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="bg-red-100 p-4 rounded-full group-hover:bg-red-200 transition-colors mb-4">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-gray-800 font-medium">Laporan PDF</h3>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Laporan Excel -->
+            <a href="{{ route('laporan.excel') }}" class="group">
+                <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-green-200 group-hover:transform group-hover:scale-100">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="bg-green-100 p-4 rounded-full group-hover:bg-green-200 transition-colors mb-4">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v1a1 1 0 001 1h4a1 1 0 001-1v-1m3-2V8a2 2 0 00-2-2H8a2 2 0 00-2 2v6m9-5h-6a2 2 0 100 4h6a2 2 0 100-4z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-gray-800 font-medium">Laporan Excel</h3>
+
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
     <!-- Grafik Statistik Peminjaman dengan Opsi Periode -->
     <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -82,15 +150,15 @@
             <!-- Periode Toggle Buttons -->
             <div class="flex gap-2 flex-wrap">
                 <a href="{{ route('admin.dashboard', ['periode' => 'minggu']) }}"
-                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 {{ $periode === 'minggu' ? 'bg-blue-500 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 {{ $periode === 'minggu' ? 'bg-blue-500 text-white shadow-lg transform scale-100' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     Minggu Ini
                 </a>
                 <a href="{{ route('admin.dashboard', ['periode' => 'bulan']) }}"
-                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 {{ $periode === 'bulan' ? 'bg-blue-500 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 {{ $periode === 'bulan' ? 'bg-blue-500 text-white shadow-lg transform scale-100' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     Bulan Ini
                 </a>
                 <a href="{{ route('admin.dashboard', ['periode' => 'semester']) }}"
-                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 {{ $periode === 'semester' ? 'bg-blue-500 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 {{ $periode === 'semester' ? 'bg-blue-500 text-white shadow-lg transform scale-100' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     Semester Ini
                 </a>
             </div>
@@ -242,77 +310,6 @@
                     </div>
                 @endforelse
             </div>
-        </div>
-    </div>
-
-    <!-- Kartu Aksi Cepat -->
-    <div class="bg-gradient-to-tl from-blue-600 to-blue-700 p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-medium text-white mb-6 flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-            </svg>
-            Aksi Cepat
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Tambah Ruangan -->
-            <a href="{{ route('sarpras.ruangan.tambah_ruangan') }}" class="group">
-                <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-blue-200 group-hover:transform group-hover:scale-105">
-                    <div class="flex flex-col items-center text-center">
-                        <div class="bg-blue-100 p-4 rounded-full group-hover:bg-blue-200 transition-colors mb-4">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-gray-800 font-medium">Tambah Ruangan</h3>
-                        <p class="text-xs text-gray-500 mt-1">Tambah data ruangan baru</p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Tambah Proyektor -->
-            <a href="{{ route('sarpras.proyektor.tambah_proyektor') }}" class="group">
-                <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-purple-200 group-hover:transform group-hover:scale-105">
-                    <div class="flex flex-col items-center text-center">
-                        <div class="bg-blue-100 p-4 rounded-full group-hover:bg-blue-200 transition-colors mb-4">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-gray-800 font-medium">Tambah Proyektor</h3>
-                        <p class="text-xs text-gray-500 mt-1">Tambah data proyektor baru</p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Laporan PDF -->
-            <a href="{{ route('laporan.pdf') }}" class="group">
-                <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-red-200 group-hover:transform group-hover:scale-105">
-                    <div class="flex flex-col items-center text-center">
-                        <div class="bg-red-100 p-4 rounded-full group-hover:bg-red-200 transition-colors mb-4">
-                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-gray-800 font-medium">Laporan PDF</h3>
-                        <p class="text-xs text-gray-500 mt-1">Unduh laporan dalam PDF</p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Laporan Excel -->
-            <a href="{{ route('laporan.excel') }}" class="group">
-                <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-green-200 group-hover:transform group-hover:scale-105">
-                    <div class="flex flex-col items-center text-center">
-                        <div class="bg-green-100 p-4 rounded-full group-hover:bg-green-200 transition-colors mb-4">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v1a1 1 0 001 1h4a1 1 0 001-1v-1m3-2V8a2 2 0 00-2-2H8a2 2 0 00-2 2v6m9-5h-6a2 2 0 100 4h6a2 2 0 100-4z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-gray-800 font-medium">Laporan Excel</h3>
-                        <p class="text-xs text-gray-500 mt-1">Unduh laporan dalam Excel</p>
-                    </div>
-                </div>
-            </a>
         </div>
     </div>
 </div>

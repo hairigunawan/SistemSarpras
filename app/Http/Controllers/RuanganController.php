@@ -130,21 +130,23 @@ class RuanganController extends Controller
 
     public function destroy(Ruangan $ruangan)
     {
-        $statusDipinjam = Status::where('nama_status', 'Dipinjam')->first()->id_status;
+        $statuspeminjam = Status::where('nama_status', 'Dipinjam')->value('id_status');
 
-        if ($ruangan->id_status === $statusDipinjam) {
-            return redirect()->route('admin.sarpras.index')->with('error', 'Ruangan tidak dapat dihapus karena sedang dipinjam.');
+        if ($ruangan->id_status === $statuspeminjam) {
+            return back()->with('error', 'Ruangan sedang dipinjam dan tidak dapat dihapus.');
         }
 
         if ($ruangan->peminjamans()->exists()) {
-            return redirect()->route('admin.sarpras.index')->with('error', 'Ruangan tidak dapat dihapus karena memiliki riwayat peminjaman.');
+            return back()->with('error', 'Ruangan memiliki riwayat peminjaman dan tidak dapat dihapus.');
         }
 
         if ($ruangan->gambar && Storage::disk('public')->exists($ruangan->gambar)) {
             Storage::disk('public')->delete($ruangan->gambar);
         }
 
+        $ruangan->delete();
 
-        return redirect()->route('admin.sarpras.index')->with('success', 'Ruangan berhasil dihapus.');
+        return redirect()->route('admin.sarpras.index')
+            ->with('success', 'Ruangan berhasil dihapus.');
     }
 }
