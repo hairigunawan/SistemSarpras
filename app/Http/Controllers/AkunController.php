@@ -100,8 +100,7 @@ class AkunController extends Controller
     }
     public function lihat_akun($id)
     {
-        $u = User::with(['id_user'])
-            ->findOrFail($id);
+        $u = User::findOrFail($id);
 
         return view('admin.akun.lihat_akun', compact('u'));
     }

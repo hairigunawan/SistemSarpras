@@ -71,9 +71,10 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
         // Akun
         Route::get('/akun', [AkunController::class, 'index'])->name('admin.akun.index');
         Route::get('/akun/tambah_akun/{id}', [AkunController::class, 'tambah_akun'])->name('admin.akun.tambah_akun');
-        Route::get('/akun/edit_akun', [AkunController::class, 'edit_akun'])->name('admin.akun.edit_akun');
+        Route::get('/akun/edit_akun/{akun}', [AkunController::class, 'edit_akun'])->name('admin.akun.edit_akun');
         Route::post('/akun/store/new', [AkunController::class, 'store'])->name('admin.akun.store.new');
-        Route::patch('/akun/store/{id}', [AkunController::class, 'update'])->name('admin.akun.update');
+        Route::patch('/akun/store/{akun}', [AkunController::class, 'update'])->name('admin.akun.update');
+        Route::delete('/akun/{akun}', [AkunController::class, 'hapus_akun'])->name('admin.akun.hapus_akun');
         Route::get('/akun/lihat_akun/{id}', [AkunController::class, 'lihat_akun'])->name('admin.akun.lihat_akun');
 
         // Peminjaman
