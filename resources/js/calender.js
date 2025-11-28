@@ -6,63 +6,46 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const fetchUrl = window.approvedDatesApiUrl;
+    // Pastikan FullCalendar sudah diload di halaman layout
+    if (!window.FullCalendar) {
+        console.error("Library FullCalendar belum diload!");
+        return;
+    }
     const { Calendar, dayGridPlugin, interactionPlugin } = window.FullCalendar;
 
     const calendar = new Calendar(calendarEl, {
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: "dayGridMonth",
         locale: "id",
-
-        buttonText: {
-            today: 'Hari Ini',
-        },
-
+        themeSystem: 'standard',
+        buttonText: { today: 'Hari Ini' },
         headerToolbar: {
-            left: "prev",
+            left: "prev,next today",
             center: "title",
-            right: "next",
+            right: ""
         },
-
         height: 'auto',
-        aspectRatio: 1.2,
+        contentHeight: 650,
         fixedWeekCount: false,
-        dayMaxEvents: 3,
+        showNonCurrentDates: false,
+        dayMaxEvents: 2,
 
         dayCellDidMount(info) {
             const dateStr = info.date.toISOString().split('T')[0];
             info.el.setAttribute('data-date', dateStr);
+            const contentEl = info.el.querySelector('.fc-daygrid-day-frame');
+            if(contentEl) {
+                const badgeContainer = document.createElement('div');
+                badgeContainer.className = 'custom-badge-container';
+                contentEl.appendChild(badgeContainer);
+            }
         },
 
         eventDidMount(info) {
-            const dateStr = info.event.startStr.split('T')[0];
-            const dayCell = calendarEl.querySelector(`td[data-date="${dateStr}"]`);
-            if (!dayCell) return;
-
-            const types = info.event.extendedProps.sarpras_types || [];
-
-            // Jika meminjam keduanya (ruangan + proyektor)
-            if (types.includes('ruangan') && types.includes('proyektor')) {
-                dayCell.style.background = 'linear-gradient(135deg, #dbeafe 50%, #dcfce7 50%)';
-                dayCell.style.borderColor = '#3b82f6';
-            }
-            // Hanya ruangan
-            else if (types.includes('ruangan')) {
-                dayCell.style.backgroundColor = "#dbeafe";
-                dayCell.style.borderColor = "#3b82f6";
-            }
-            // Hanya proyektor
-            else if (types.includes('proyektor')) {
-                dayCell.style.backgroundColor = "#dcfce7";
-                dayCell.style.borderColor = "#22c55e";
-            }
-
-            info.el.style.cursor = 'pointer';
+             info.el.title = info.event.title;
         },
 
-        dayCellContent(arg) {
-            return { html: arg.dayNumberText };
-        },
-
+        // --- FETCH EVENTS ---
         events: async (info, success, failure) => {
             try {
                 const res = await fetch(fetchUrl);
@@ -71,478 +54,265 @@ document.addEventListener("DOMContentLoaded", () => {
                 const data = await res.json();
                 const events = [];
                 const dateGroups = {};
-                const processedPeminjaman = new Set();
 
                 if (data.approvedDetails) {
-                    // Kelompokkan peminjaman berdasarkan peminjam dan waktu
                     const peminjamanMap = {};
-
+                    // Grouping Logic
                     for (const date in data.approvedDetails) {
                         data.approvedDetails[date].forEach((p) => {
                             const key = `${p.nama_peminjam}_${p.tanggal_pinjam}_${p.jam_mulai}_${p.jam_selesai}`;
-                            
                             if (!peminjamanMap[key]) {
                                 peminjamanMap[key] = {
                                     peminjam: p.nama_peminjam || "N/A",
+                                    email: p.email_peminjam, // Pastikan field ini ada dari API jika ingin ditampilkan
                                     kegiatan: p.jenis_kegiatan,
+                                    lokasi: p.lokasi_kegiatan, // Pastikan field ini ada
                                     tanggal_pinjam: p.tanggal_pinjam,
                                     tanggal_kembali: p.tanggal_kembali,
                                     jam_mulai: p.jam_mulai,
                                     jam_selesai: p.jam_selesai,
                                     jumlah_peserta: p.jumlah_peserta,
-                                    ruangan: null,
-                                    proyektor: null,
                                     types: [],
                                     ids: []
                                 };
                             }
-
                             const type = p.sarpras_type;
                             if (type === 'ruangan') {
-                                peminjamanMap[key].ruangan = p.id_sarpras;
+                                peminjamanMap[key].ruangan_id = p.id_sarpras;
                                 peminjamanMap[key].types.push('ruangan');
                                 peminjamanMap[key].ids.push({ type: 'ruangan', id: p.id_sarpras });
                             } else if (type === 'proyektor') {
-                                peminjamanMap[key].proyektor = p.id_sarpras;
+                                peminjamanMap[key].proyektor_id = p.id_sarpras;
                                 peminjamanMap[key].types.push('proyektor');
                                 peminjamanMap[key].ids.push({ type: 'proyektor', id: p.id_sarpras });
                             }
                         });
                     }
 
-                    // Buat events dari peminjaman yang sudah digabungkan
+                    // Processing Events for Calendar
                     for (const key in peminjamanMap) {
                         const p = peminjamanMap[key];
                         const date = p.tanggal_pinjam;
+                        if (!dateGroups[date]) dateGroups[date] = [];
 
-                        if (!dateGroups[date]) {
-                            dateGroups[date] = [];
-                        }
-
-                        let title = p.kegiatan;
-                        let color = '#6b7280';
-                        
+                        // Warna Event Bar (Kalender)
+                        let bgColor = '#f3f4f6'; let borderColor = '#d1d5db'; let textColor = '#374151';
                         if (p.types.includes('ruangan') && p.types.includes('proyektor')) {
-                            title = `🏢📽️ ${p.kegiatan}`;
-                            color = '#8b5cf6'; // Purple untuk kombinasi
+                            bgColor = '#f5f3ff'; borderColor = '#8b5cf6'; textColor = '#5b21b6';
                         } else if (p.types.includes('ruangan')) {
-                            title = `🏢 ${p.kegiatan}`;
-                            color = '#3b82f6'; // Biru untuk ruangan
+                            bgColor = '#eff6ff'; borderColor = '#3b82f6'; textColor = '#1e40af';
                         } else if (p.types.includes('proyektor')) {
-                            title = `📽️ ${p.kegiatan}`;
-                            color = '#22c55e'; // Hijau untuk proyektor
+                            bgColor = '#f0fdf4'; borderColor = '#22c55e'; textColor = '#166534';
                         }
 
                         events.push({
-                            title: title,
+                            title: p.kegiatan,
                             start: `${p.tanggal_pinjam}T${p.jam_mulai}:00`,
                             end: `${p.tanggal_kembali}T${p.jam_selesai}:00`,
-                            color: color,
+                            backgroundColor: bgColor,
+                            borderColor: borderColor,
+                            textColor: textColor,
                             extendedProps: {
-                                peminjam_nama: p.peminjam,
-                                jenis_kegiatan: p.kegiatan,
-                                jam_mulai: p.jam_mulai,
-                                jam_selesai: p.jam_selesai,
-                                jumlah_peserta: p.jumlah_peserta,
+                                ...p,
                                 sarpras_ids: p.ids,
-                                sarpras_types: p.types,
-                                ruangan_id: p.ruangan,
-                                proyektor_id: p.proyektor
+                                sarpras_types: p.types
                             },
                         });
-
-                        dateGroups[date].push({
-                            peminjam: p.peminjam,
-                            types: p.types,
-                            kegiatan: p.kegiatan,
-                            jam_mulai: p.jam_mulai,
-                            jam_selesai: p.jam_selesai,
-                            ruangan_id: p.ruangan,
-                            proyektor_id: p.proyektor
-                        });
+                        dateGroups[date].push(p);
                     }
                 }
 
+                // Render Badge (Titik Kecil)
                 setTimeout(() => {
                     for (const date in dateGroups) {
                         const dayCell = calendarEl.querySelector(`td[data-date="${date}"]`);
                         if (dayCell && dateGroups[date].length > 0) {
-                            addBorrowerBadge(dayCell, dateGroups[date]);
+                            renderBadges(dayCell, dateGroups[date]);
                         }
                     }
                 }, 100);
 
                 success(events);
             } catch (error) {
-                console.error("Error fetching approved dates:", error);
+                console.error("Error:", error);
                 failure(error);
             }
         },
 
         eventClick(info) {
-            const sarprasIds = info.event.extendedProps.sarpras_ids || [];
-            const types = info.event.extendedProps.sarpras_types || [];
-            const ruanganId = info.event.extendedProps.ruangan_id;
-            const proyektorId = info.event.extendedProps.proyektor_id;
-
-            if (typeof Swal !== 'undefined') {
-                let sarprasInfo = '';
-                
-                if (types.includes('ruangan') && types.includes('proyektor')) {
-                    sarprasInfo = `
-                        <div class="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border-l-4 border-purple-500">
-                            <svg class="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
-                            <div>
-                                <span class="text-xs text-purple-600 font-bold">Jenis Peminjaman</span>
-                                <p class="text-sm font-medium text-gray-800">Ruangan + Proyektor</p>
-                            </div>
-                        </div>
-                    `;
-                } else if (types.includes('ruangan')) {
-                    sarprasInfo = `
-                        <div class="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                            <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
-                            <div>
-                                <span class="text-xs text-blue-600 font-bold">Jenis Peminjaman</span>
-                                <p class="text-sm font-medium text-gray-800">Ruangan</p>
-                            </div>
-                        </div>
-                    `;
-                } else if (types.includes('proyektor')) {
-                    sarprasInfo = `
-                        <div class="flex items-start gap-3 p-3 bg-green-50 rounded-lg border-l-4 border-green-500">
-                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                            </svg>
-                            <div>
-                                <span class="text-xs text-green-600 font-bold">Jenis Peminjaman</span>
-                                <p class="text-sm font-medium text-gray-800">Proyektor</p>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                Swal.fire({
-                    title: '<div class="text-lg font-bold">' + info.event.extendedProps.jenis_kegiatan + '</div>',
-                    html: `
-                        <div class="text-left space-y-3 p-2">
-                            ${sarprasInfo}
-                            
-                            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                                <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
-                                <div>
-                                    <span class="text-xs text-gray-500 font-medium">Peminjam</span>
-                                    <p class="text-sm font-medium text-gray-800">${info.event.extendedProps.peminjam_nama}</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                                <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <div>
-                                    <span class="text-xs text-gray-500 font-medium">Waktu</span>
-                                    <p class="text-sm font-medium text-gray-800">${info.event.extendedProps.jam_mulai} - ${info.event.extendedProps.jam_selesai}</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                                <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                </svg>
-                                <div>
-                                    <span class="text-xs text-gray-500 font-medium">Jumlah Peserta</span>
-                                    <p class="text-sm font-medium text-gray-800">${info.event.extendedProps.jumlah_peserta} orang</p>
-                                </div>
-                            </div>
-                        </div>
-                    `,
-                    icon: false,
-                    showCancelButton: sarprasIds.length > 0,
-                    confirmButtonText: sarprasIds.length > 0 ? "Lihat Detail" : "Tutup",
-                    cancelButtonText: "Tutup",
-                    confirmButtonColor: "#3b82f6",
-                    cancelButtonColor: "#6b7280",
-                    customClass: {
-                        popup: 'rounded-2xl',
-                        confirmButton: 'rounded-lg px-6 py-2.5',
-                        cancelButton: 'rounded-lg px-6 py-2.5'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed && sarprasIds.length > 0) {
-                        // Jika meminjam keduanya, prioritaskan ruangan
-                        if (ruanganId) {
-                            window.location.href = `/sarana-prasarana/detail/ruangan/${ruanganId}`;
-                        } else if (proyektorId) {
-                            window.location.href = `/sarana-prasarana/detail/proyektor/${proyektorId}`;
-                        }
-                    }
-                });
-            }
+             // Klik pada Event Bar (Kotak berwarna di kalender)
+             showEventDetailModal(info.event);
         },
-
-        loading(isLoading) {
-            calendarEl.classList.toggle('fc-loading', isLoading);
-        }
     });
 
-    function showBorrowerDetails(borrowers, date) {
-        if (typeof Swal === 'undefined') return;
+    calendar.render();
 
-        const formattedDate = new Date(date).toLocaleDateString('id-ID', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-
-        const ruanganOnly = borrowers.filter(b => b.types.length === 1 && b.types.includes('ruangan'));
-        const proyektorOnly = borrowers.filter(b => b.types.length === 1 && b.types.includes('proyektor'));
-        const both = borrowers.filter(b => b.types.length === 2);
-
-        let borrowersHtml = `
-            <div class="text-left space-y-4">
-                <div class="bg-gradient-to-r from-blue-500 to-purple-500 p-4 rounded-lg text-white">
-                    <p class="text-sm font-medium flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        ${formattedDate}
-                    </p>
-                </div>
-        `;
-
-        if (both.length > 0) {
-            borrowersHtml += `
-                <div>
-                    <h3 class="text-sm font-bold text-purple-700 mb-2 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                        Ruangan + Proyektor (${both.length})
-                    </h3>
-                    <div class="space-y-2">
-            `;
-
-            both.forEach((borrower, index) => {
-                borrowersHtml += `
-                    <div class="bg-gradient-to-r from-blue-50 to-green-50 p-3 rounded-lg border-l-4 border-purple-500">
-                        <div class="flex items-start gap-2">
-                            <span class="bg-purple-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">${index + 1}</span>
-                            <div class="flex-1">
-                                <p class="font-semibold text-gray-800 text-sm">${borrower.peminjam}</p>
-                                <p class="text-xs text-gray-600 mt-1">${borrower.kegiatan}</p>
-                                <p class="text-xs text-purple-600 font-medium mt-1">🏢 Ruangan + 📽️ Proyektor</p>
-                                <p class="text-xs text-gray-500 mt-1">⏰ ${borrower.jam_mulai} - ${borrower.jam_selesai}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            borrowersHtml += `</div></div>`;
-        }
-
-        if (ruanganOnly.length > 0) {
-            borrowersHtml += `
-                <div>
-                    <h3 class="text-sm font-bold text-blue-700 mb-2 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
-                        Ruangan Saja (${ruanganOnly.length})
-                    </h3>
-                    <div class="space-y-2">
-            `;
-
-            ruanganOnly.forEach((borrower, index) => {
-                borrowersHtml += `
-                    <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500">
-                        <div class="flex items-start gap-2">
-                            <span class="bg-blue-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">${index + 1}</span>
-                            <div class="flex-1">
-                                <p class="font-semibold text-gray-800 text-sm">${borrower.peminjam}</p>
-                                <p class="text-xs text-gray-600 mt-1">${borrower.kegiatan}</p>
-                                <p class="text-xs text-gray-500 mt-1">⏰ ${borrower.jam_mulai} - ${borrower.jam_selesai}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            borrowersHtml += `</div></div>`;
-        }
-
-        if (proyektorOnly.length > 0) {
-            borrowersHtml += `
-                <div>
-                    <h3 class="text-sm font-bold text-green-700 mb-2 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                        </svg>
-                        Proyektor Saja (${proyektorOnly.length})
-                    </h3>
-                    <div class="space-y-2">
-            `;
-
-            proyektorOnly.forEach((borrower, index) => {
-                borrowersHtml += `
-                    <div class="bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
-                        <div class="flex items-start gap-2">
-                            <span class="bg-green-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">${index + 1}</span>
-                            <div class="flex-1">
-                                <p class="font-semibold text-gray-800 text-sm">${borrower.peminjam}</p>
-                                <p class="text-xs text-gray-600 mt-1">${borrower.kegiatan}</p>
-                                <p class="text-xs text-gray-500 mt-1">⏰ ${borrower.jam_mulai} - ${borrower.jam_selesai}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            borrowersHtml += `</div></div>`;
-        }
-
-        borrowersHtml += `
-                <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                    <p class="text-xs text-yellow-800 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Klik pada event untuk melihat detail lengkap
-                    </p>
-                </div>
-            </div>
-        `;
-
-        Swal.fire({
-            title: `<div class="text-lg font-bold text-gray-800">📋 Daftar Peminjam</div>`,
-            html: borrowersHtml,
-            icon: false,
-            confirmButtonText: "Tutup",
-            confirmButtonColor: "#3b82f6",
-            width: '650px',
-            customClass: {
-                popup: 'rounded-2xl',
-                confirmButton: 'rounded-lg px-6 py-2.5',
-                htmlContainer: 'max-h-96 overflow-y-auto'
-            }
-        });
-    }
-
-    function addBorrowerBadge(dayCell, borrowers) {
-        if (dayCell.querySelector('.borrower-badge')) {
-            return;
-        }
-
-        const dayCellContent = dayCell.querySelector('.fc-daygrid-day-frame');
-        if (!dayCellContent) return;
-
-        const badgeContainer = document.createElement('div');
-        badgeContainer.className = 'borrower-badge';
-        badgeContainer.style.cssText = `
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            z-index: 10;
-            cursor: pointer;
-        `;
-
-        badgeContainer.addEventListener('click', (e) => {
-            e.stopPropagation();
-            showBorrowerDetails(borrowers, dayCell.getAttribute('data-date'));
-        });
+    function renderBadges(dayCell, borrowers) {
+        const container = dayCell.querySelector('.custom-badge-container');
+        if (!container) return;
+        container.innerHTML = '';
 
         const bothCount = borrowers.filter(b => b.types.length === 2).length;
         const ruanganOnlyCount = borrowers.filter(b => b.types.length === 1 && b.types.includes('ruangan')).length;
         const proyektorOnlyCount = borrowers.filter(b => b.types.length === 1 && b.types.includes('proyektor')).length;
 
-        // Badge untuk peminjaman kombinasi (ruangan + proyektor)
+        const createBadge = (text, bgClass, textClass) => {
+            const badge = document.createElement('div');
+            badge.className = `badge-item ${bgClass} ${textClass}`;
+            badge.textContent = text;
+            badge.onclick = (e) => {
+                e.stopPropagation(); // Mencegah trigger eventClick kalender
+                // Klik pada Badge (Memanggil Modal List)
+                showBorrowerDetails(borrowers, dayCell.getAttribute('data-date'));
+            };
+            return badge;
+        };
+
         if (bothCount > 0) {
-            const bothBadge = document.createElement('div');
-            bothBadge.style.cssText = `
-                background: linear-gradient(135deg, #3b82f6 50%, #22c55e 50%);
-                color: white;
-                font-size: 10px;
-                padding: 2px 6px;
-                border-radius: 9999px;
-                font-weight: 600;
-                white-space: nowrap;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            `;
-            bothBadge.textContent = `${bothCount} R+P`;
-            bothBadge.title = `${bothCount} Peminjaman Ruangan + Proyektor`;
-            badgeContainer.appendChild(bothBadge);
+            const b = createBadge(`${bothCount} Gabungan`, 'bg-gradient-to-r from-blue-500 to-purple-500', 'text-white');
+            container.appendChild(b);
         }
-
-        // Badge untuk ruangan saja
         if (ruanganOnlyCount > 0) {
-            const ruanganBadge = document.createElement('div');
-            ruanganBadge.style.cssText = `
-                background-color: #3b82f6;
-                color: white;
-                font-size: 10px;
-                padding: 2px 6px;
-                border-radius: 9999px;
-                font-weight: 600;
-                white-space: nowrap;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            `;
-            ruanganBadge.textContent = `${ruanganOnlyCount} R`;
-            ruanganBadge.title = `${ruanganOnlyCount} Peminjaman Ruangan`;
-            badgeContainer.appendChild(ruanganBadge);
+            const b = createBadge(`${ruanganOnlyCount} Ruangan`, 'bg-blue-100', 'text-blue-700');
+            b.style.border = '1px solid #bfdbfe';
+            container.appendChild(b);
         }
-
-        // Badge untuk proyektor saja
-                // Badge untuk ruangan saja
-        if (ruanganOnlyCount > 0) {
-            const ruanganBadge = document.createElement('div');
-            ruanganBadge.style.cssText = `
-                background-color: #3b82f6;
-                color: white;
-                font-size: 10px;
-                padding: 2px 6px;
-                border-radius: 9999px;
-                font-weight: 600;
-                white-space: nowrap;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            `;
-            ruanganBadge.textContent = `${ruanganOnlyCount} R`;
-            ruanganBadge.title = `${ruanganOnlyCount} Peminjaman Ruangan`;
-            badgeContainer.appendChild(ruanganBadge);
-        }
-
-        // Badge untuk proyektor saja
         if (proyektorOnlyCount > 0) {
-            const proyektorBadge = document.createElement('div');
-            proyektorBadge.style.cssText = `
-                background-color: #22c55e;
-                color: white;
-                font-size: 10px;
-                padding: 2px 6px;
-                border-radius: 9999px;
-                font-weight: 600;
-                white-space: nowrap;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            `;
-            proyektorBadge.textContent = `${proyektorOnlyCount} P`;
-            proyektorBadge.title = `${proyektorOnlyCount} Peminjaman Proyektor`;
-            badgeContainer.appendChild(proyektorBadge);
+            const b = createBadge(`${proyektorOnlyCount} Proyektor`, 'bg-green-100', 'text-green-700');
+            b.style.border = '1px solid #bbf7d0';
+            container.appendChild(b);
         }
-
-        dayCellContent.style.position = "relative";
-        dayCellContent.appendChild(badgeContainer);
     }
 
-    // Jalankan calendar
-    calendar.render();
+    function showEventDetailModal(event) {
+        if (typeof Swal === 'undefined') return;
+
+        const props = event.extendedProps;
+        if (!props) return;
+
+        // Helpers
+        const formatDateIndo = (dStr) => {
+            try { return new Date(dStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); }
+            catch { return dStr; }
+        };
+        const formatTime = (tStr) => String(tStr).substring(0, 5);
+
+        // Label Logic
+        let sarprasLabel = '-';
+        const types = props.sarpras_types || [];
+        if (types.includes('ruangan') && types.includes('proyektor')) sarprasLabel = 'Ruangan + Proyektor';
+        else if (types.includes('ruangan')) sarprasLabel = 'Ruangan';
+        else if (types.includes('proyektor')) sarprasLabel = 'Proyektor';
+
+        const content = `
+            <div class="text-left font-sans">
+                <div class="mb-6 pb-4 border-b border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-900">Informasi Detail</h3>
+                    <p class="text-sm text-gray-500 mt-1">Rincian lengkap mengenai pengajuan peminjaman.</p>
+                </div>
+                <div class="flex flex-col gap-5">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-start border-b border-gray-50 pb-4">
+                        <span class="text-gray-500 font-medium text-sm sm:w-1/3">Nama Peminjam</span>
+                        <div class="text-gray-900 font-bold text-sm sm:w-2/3 text-right">
+                            ${props.peminjam}
+                            ${props.email ? `<span class="text-gray-400 font-normal block sm:inline text-xs sm:text-sm">(${props.email})</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-start border-b border-gray-50 pb-4">
+                        <span class="text-gray-500 font-medium text-sm sm:w-1/3">Jenis Kegiatan</span>
+                        <span class="text-gray-900 text-sm sm:w-2/3 text-right">${props.kegiatan || '-'}</span>
+                    </div>
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-start border-b border-gray-50 pb-4">
+                        <span class="text-gray-500 font-medium text-sm sm:w-1/3">Sarpras</span>
+                        <span class="text-gray-900 font-semibold text-sm sm:w-2/3 text-right">${sarprasLabel}</span>
+                    </div>
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-start border-b border-gray-50 pb-4">
+                        <span class="text-gray-500 font-medium text-sm sm:w-1/3">Lokasi</span>
+                        <span class="text-gray-900 text-sm sm:w-2/3 text-right">${props.lokasi || 'Gedung Utama'}</span>
+                    </div>
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-start pt-1">
+                        <span class="text-gray-500 font-medium text-sm sm:w-1/3">Jadwal</span>
+                        <div class="text-right sm:w-2/3">
+                            <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">MULAI</span>
+                            <div class="text-gray-900 font-medium text-sm">
+                                <span class="font-bold">${formatDateIndo(props.tanggal_pinjam)}</span> Pukul ${formatTime(props.jam_mulai)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        Swal.fire({
+            html: content,
+            showCloseButton: true,
+            showConfirmButton: (props.sarpras_ids && props.sarpras_ids.length > 0),
+            confirmButtonText: 'Lihat Asset',
+            confirmButtonColor: '#3ec3cc',
+            width: '600px',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (props.ruangan_id) window.location.href = `/sarana-prasarana/detail/ruangan/${props.ruangan_id}`;
+                else if (props.proyektor_id) window.location.href = `/sarana-prasarana/detail/proyektor/${props.proyektor_id}`;
+            }
+        });
+    }
+
+    function showBorrowerDetails(borrowers, date) {
+        if (typeof Swal === 'undefined') return;
+
+        const dateObj = new Date(date);
+        const dateStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        const formatTime = (time) => String(time).split(':').slice(0, 2).join(':');
+
+        const renderRow = (b, type) => {
+            let accentColor = 'border-gray-300';
+            let badgeBg = 'bg-gray-100';
+            let badgeText = 'text-gray-600';
+
+            if (type === 'ruangan') { accentColor = 'border-blue-500'; badgeBg = 'bg-blue-50'; badgeText = 'text-blue-600'; }
+            else if (type === 'proyektor') { accentColor = 'border-green-500'; badgeBg = 'bg-green-50'; badgeText = 'text-green-600'; }
+            else if (type === 'gabungan') { accentColor = 'border-purple-500'; badgeBg = 'bg-purple-50'; badgeText = 'text-purple-600'; }
+
+            return `
+                <div class="group relative flex flex-col gap-2 p-4 mb-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 ${accentColor}"></div>
+                    <div class="grid items-start gap-y-3 pl-2">
+                    <span class="font-medium text-gray-700 tracking-tight">${b.peminjam}</span>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-medium">Kegiatan: ${b.kegiatan}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-sm font-medium">Waktu Kegiatan: ${formatTime(b.jam_mulai)} - ${formatTime(b.jam_selesai)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        const both = borrowers.filter(b => b.types.length === 2);
+        const ruangan = borrowers.filter(b => b.types.length === 1 && b.types.includes('ruangan'));
+        const proyektor = borrowers.filter(b => b.types.length === 1 && b.types.includes('proyektor'));
+
+        let html = `<div class="text-left max-h-[60vh] overflow-y-auto px-1 pt-2 custom-scrollbar">`;
+
+        if(both.length) {
+            html += `<div class="mb-5"><div class="flex items-center gap-2 mb-3 sticky top-0 bg-white py-2 z-10 border-b border-gray-100 backdrop-blur-sm bg-opacity-95"><h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Gabungan (${both.length})</h4></div><div class="pl-1">${both.map(b => renderRow(b, 'gabungan')).join('')}</div></div>`;
+        }
+        if(ruangan.length) {
+            html += `<div class="mb-5"><div class="flex items-center gap-2 mb-3 sticky top-0 bg-white py-2 z-10 border-b border-gray-100 backdrop-blur-sm bg-opacity-95"><h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Ruangan (${ruangan.length})</h4></div><div class="pl-1">${ruangan.map(b => renderRow(b, 'ruangan')).join('')}</div></div>`;
+        }
+        if(proyektor.length) {
+            html += `<div class="mb-5"><div class="flex items-center gap-2 mb-3 sticky top-0 bg-white py-2 z-10 border-b border-gray-100 backdrop-blur-sm bg-opacity-95"><h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Proyektor (${proyektor.length})</h4></div><div class="pl-1">${proyektor.map(b => renderRow(b, 'proyektor')).join('')}</div></div>`;
+        }
+        html += `</div>`;
+
+        Swal.fire({
+            title: `<div class="flex flex-col items-center pt-2 px-2"><span class="text-xl font-bold text-gray-800">${dateStr}</span></div>`,
+            html: html,
+            width: '500px',
+            showConfirmButton: false,
+            showCloseButton: false,
+        });
+    }
 });

@@ -15,39 +15,30 @@ class SarprasController extends Controller
      */
     public function index(Request $request , $type = null, $id = null)
     {
-        // Query untuk ruangan
-        $ruanganQuery = Ruangan::with('status', 'lokasi');
-
-        if ($request->has('nama_status') && $request->nama_status) {
-            $statusId = Status::where('nama_status', $request->nama_status)->value('id_status');
-            $ruanganQuery->where('id_status', $statusId);
-        }
-
-        if ($request->has('search') && $request->search) {
-            $ruanganQuery->where('nama_ruangan', 'like', '%' . $request->search . '%');
-        }
-
-        $ruangans = $ruanganQuery->latest()->paginate(9);
+        // Query untuk ruangan dengan filter yang sama di RuanganController
+        $r = Ruangan::filter($request->all())
+            ->latest()
+            ->paginate(9);
 
         // Query untuk proyektor
-        $proyektorQuery = Proyektor::with('status');
+        $p = Proyektor::with('status');
 
-        if ($request->has('nama_status') && $request->nama_status) {
+        if (isset($request->nama_status) && $request->nama_status) {
             $statusId = Status::where('nama_status', $request->nama_status)->value('id_status');
-            $proyektorQuery->where('id_status', $statusId);
+            $p->where('id_status', $statusId);
         }
 
-        if ($request->has('search') && $request->search) {
-            $proyektorQuery->where('nama_proyektor', 'like', '%' . $request->search . '%');
+        if (isset($request->search) && $request->search) {
+            $p->where('nama_proyektor', 'like', '%' . $request->search . '%');
         }
 
-        $proyektors = $proyektorQuery->latest()->paginate(9);
+        $p = $p->latest()->paginate(9);
 
         // Perbarui status proyektor berdasarkan peminjaman aktif
         ProyektorStatusHelper::updateProyektorStatus();
 
-        $statuses = Status::all();
+        $s = Status::all();
 
-        return view('admin.sarpras.index', compact('ruangans', 'proyektors', 'statuses'));
+        return view('admin.sarpras.index', compact('r', 's', 'p'));
     }
 }

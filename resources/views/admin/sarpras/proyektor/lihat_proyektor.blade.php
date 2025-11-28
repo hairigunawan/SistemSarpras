@@ -58,11 +58,11 @@
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 fade-in">
                     <div class="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                        @if($proyektor->gambar) <img src="{{ asset('storage/' . $proyektor->gambar) }}" alt="{{ $proyektor->nama_proyektor }}" class="aspect-video w-full rounded-xl object-cover shadow-md"> @else <div class="flex aspect-video w-full items-center justify-center rounded-xl bg-gray-100"> <span class="text-gray-400">Tidak ada gambar</span> </div> @endif
+                        @if($p->gambar) <img src="{{ asset('storage/' . $p->gambar) }}" alt="{{ $p->nama_proyektor }}" class="aspect-video w-full rounded-xl object-cover shadow-md"> @else <div class="flex aspect-video w-full items-center justify-center rounded-xl bg-gray-100"> <span class="text-gray-400">Tidak ada gambar</span> </div> @endif
                     </div>
 
                     @php
-                        $status = $proyektor->status->nama_status ?? 'Unknown';
+                        $status = $p->status->nama_status ?? 'Unknown';
                         $colors = [
                             'Tersedia'   => 'bg-green-50 text-green-700 border-green-200',
                             'Dipakai'    => 'bg-yellow-50 text-yellow-700 border-yellow-200',
@@ -86,7 +86,7 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 fade-in hover-lift">
 
                     <h2 class="text-xl font-semibold text-gray-900 mb-6">
-                        {{ $proyektor->nama_proyektor ?? 'Nama proyektor' }}
+                        {{ $p->nama_proyektor ?? 'Nama proyektor' }}
                     </h2>
 
                     <div class="space-y-6">
@@ -102,30 +102,33 @@
                         {{-- merk --}}
                         <div>
                             <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Merk proyektor</h3>
-                            <p class="mt-1 text-gray-900">{{ $proyektor->merk }}</p>
+                            <p class="mt-1 text-gray-900">{{ $p->merk }}</p>
                         </div>
 
                         <!-- Kode proyektor -->
                         <div>
                             <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Kode proyektor</h3>
                             <p class="text-sm font-medium text-gray-900">
-                                {{ $proyektor->kode_proyektor }}
+                                {{ $p->kode_proyektor }}
                             </p>
                         </div>
 
                         <!-- Actions -->
                         <div class="flex justify-between pt-4 border-t border-blue-100">
 
-                            <a href="{{ route('sarpras.proyektor.edit_proyektor', $proyektor->id_proyektor) }}"
-                               class="px-10 py-1.5 text-sm font-medium text-blue-700 bg-blue-300 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+                            <a href="{{ route('sarpras.proyektor.edit_proyektor', $p->id_proyektor) }}"
+                               class="flex px-8 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+                               <svg class="-ml-1 mr-2 h-5 w-5 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
                                 Edit
                             </a>
 
                             <!-- Tombol Hapus -->
                             <button
                                 type="button"
-                                onclick="openModal('{{ $proyektor->id_proyektor }}')"
-                                class="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 transition"
+                                onclick="openModal('{{ $p->id_proyektor }}')"
+                                class="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-6 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 transition"
                             >
                                 <!-- Icon Trash -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
@@ -137,21 +140,21 @@
                             </button>
 
                             <!-- Modal Konfirmasi -->
-                            <div id="modal-{{ $proyektor->id_proyektor }}"
+                            <div id="modal-{{ $p->id_proyektor }}"
                                 class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
                                 <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm text-center">
                                     <h2 class="text-lg font-semibold text-gray-800 mb-2">Konfirmasi Hapus</h2>
                                     <p class="text-sm text-gray-600 mb-4">
-                                        Apakah Anda yakin ingin menghapus proyektor <b>{{ $proyektor->nama_proyektor }}</b>?
+                                        Apakah Anda yakin ingin menghapus proyektor <b>{{ $p->nama_proyektor }}</b>?
                                     </p>
 
-                                    <form action="{{ route('sarpras.proyektor.destroy', $proyektor->id_proyektor) }}" method="POST">
+                                    <form action="{{ route('sarpras.proyektor.destroy', $p->id_proyektor) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
 
                                         <div class="flex justify-center gap-3 mt-4">
                                             <button type="button"
-                                                    onclick="closeModal('{{ $proyektor->id_proyektor }}')"
+                                                    onclick="closeModal('{{ $p->id_proyektor }}')"
                                                     class="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700">
                                                 Batal
                                             </button>

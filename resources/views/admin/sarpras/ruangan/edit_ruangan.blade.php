@@ -32,26 +32,26 @@
         </div>
     @endif
 
-    <form action="{{ route('sarpras.ruangan.update', $ruangan->id_ruangan) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('sarpras.ruangan.update_ruangan', $r->id_ruangan) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="space-y-4">
 
             <div>
                 <label for="nama_ruangan" class="block text-sm font-medium text-gray-700">Nama Ruangan</label>
-                <input type="text" name="nama_ruangan" id="nama_ruangan" value="{{ old('nama_ruangan', $ruangan->nama_ruangan) }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                <input type="text" name="nama_ruangan" id="nama_ruangan" value="{{ old('nama_ruangan', $r->nama_ruangan) }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 @error('nama_ruangan') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label for="kode_ruangan" class="block text-sm font-medium text-gray-700">Kode Ruangan</label>
-                <input type="text" name="kode_ruangan" id="kode_ruangan" value="{{ old('kode_ruangan', $ruangan->kode_ruangan) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                <input type="text" name="kode_ruangan" id="kode_ruangan" value="{{ old('kode_ruangan', $r->kode_ruangan) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 @error('kode_ruangan') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label for="kapasitas" class="block text-sm font-medium text-gray-700">Kapasitas</label>
-                <input type="number" name="kapasitas" id="kapasitas" value="{{ old('kapasitas', $ruangan->kapasitas) }}" min="1" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                <input type="number" name="kapasitas" id="kapasitas" value="{{ old('kapasitas', $r->kapasitas) }}" min="1" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 @error('kapasitas') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
@@ -59,8 +59,8 @@
                 <label for="lokasi_id" class="block text-sm font-medium text-gray-700">Lokasi</label>
                 <select name="lokasi_id" id="lokasi_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                   <option value="">Pilih Lokasi</option>
-                  @foreach($lokasiList as $id => $lokasi)
-                    <option value="{{ $id }}" {{ old('lokasi_id', $ruangan->lokasi_id) == $id ? 'selected' : '' }}>
+                  @foreach($l as $id => $lokasi)
+                    <option value="{{ $id }}" {{ old('lokasi_id', $r->lokasi_id) == $id ? 'selected' : '' }}>
                       {{ $lokasi }}
                     </option>
                   @endforeach
@@ -73,8 +73,8 @@
                 <label for="id_status" class="block text-sm font-medium text-gray-700">Status</label>
                 <select name="id_status" id="id_status" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                     <option value="">Pilih Status</option>
-                    @foreach($statuses as $status)
-                        <option value="{{ $status->id_status }}" {{ old('id_status', $ruangan->id_status) == $status->id_status ? 'selected' : '' }}>
+                    @foreach($s as $status)
+                        <option value="{{ $status->id_status }}" {{ old('id_status', $r->id_status) == $status->id_status ? 'selected' : '' }}>
                             {{ $status->nama_status }}
                         </option>
                     @endforeach
@@ -85,8 +85,8 @@
             <div>
                 <label for="gambar" class="block text-sm font-medium text-gray-700">Ubah Gambar</label>
                 <div class="rounded border border-gray-500 border-dashed p-2">
-                    @if($ruangan->gambar)
-                        <img src="{{ asset('storage/' . $ruangan->gambar) }}" alt="{{ $ruangan->nama_ruangan }}" class="my-2 h-32 w-auto">
+                    @if($r->gambar)
+                        <img src="{{ asset('storage/' . $r->gambar) }}" alt="{{ $r->nama_ruangan }}" class="my-2 h-32 w-auto">
                     @endif
                     <input type="file" name="gambar" id="gambar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-6 file:rounded-xl file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                 </div>

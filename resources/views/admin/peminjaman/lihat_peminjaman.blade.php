@@ -3,381 +3,343 @@
 @section('title', 'Detail Peminjaman')
 
 @section('content')
-<div class="max-w-full mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
 
-    <!-- Alert Pesan -->
-    @if (session('success'))
-        <div class="mb-4 px-4 py-3 rounded bg-green-100 text-green-800 border border-green-200">
-            {{ session('success') }}
-        </div>
-    @endif
-    @if (session('warning'))
-        <div class="mb-4 px-4 py-3 rounded bg-yellow-100 text-yellow-800 border border-yellow-200">
-            {{ session('warning') }}
-        </div>
-    @endif
-    @if ($errors->any())
-        <div class="mb-4 px-4 py-3 rounded bg-red-100 text-red-800 border border-red-200">
-            <ul class="mb-0 pl-4 list-disc">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <!-- Header with Actions -->
-    <div class="px-6 py-4 border-b border-gray-200">
-        <div class="flex flex-wrap justify-between items-center">
-
-            <!-- Back -->
-            <a href="{{ route('admin.peminjaman.index') }}"
-               class="flex gap-2 text-xl items-center text-gray-800 font-semibold mb-2 sm:mb-0 hover:text-indigo-600 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                    class="text-indigo-600" viewBox="0 0 24 24">
-                    <path fill="none" stroke="currentColor"
-                        stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 18l-6-6l6-6"/>
-                </svg>
-                <span>Detail Peminjaman</span>
-            </a>
-
-            <!-- Action Buttons -->
-            <div class="flex flex-wrap items-center gap-2">
-                    @if ($mainPeminjaman->status_peminjaman == 'Menunggu')
-                    <form action="{{ route('peminjaman.approve', $mainPeminjaman->id_peminjaman) }}" method="POST" class="inline">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit"
-                            onclick="return confirm('Apakah Anda yakin ingin menyetujui peminjaman ini?')"
-                            class="flex items-center gap-2 px-4 py-2 text-sm bg-green-100 text-green-700 font-medium rounded-lg hover:bg-green-200 transition border border-green-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="m9.55 18l-5.7-5.7l1.425-1.425L9.55 15.15l9.175-9.175L20.15 7.4L9.55 18Z"/>
-                            </svg>
-                            <span>Setujui</span>
-                        </button>
-                    </form>
-                    <a href="{{ route('admin.peminjaman.reject.create', $mainPeminjaman->id_peminjaman) }}"
-                       class="flex items-center gap-2 px-4 py-2 text-sm bg-red-100 text-red-700 font-medium rounded-lg hover:bg-red-200 transition border border-red-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
-                        </svg>
-                        <span>Tolak</span>
-                    </a>
-                @elseif ($mainPeminjaman->status_peminjaman == 'Disetujui')
-                    <form action="{{ route('peminjaman.complete', $mainPeminjaman->id_peminjaman) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit"
-                            onclick="return confirm('Apakah Anda yakin ingin menyelesaikan peminjaman ini?')"
-                            class="flex items-center gap-2 px-4 py-2 text-sm bg-indigo-100 text-indigo-700 font-medium rounded-lg hover:bg-indigo-200 transition border border-indigo-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-                                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="m9 11l3 3L22 4m-2 10v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" />
-                            </svg>
-                            <span>Selesaikan</span>
-                        </button>
-                    </form>
-                @endif
-
-                <!-- WA -->
-                <a href="https://wa.me/{{ $mainPeminjaman->nomor_whatsapp ?? ($mainPeminjaman->user->telepon ?? '') }}"
-                   target="_blank"
-                   class="flex items-center gap-2 px-4 py-2 bg-green-500 text-white font-medium text-sm rounded-lg hover:bg-green-600 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                        viewBox="0 0 24 24">
-                        <path fill="currentColor"
-                            d="M19.05 4.95A9.9 9.9 0 0 0 12 2a9.9 9.9
-                            0 0 0-7.05 2.95a9.9 9.9 0 0 0-2.95 7.05A9.9 9.9 0 0 0
-                            12 22a9.9 9.9 0 0 0 7.05-2.95A9.9 9.9 0 0 0 22
-                            12a9.9 9.9 0 0 0-2.95-7.05M16.5
-                            15.3c-.25.5-.85.95-1.4 1.1s-1.1.2-1.7-.15s-1.2-.8-1.7-1.35c-.5-.55-1-1.15-1.35-1.7s-.4-1.15-.15-1.7s.6-1.15 1.1-1.4s.95-.2 1.45 0l.6.35l.2.35c.25.65.15 1.4-.3 1.85l-.5.55c-.1.1-.1.25 0 .35s.2.2.35.35l1.05 1.05c.1.1.25.1.35 0l.55-.5c.45-.45 1.2-.55 1.85-.3l.35.2l.35.6c.2.5 0 1.05-.15 1.3Z"/>
-                    </svg>
-                    <span>Hubungi</span>
+        <!-- Header Section: Judul & Tombol Kembali -->
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <a href="{{ route('admin.peminjaman.index') }}" class="p-2 rounded-lg hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-arrow-left text-gray-600"></i>
                 </a>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- STATUS -->
-    <div class="px-6 py-4">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-800">
-                    {{ $mainPeminjaman->nama_peminjam ?? ($mainPeminjaman->user->name ?? 'N/A') }}
-                </h2>
-                <p class="text-gray-600">{{ $mainPeminjaman->user->email ?? 'Tidak diketahui' }}</p>
-            </div>
-
-            <span class="px-3 py-1 rounded-full text-sm font-medium
-                @if($mainPeminjaman->status_peminjaman == 'Menunggu')
-                    bg-yellow-100 text-yellow-800
-                @elseif($mainPeminjaman->status_peminjaman == 'Disetujui')
-                    bg-green-100 text-green-800
-                @elseif($mainPeminjaman->status_peminjaman == 'Selesai')
-                    bg-blue-100 text-blue-800
-                @elseif($mainPeminjaman->status_peminjaman == 'Ditolak')
-                    bg-red-100 text-red-800
-                @else
-                    bg-gray-100 text-gray-800
-                @endif">
-                {{ $mainPeminjaman->status_peminjaman == 'Menunggu' ? 'Menunggu Konfirmasi' : $mainPeminjaman->status_peminjaman }}
-            </span>
-        </div>
-    </div>
-
-    <!-- INFORMASI PEMINJAMAN -->
-    <div class="px-6 py-2">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
-            Informasi Peminjaman
-        </h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <!-- Kiri -->
-            <div class="space-y-4">
-
-                <x-info-row label="Tanggal Pengajuan"
-                    :value="\Carbon\Carbon::parse($mainPeminjaman->created_at)->translatedFormat('d F Y')" />
-
-                <x-info-row label="Jadwal Pinjam">
-                    {{ \Carbon\Carbon::parse($mainPeminjaman->tanggal_pinjam)->translatedFormat('d F Y') }}<br>
-                    {{ date('H:i', strtotime($mainPeminjaman->jam_mulai)) }}
-                </x-info-row>
-
-                <x-info-row label="Jadwal Kembali">
-                    {{ \Carbon\Carbon::parse($mainPeminjaman->tanggal_kembali)->translatedFormat('d F Y') }}<br>
-                    {{ date('H:i', strtotime($mainPeminjaman->jam_selesai)) }}
-                </x-info-row>
-
-            </div>
-
-            <!-- Kanan -->
-            <div class="space-y-4">
-
-                <x-info-row label="Keterangan" :value="$mainPeminjaman->jenis_kegiatan" />
-
-                <x-info-row label="Sarana & Prasarana">
-                    @if($mainPeminjaman->ruangan && $mainPeminjaman->proyektor)
-                        {{ $mainPeminjaman->ruangan->nama_ruangan }} & {{ $mainPeminjaman->proyektor->nama_proyektor }}
-                    @elseif($mainPeminjaman->ruangan)
-                        {{ $mainPeminjaman->ruangan->nama_ruangan }}
-                    @elseif($mainPeminjaman->proyektor)
-                        {{ $mainPeminjaman->proyektor->nama_proyektor }}
-                    @else
-                        N/A
-                    @endif
-                </x-info-row>
-
-                <x-info-row label="Lokasi"
-                    :value="$mainPeminjaman->ruangan->lokasi->nama_lokasi ?? '-'" />
-
-                <x-info-row label="Alasan Penolakan"
-                    :value="$mainPeminjaman->alasan_penolakan ?? '-'" />
-
-            </div>
-        </div>
-    </div>
-
-    <!-- INFORMASI PEMINJAM -->
-    <div class="px-6 py-4">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
-            Informasi Peminjam
-        </h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <x-info-row label="Nama Lengkap"
-                :value="$mainPeminjaman->nama_peminjam ?? ($mainPeminjaman->user->name ?? 'N/A')" />
-
-            <x-info-row label="Email"
-                :value="$mainPeminjaman->user->email ?? 'Tidak diketahui'" />
-
-            <x-info-row label="Nomor WhatsApp"
-                :value="$mainPeminjaman->nomor_whatsapp ?? ($mainPeminjaman->user->telepon ?? '-')" />
-
-        </div>
-    </div>
-
-
-    <!-- Peminjaman Konflik -->
-    @if (!empty($candidates ?? []) && count($candidates) > 1)
-    <div class="px-6 py-4 border-t border-gray-200">
-        <div class="flex items-center mb-4">
-            <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-800">Peminjaman Konfik Lainnya</h3>
-        </div>
-
-        <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-orange-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm text-orange-800">
-                        <strong>Informasi:</strong> Saat menyetujui peminjaman ini, sistem akan secara otomatis menolak peminjaman lain yang konflik dengan sumber daya dan waktu yang sama.
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Detail Peminjaman</h1>
+                    <p class="text-sm text-gray-500">
+                         &bull; Diajukan pada {{ \Carbon\Carbon::parse($mainPeminjaman->created_at)->format('d M Y') }}
                     </p>
                 </div>
             </div>
+
+            <a href="{{ route('admin.peminjaman.index') }}"
+               class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 hover:bg-gray-50">
+                <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m0 0l6-6m-6 6l6 6"/>
+                </svg>
+                Kembali ke Daftar
+            </a>
         </div>
 
-        <div class="overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peminjam</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sumber Daya</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu Pinjam</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                    </tr>
-                </thead>
+        <!-- Alert Pesan -->
+        @if (session('success'))
+            <div class="mb-6 rounded-md bg-green-50 p-4 border-l-4 border-green-400 shadow-sm">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-green-700">{{ session('success') }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+        @if (session('warning'))
+            <div class="mb-6 rounded-md bg-yellow-50 p-4 border-l-4 border-yellow-400 shadow-sm">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">{{ session('warning') }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="mb-6 rounded-md bg-red-50 p-4 border-l-4 border-red-400 shadow-sm">
+                <div class="ml-3">
+                    <ul class="list-disc pl-5 text-sm text-red-700">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        @endif
 
-                <tbody class="bg-white divide-y divide-gray-200">
+        <!-- Main Card -->
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
 
-                    @foreach ($candidates as $index => $candidate)
-                        <tr class="hover:bg-gray-50 {{ $candidate->id_peminjaman == $mainPeminjaman->id_peminjaman ? 'bg-blue-50' : '' }}">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $index + 1 }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $candidate->nama_peminjam ?? $candidate->user->name ?? 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                @if($candidate->ruangan && $candidate->proyektor)
-                                    {{ $candidate->ruangan->nama_ruangan }} & {{ $candidate->proyektor->nama_proyektor }}
-                                @elseif($candidate->ruangan)
-                                    {{ $candidate->ruangan->nama_ruangan }}
-                                @elseif($candidate->proyektor)
-                                    {{ $candidate->proyektor->nama_proyektor }}
-                                @else
-                                    N/A
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ \Carbon\Carbon::parse($candidate->tanggal_pinjam)->format('d M Y') }}<br>
-                                {{ $candidate->jam_mulai }} - {{ $candidate->jam_selesai }}
-                            </td>
+            <!-- Card Header: Status & Actions -->
+            <div class="px-6 py-5 border-b border-gray-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
-                            <td class="px-6 py-4">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                    @if($candidate->status_peminjaman == 'Menunggu')
-                                        bg-yellow-100 text-yellow-800
-                                    @elseif($candidate->status_peminjaman == 'Disetujui')
-                                        bg-green-100 text-green-800
-                                    @elseif($candidate->status_peminjaman == 'Selesai')
-                                        bg-blue-100 text-blue-800
-                                    @elseif($candidate->status_peminjaman == 'Ditolak')
-                                        bg-red-100 text-red-800
-                                    @else
-                                        bg-gray-100 text-gray-800
-                                    @endif
-                                    ">
-                                    {{ $candidate->status_peminjaman == 'Menunggu' ? 'Menunggu Konfirmasi' : $candidate->status_peminjaman }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                @if($candidate->status_peminjaman == 'Menunggu' && $candidate->id_peminjaman != $mainPeminjaman->id_peminjaman)
-                                    <a href="{{ route('admin.peminjaman.lihat_peminjaman', $candidate->id_peminjaman) }}"
-                                       class="text-indigo-600 hover:text-indigo-900">Lihat</a>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
+                <!-- Status Badge -->
+                <div class="flex items-center gap-3">
+                    <span class="text-gray-500 text-sm">Status:</span>
+                    <span class="px-3 py-1 rounded-full text-sm font-medium
+                        @if($mainPeminjaman->status_peminjaman == 'Menunggu') bg-yellow-100 text-yellow-800
+                        @elseif($mainPeminjaman->status_peminjaman == 'Disetujui') bg-green-100 text-green-800
+                        @elseif($mainPeminjaman->status_peminjaman == 'Selesai') bg-blue-100 text-blue-800
+                        @elseif($mainPeminjaman->status_peminjaman == 'Ditolak') bg-red-100 text-red-800
+                        @else bg-gray-100 text-gray-800 @endif">
+                        {{ $mainPeminjaman->status_peminjaman == 'Menunggu' ? 'Menunggu Konfirmasi' : $mainPeminjaman->status_peminjaman }}
+                    </span>
 
-            </table>
-        </div>
-    </div>
-    @endif
+                    @if($mainPeminjaman->status_peminjaman == 'Ditolak')
+                        <span class="text-xs text-red-600 italic">(Alasan: {{ $mainPeminjaman->alasan_penolakan }})</span>
+                    @endif
+                </div>
 
-</div>
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap items-center gap-2">
+                    @if ($mainPeminjaman->status_peminjaman == 'Menunggu')
+                        <form action="{{ route('peminjaman.approve', $mainPeminjaman->id_peminjaman) }}" method="POST" class="inline">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyetujui peminjaman ini?')"
+                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Setujui
+                            </button>
+                        </form>
 
-<!-- MODAL TOLAK -->
-<div id="rejectModal"
-     class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity">
+                        <button type="button" onclick="openRejectModal('{{ $mainPeminjaman->id_peminjaman }}')"
+                            class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-900 focus:outline-none focus:border-red-900 focus:ring ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            Tolak
+                        </button>
+                    @elseif ($mainPeminjaman->status_peminjaman == 'Disetujui')
+                        <form action="{{ route('peminjaman.complete', $mainPeminjaman->id_peminjaman) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyelesaikan peminjaman ini?')"
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Selesaikan
+                            </button>
+                        </form>
+                    @endif
 
-    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-xl bg-white">
-
-        <div class="mt-3">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium text-gray-900">Alasan Penolakan</h3>
-
-                <button id="closeRejectModal" type="button"
-                    class="text-gray-400 hover:text-gray-500">
-                    <svg class="h-6 w-6" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round"
-                            stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+                    <!-- WA Button -->
+                    <a href="https://wa.me/{{ $mainPeminjaman->user->nomor_telepon ?? '-' }}" target="_blank"
+                       class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+                        <svg class="w-4 h-4 mr-2 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                        </svg>
+                        WhatsApp
+                    </a>
+                </div>
             </div>
 
-            <form id="rejectForm" action="#"
-                method="POST"
-                data-action-template="{{ route('peminjaman.reject', ['id' => ':peminjaman_id']) }}">
+            <!-- Informasi Peminjaman -->
+            <div class="border-b border-gray-200 px-4 py-5 sm:p-0">
+                <dl class="sm:divide-y sm:divide-gray-200">
 
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Informasi Detail</h3>
+                        <p class="mt-1 max-w-2xl text-sm text-gray-500">Rincian lengkap mengenai pengajuan peminjaman.</p>
+                    </div>
+
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-50">
+                        <dt class="text-sm font-medium text-gray-500">Nama Peminjam</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 font-semibold">
+                            {{ $mainPeminjaman->nama_peminjam ?? ($mainPeminjaman->user->name ?? 'N/A') }}
+                            <span class="text-gray-500 font-normal ml-2">({{ $mainPeminjaman->user->email ?? '-' }})</span>
+                        </dd>
+                    </div>
+
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Jenis Kegiatan / Keterangan</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ $mainPeminjaman->jenis_kegiatan }}</dd>
+                    </div>
+
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-50">
+                        <dt class="text-sm font-medium text-gray-500">Sarpras yang Dipinjam</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            @if($mainPeminjaman->ruangan && $mainPeminjaman->proyektor)
+                                <span class="inline-flex items-center py-0.5 rounded-md text-sm font-medium">
+                                    {{ $mainPeminjaman->ruangan->nama_ruangan }}
+                                </span>
+                                <span class="text-gray-400">+</span>
+                                <span class="inline-flex items-center py-0.5 rounded-md text-sm font-medium">
+                                    {{ $mainPeminjaman->proyektor->nama_proyektor }}
+                                </span>
+                            @elseif($mainPeminjaman->ruangan)
+                                <span class="inline-flex items-center py-0.5 rounded-md text-sm font-medium">
+                                    {{ $mainPeminjaman->ruangan->nama_ruangan }}
+                                </span>
+                            @elseif($mainPeminjaman->proyektor)
+                                <span class="inline-flex items-center py-0.5 rounded-md text-sm font-medium">
+                                    {{ $mainPeminjaman->proyektor->nama_proyektor }}
+                                </span>
+                            @else
+                                <span class="text-gray-500 italic">Tidak ada fasilitas spesifik</span>
+                            @endif
+                        </dd>
+                    </div>
+
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Lokasi</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ $mainPeminjaman->ruangan->lokasi->nama_lokasi ?? '-' }}</dd>
+                    </div>
+
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-50">
+                        <dt class="text-sm font-medium text-gray-500">Jadwal Peminjaman</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <div class="flex flex-col sm:flex-row sm:gap-8">
+                                <div>
+                                    <span class="block text-xs text-gray-500 uppercase tracking-wide">Mulai</span>
+                                    <span class="font-medium">{{ \Carbon\Carbon::parse($mainPeminjaman->tanggal_pinjam)->translatedFormat('d F Y') }}</span>
+                                    <span class="text-gray-600">Pukul {{ date('H:i', strtotime($mainPeminjaman->jam_mulai)) }}</span>
+                                </div>
+                                <div class="hidden sm:block border-l border-gray-300"></div>
+                                <div>
+                                    <span class="block text-xs text-gray-500 uppercase tracking-wide">Selesai</span>
+                                    <span class="font-medium">{{ \Carbon\Carbon::parse($mainPeminjaman->tanggal_pinjam)->translatedFormat('d F Y') }}</span>
+                                    <span class="text-gray-600">Pukul {{ date('H:i', strtotime($mainPeminjaman->jam_selesai)) }}</span>
+                                </div>
+                            </div>
+                        </dd>
+                    </div>
+
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Kontak (WhatsApp)</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ $mainPeminjaman->user->nomor_telepon ?? '-' }}</dd>
+                    </div>
+
+                </dl>
+            </div>
+        </div>
+
+        <!-- Konflik / Kandidat Lain (Jika Ada) -->
+        @if (!empty($candidates ?? []) && count($candidates) > 1)
+            <div class="mt-8 bg-white overflow-hidden shadow-sm sm:rounded-lg border border-orange-200">
+                <div class="px-6 py-5 border-b border-orange-100 bg-orange-50 flex items-center">
+                    <div class="flex-shrink-0 bg-orange-100 rounded-full p-2">
+                        <svg class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-orange-900">Terdeteksi Konflik Jadwal</h3>
+                        <p class="text-sm text-orange-700">Menyetujui peminjaman ini akan otomatis menolak peminjaman lain di bawah ini.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peminjam</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fasilitas</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach ($candidates as $candidate)
+                                <tr class="{{ $candidate->id_peminjaman == $mainPeminjaman->id_peminjaman ? 'bg-blue-50' : 'hover:bg-gray-50' }}">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {{ $candidate->nama_peminjam ?? $candidate->user->name }}
+                                        @if($candidate->id_peminjaman == $mainPeminjaman->id_peminjaman)
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">Sedang Dilihat</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ $candidate->ruangan->nama_ruangan ?? '' }} {{ $candidate->proyektor ? '& ' . $candidate->proyektor->nama_proyektor : '' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ \Carbon\Carbon::parse($candidate->tanggal_pinjam)->format('d/m/Y') }} <br>
+                                        {{ $candidate->jam_mulai }} - {{ $candidate->jam_selesai }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                            {{ $candidate->status_peminjaman == 'Menunggu' ? 'bg-yellow-100 text-yellow-800' :
+                                               ($candidate->status_peminjaman == 'Disetujui' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800') }}">
+                                            {{ $candidate->status_peminjaman }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        @if($candidate->id_peminjaman != $mainPeminjaman->id_peminjaman)
+                                            <a href="{{ route('admin.peminjaman.lihat_peminjaman', $candidate->id_peminjaman) }}" class="text-indigo-600 hover:text-indigo-900">Lihat Detail</a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endif
+
+    </div>
+</div>
+
+<!-- MODAL TOLAK (Hidden by default) -->
+<div id="rejectModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeModal()"></div>
+
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <form id="rejectForm" action="#" method="POST" data-action-template="{{ route('peminjaman.reject', ['id' => ':peminjaman_id']) }}">
                 @csrf
                 @method('PATCH')
 
-                <div class="mt-2 px-2 py-3">
-                    <textarea name="alasan_penolakan"
-                        class="w-full h-32 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Masukkan alasan penolakan..." required></textarea>
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Tolak Peminjaman</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 mb-4">
+                                    Silakan masukkan alasan penolakan untuk memberitahu peminjam.
+                                </p>
+                                <textarea name="alasan_penolakan" rows="4"
+                                    class="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-gray-300 rounded-md p-3"
+                                    placeholder="Tuliskan alasan penolakan di sini..."
+                                    required></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="flex items-center justify-end space-x-3 px-2 py-3">
-                    <button type="button" id="cancelRejectBtn"
-                        class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg">
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Tolak Sekarang
+                    </button>
+                    <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                         Batal
                     </button>
-
-                    <button type="submit"
-                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg">
-                        Tolak Pengajuan
-                    </button>
                 </div>
-
             </form>
         </div>
-
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    // Simple vanilla JS for Modal
     const rejectModal = document.getElementById('rejectModal');
     const rejectForm = document.getElementById('rejectForm');
-    const cancelReject = document.getElementById('cancelRejectBtn');
-    const modalCloseBtn = document.getElementById('closeRejectModal');
 
-    // OPEN MODAL
-    window.openRejectModal = function(id) {
+    function openRejectModal(id) {
         const template = rejectForm.getAttribute('data-action-template');
         rejectForm.action = template.replace(':peminjaman_id', id);
         rejectModal.classList.remove('hidden');
     }
 
-    // CLOSE MODAL
     function closeModal() {
         rejectModal.classList.add('hidden');
         rejectForm.reset();
-        rejectForm.action = "#";
     }
-
-    cancelReject.addEventListener('click', closeModal);
-    modalCloseBtn.addEventListener('click', closeModal);
-
-    rejectModal.addEventListener('click', function(e){
-        if (e.target === rejectModal) closeModal();
-    });
-});
 </script>
 @endsection

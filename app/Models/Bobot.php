@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Bobot extends Model
 {
-    protected $fillable = ['nama', 'nilai', 'keterangan_bobot'];
+    use HasFactory;
 
-    public function prioritas()
-    {
-        return $this->belongsTo(Prioritas::class, 'nama_prioritas', 'nama');
-    }
+    protected $table = 'bobots';
+    protected $fillable = ['nama', 'nilai', 'keterangan_bobot'];
 }

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Exception;
 
 class Proyektor extends Model
 {
@@ -20,6 +22,8 @@ class Proyektor extends Model
         'id_status'
     ];
 
+    // --- RELASI ---
+
     public function status()
     {
         return $this->belongsTo(Status::class, 'id_status', 'id_status');
@@ -33,5 +37,93 @@ class Proyektor extends Model
     public function feedback()
     {
         return $this->hasMany(Feedback::class, 'id_proyektor', 'id_proyektor');
+    }
+
+    // --- LOGIKA BISNIS (OOP / CRUD Methods) ---
+
+    /**
+     * Scope untuk memfilter data (Search & Filter Status)
+     */
+    public function scopeFilter($query, array $filters)
+    {
+        $query->with(['status']);
+
+        if (isset($filters['nama_status']) && $filters['nama_status']) {
+            $query->whereHas('status', function ($q) use ($filters) {
+                $q->where('nama_status', $filters['nama_status']);
+            });
+        }
+
+        if (isset($filters['search']) && $filters['search']) {
+            $query->where('nama_proyektor', 'like', '%' . $filters['search'] . '%');
+        }
+
+        return $query;
+    }
+
+    /**
+     * Handle logika Create Proyektor beserta upload gambar
+     */
+    public static function Submit(array $data, $imageFile = null)
+    {
+        // Path default jika tidak ada gambar (opsional, sesuaikan dengan kebutuhan)
+        $path = null;
+
+        if ($imageFile) {
+            $path = self::uploadImage($imageFile);
+        }
+
+        $data['gambar'] = $path;
+
+        return self::create($data);
+    }
+
+    /**
+     * Handle logika Update Proyektor beserta replace gambar
+     */
+    public function updateProyektor(array $data, $imageFile = null)
+    {
+        if ($imageFile) {
+            // Hapus gambar lama jika ada
+            $this->removeImage();
+            // Upload yang baru
+            $data['gambar'] = self::uploadImage($imageFile);
+        }
+
+        return $this->update($data);
+    }
+
+    /**
+     * Handle logika Delete Proyektor dengan pengecekan status dan relasi
+     */
+    public function hapusProyektor()
+    {
+        // Cek 1: Apakah sedang dipinjam?
+        if ($this->status && $this->status->nama_status === 'Dipinjam') {
+            throw new Exception('Proyektor sedang dipinjam dan tidak dapat dihapus.');
+        }
+
+        // Cek 2: Apakah ada riwayat peminjaman?
+        if ($this->peminjamans()->exists()) {
+            throw new Exception('Proyektor memiliki riwayat peminjaman dan tidak dapat dihapus.');
+        }
+
+        // Jika lolos, hapus gambar dan record
+        $this->removeImage();
+        return $this->delete();
+    }
+
+    // --- HELPER PRIVATE ---
+
+    private static function uploadImage($file)
+    {
+        return $file->store('proyektor', 'public');
+    }
+
+    private function removeImage()
+    {
+        if ($this->gambar && Storage::disk('public')->exists($this->gambar)) {
+            Storage::disk('public')->delete($this->gambar);
+        }
     }
 }

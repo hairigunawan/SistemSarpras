@@ -13,7 +13,7 @@
             <!-- Filter Periode -->
             <div class="flex items-center gap-4">
                 <label for="periode" class="text-sm font-medium text-gray-700">Filter Periode:</label>
-                <select id="periode" name="periode" onchange="updateFilters()" class="p-2 text-sm text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <select id="periode" name="periode" onchange="updateFilters()" class="p-2 text-sm text-gray-700 border border-gray-300 rounded-lg">
                     <option value="perbulan" {{ $periode == 'perbulan' ? 'selected' : '' }}>Perbulan</option>
                     <option value="persemester" {{ $periode == 'persemester' ? 'selected' : '' }}>Persemester</option>
                 </select>
@@ -24,7 +24,7 @@
             </form>
         <div class="flex gap-3">
             <a href="{{ route('laporan.pdf', ['periode' => $periode]) }}"
-               class="flex items-center gap-2 px-4 py-1.5 text-white text-sm bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
+               class="flex gap-3 px-3 py-2 text-white transition bg-blue-500 rounded-lg items-center text-sm shadow hover:bg-blue-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 10.5L12 15m0 0l4.5-4.5M12 15V3" />
                 </svg>
@@ -32,7 +32,7 @@
             </a>
 
             <a href="{{ route('laporan.excel', ['periode' => $periode]) }}"
-               class="flex items-center gap-2 px-4 py-1.5 text-white text-sm bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
+               class="flex gap-3 px-3 py-2 text-sm items-center text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5h7.5M8.25 9h7.5M8.25 13.5h7.5M4.5 19.5h15M4.5 3h15a1.5 1.5 0 011.5 1.5v18a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 22.5v-18A1.5 1.5 0 014.5 3z" />
                 </svg>
@@ -53,6 +53,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 2.25h6a2.25 2.25 0 012.25 2.25v15a2.25 2.25 0 01-2.25 2.25H9A2.25 2.25 0 016.75 19.5v-15A2.25 2.25 0 019 2.25z" />
                 </svg>
             </div>
+
         </div>
 
         <div class="flex items-center justify-between p-5 text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl">
@@ -82,16 +83,11 @@
         </div>
     </div>
 
-    <!-- Periode Label -->
-    <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <p class="text-sm text-blue-800"><strong>Periode Aktif:</strong> {{ $periodeLabel }}</p>
-    </div>
-
     <!-- Peminjam Teratas & Sarpras Terpopuler -->
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
         <!-- Peminjam Teratas -->
         <div class="p-5 bg-white shadow rounded-xl">
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center justify-between mb-6">
                 <h2 class="font-semibold text-gray-800">Peminjam Teratas</h2>
                 <span class="text-xs text-gray-500">({{ $periodeLabel }})</span>
             </div>
@@ -103,11 +99,11 @@
                             {{ $index + 1 }}
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800">{{ $peminjam['nama'] }}</p>
-                            <p class="text-sm text-gray-500">{{ $peminjam['email'] }}</p>
+                            <p class="text-sm font-semibold text-gray-800">{{ $peminjam['nama'] }}</p>
+                            <p class="text-xs text-gray-500">{{ $peminjam['email'] }}</p>
                         </div>
                     </div>
-                    <span class="text-sm text-gray-700">{{ $peminjam['jumlah'] }} Peminjaman</span>
+                    <span class="text-xs text-gray-700">{{ $peminjam['jumlah'] }} Peminjaman</span>
                 </li>
                 @empty
                 <li class="text-sm text-gray-500">Tidak ada data peminjam teratas.</li>
@@ -117,7 +113,7 @@
 
         <!-- Sarpras Terpopuler -->
         <div class="p-5 bg-white shadow rounded-xl">
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center justify-between mb-6">
                 <h2 class="font-semibold text-gray-800">Sarpras Terpopuler</h2>
                 <span class="text-xs text-gray-500">({{ $periodeLabel }})</span>
             </div>
@@ -129,11 +125,11 @@
                             {{ $index + 1 }}
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800">{{ $sarpras['nama'] }}</p>
-                            <p class="text-sm text-gray-500">{{ $sarpras['lokasi' ?? 'merk_'] }}</p>
+                            <p class="text-sm font-semibold text-gray-800">{{ $sarpras['nama'] }}</p>
+                            <p class="text-xs text-gray-500">{{ $sarpras['lokasi' ?? 'merk_'] }}</p>
                         </div>
                     </div>
-                    <span class="text-sm text-gray-700">{{ $sarpras['jumlah'] }} Peminjaman</span>
+                    <span class="text-xs text-gray-700">{{ $sarpras['jumlah'] }} Peminjaman</span>
                 </li>
                 @empty
                 <li class="text-sm text-gray-500">Tidak ada data sarpras terpopuler.</li>

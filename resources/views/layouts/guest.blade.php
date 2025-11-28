@@ -14,9 +14,9 @@
             @yield('content')
         </main>
 
-        <footer class="bg-white border-t">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <p class="text-center text-sm text-gray-500">© 2025 SIMPERSITE. All rights reserved.</p>
+        <footer class="bg-white border-t border-gray-200 py-8 mt-auto">
+            <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+                <p>&copy; {{ date('Y') }} SIMPERSITE - Jurusan Teknologi Informasi Politeknik Negeri Tanah Laut. All rights reserved.</p>
             </div>
         </footer>
     </div>
@@ -131,6 +131,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {{-- Auto-hide notification setelah 5 detik --}}
     <script>

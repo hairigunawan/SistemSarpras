@@ -3,94 +3,157 @@
 @section('title', 'Data Peminjaman')
 
 @section('content')
-<div class="bg-white rounded-lg p-6">
-    <div class="flex justify-between">
-        <div>
-            <h2 class="text-xl text-gray-700 font-semibold mb-1">Peminjaman</h2>
-            <p class="text-gray-500 mb-6">Kelola data peminjaman sarpras</p>
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header & Search Section -->
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Data Peminjaman</h1>
+                <p class="text-sm text-gray-500">Kelola daftar pengajuan peminjaman sarana & prasarana.</p>
+            </div>
+
+            <form method="GET" action="{{ route('admin.peminjaman.index') }}" class="relative">
+                @if(request('status'))
+                    <input type="hidden" name="status" value="{{ request('status') }}">
+                @endif
+
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        class="block w-full sm:w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm shadow-sm"
+                        placeholder="Cari nama peminjam...">
+                </div>
+            </form>
         </div>
-        <form method="GET" action="{{ route('admin.peminjaman.index') }}" class="flex items-center space-x-2">
-            @if(request('jenis'))
-                <input type="hidden" name="nama" value="{{ request('nama') }}">
+
+        <!-- Filter Tabs -->
+        <div class="mb-6 border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
+                @php
+                    $tabs = [
+                        'all' => 'Semua',
+                        'Menunggu' => 'Menunggu',
+                        'Disetujui' => 'Disetujui',
+                        'Ditolak' => 'Ditolak',
+                        'Selesai' => 'Selesai'
+                    ];
+                    $currentStatus = request('status', 'all');
+                @endphp
+
+                @foreach($tabs as $key => $label)
+                    <a href="{{ route('admin.peminjaman.index', ['status' => $key]) }}"
+                       class="{{ $currentStatus == $key
+                            ? 'border-blue-500 text-blue-600'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}
+                            whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                        {{ $label }}
+                    </a>
+                @endforeach
+            </nav>
+        </div>
+
+        <!-- Table Card -->
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">No</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peminjam</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sarana Prasarana</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Pinjam</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse($peminjaman as $item)
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $loop->iteration }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ $item->nama_peminjam ?? $item->user->name ?? 'N/A' }}
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        {{ $item->user->userRole->nama_role ?? '-' }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    @if($item->ruangan && $item->proyektor)
+                                        <div class="flex flex-col gap-1">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium w-fit">
+                                                {{ $item->ruangan->nama_ruangan }}
+                                            </span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium w-fit">
+                                                {{ $item->proyektor->nama_proyektor }}
+                                            </span>
+                                        </div>
+                                    @elseif($item->ruangan)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium">
+                                            {{ $item->ruangan->nama_ruangan }}
+                                        </span>
+                                    @elseif($item->proyektor)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium">
+                                            {{ $item->proyektor->nama_proyektor }}
+                                        </span>
+                                    @else
+                                        <span class="text-gray-400 italic text-xs">Tidak spesifik</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    {{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d M Y') }}
+                                    <div class="text-xs text-gray-500">
+                                        {{ $item->jam_mulai }} - {{ $item->jam_selesai }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-medium rounded-full
+                                        @if($item->status_peminjaman == 'Menunggu') bg-yellow-100 text-yellow-800
+                                        @elseif($item->status_peminjaman == 'Disetujui') bg-green-100 text-green-800
+                                        @elseif($item->status_peminjaman == 'Ditolak') bg-red-100 text-red-800
+                                        @elseif($item->status_peminjaman == 'Selesai') bg-blue-100 text-blue-800
+                                        @else bg-gray-100 text-gray-800 @endif">
+                                        {{ $item->status_peminjaman }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                    <a href="{{ route('admin.peminjaman.lihat_peminjaman', $item->id_peminjaman) }}"
+                                       class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors">
+                                        Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-6 py-10 text-center text-gray-500">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <svg class="h-10 w-10 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                        </svg>
+                                        <p class="text-base font-medium">Tidak ada data peminjaman.</p>
+                                        <p class="text-sm mt-1">Coba ubah filter status atau kata kunci pencarian.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination (Jika ada) -->
+            @if(method_exists($peminjaman, 'links'))
+                <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                    {{ $peminjaman->withQueryString()->links() }}
+                </div>
             @endif
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari peminjam" class="w-full md:w-64 px-4 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300">
-        </form>
-    </div>
-
-    <div class="flex justify-between">
-        <div class="border-b w-70 py-2 mb-4">
-            <a href="{{ route('admin.peminjaman.index', ['status' => 'all']) }}" class="py-2 text-sm px-3 ml-1 {{ $status == 'all' ? 'border-b border-#179ACE font-semibold text-[#179ACE]' : 'text-gray-500 hover:text-[#179ACE]' }}">Semua</a>
-            <a href="{{ route('admin.peminjaman.index', ['status' => 'Menunggu']) }}" class="py-2 text-sm px-3 {{ $status == 'Menunggu' ? 'border-b border-#179ACE font-semibold text-[#179ACE]' : 'text-gray-500 hover:text-[#179ACE]' }}">Menunggu</a>
-            <a href="{{ route('admin.peminjaman.index', ['status' => 'Disetujui']) }}" class="py-2 text-sm px-3 {{ $status == 'Disetujui' ? 'border-b border-#179ACE font-semibold text-[#179ACE]' : 'text-gray-500 hover:text-[#179ACE]' }}">Disetujui</a>
-            <a href="{{ route('admin.peminjaman.index', ['status' => 'Ditolak']) }}" class="py-2 text-sm px-3 {{ $status == 'Ditolak' ? 'border-b border-#179ACE font-semibold text-[#179ACE]' : 'text-gray-500 hover:text-[#179ACE]' }}">Ditolak</a>
-            <a href="{{ route('admin.peminjaman.index', ['status' => 'Selesai']) }}" class="py-2 text-sm px-3 mr-1 {{ $status == 'Selesai' ? 'border-b border-#179ACE font-semibold text-[#179ACE]' : 'text-gray-500 hover:text-[#179ACE]' }}">Selesai</a>
         </div>
-    </div>
-
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-t">
-            <thead>
-                <tr class="text-gray-500 text-sm">
-                    <th class="py-3 px-2 font-medium">No</th>
-                    <th class="py-3 px-2 font-medium">Role</th>
-                    <th class="py-3 px-2 font-medium">Peminjam</th>
-                    <th class="py-3 px-2 font-medium">Nama Sarpras</th>
-                    <th class="py-3 px-2 font-medium">Hari Pengajuan</th>
-                    <th class="py-3 px-2 font-medium">Status</th>
-                    <th class="flex justify-center py-3 px-2 font-medium">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($peminjaman as $item)
-                <tr class="border-t">
-                    <td class="py-4 px-2">{{ $loop->iteration }}</td>
-                    <td class="py-4 px-2 forn-medium text-sm text-gray-700">{{ $item->user->userRole->nama_role }}</td>
-                    <td class="py-4 px-2 font-medium text-gray-700 text-sm">{{ $item->nama_peminjam ?? $item->user->name ?? 'N/A' }}</td>
-                    <td class="py-4 px-2 forn-medium text-sm text-gray-700">
-                        @if($item->ruangan && $item->proyektor)
-                            {{ $item->ruangan->nama_ruangan }} & {{ $item->proyektor->nama_proyektor }}
-                        @elseif($item->ruangan)
-                            {{ $item->ruangan->nama_ruangan }}
-                        @elseif($item->proyektor)
-                            {{ $item->proyektor->nama_proyektor }}
-                        @else
-                            N/A
-                        @endif
-                    </td>
-                    <td class="py-4 px-2 forn-medium text-sm text-gray-700">
-                        {{ $item->tanggal_pinjam }}
-                    </td>
-                    <td class="py-4 px-2">
-                        @if($item->status_peminjaman == 'Menunggu')
-                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-3 py-1.5 rounded">Menunggu</span>
-                        @elseif($item->status_peminjaman == 'Disetujui')
-                        <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-3 py-1.5 rounded">Disetujui</span>
-                        @elseif($item->status_peminjaman == 'Ditolak')
-                        <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-3 py-1.5 rounded">Ditolak</span>
-                        @elseif($item->status_peminjaman == 'Selesai')
-                        <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-3 py-1.5 rounded">Selesai</span>
-                        @else
-                        <span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-3 py-1.5 rounded">{{ $item->status_peminjaman }}</span>
-                        @endif
-                    </td>
-
-                    @if($item->status_peminjaman == 'Menunggu')
-                    <td class="grid justify-center py-4 px-2">
-                        <a href="{{ route('admin.peminjaman.lihat_peminjaman', $item->id_peminjaman) }}" class="hover:bg-gray-200 px-4 py-2 rounded-lg forn-medium text-sm text-gray-700">View Details</a>
-                    </td>
-                    @else
-                    <td class="py-4 px-2 items-center">
-                        <a href="{{ route('admin.peminjaman.lihat_peminjaman', $item->id_peminjaman) }}" class="hover:bg-gray-200 px-4 py-2 rounded-lg font-medium text-sm text-gray-700">View Details</a>
-                    </td>
-                    @endif
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" class="py-4 px-2 text-center text-gray-500">Tidak ada data peminjaman</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
     </div>
 </div>
 @endsection

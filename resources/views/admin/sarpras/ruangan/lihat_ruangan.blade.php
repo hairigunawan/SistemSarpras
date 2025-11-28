@@ -57,11 +57,11 @@
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 fade-in">
                     <div class="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                        @if($ruangan->gambar) <img src="{{ asset('storage/' . $ruangan->gambar) }}" alt="{{ $ruangan->nama_ruangan }}" class="aspect-video w-full rounded-xl object-cover shadow-md"> @else <div class="flex aspect-video w-full items-center justify-center rounded-xl bg-gray-100"> <span class="text-gray-400">Tidak ada gambar</span> </div> @endif
+                        @if($r->gambar) <img src="{{ asset('storage/' . $r->gambar) }}" alt="{{ $r->nama_ruangan }}" class="aspect-video w-full rounded-xl object-cover shadow-md"> @else <div class="flex aspect-video w-full items-center justify-center rounded-xl bg-gray-100"> <span class="text-gray-400">Tidak ada gambar</span> </div> @endif
                     </div>
 
                     @php
-                        $status = $ruangan->status->nama_status ?? 'Unknown';
+                        $status = $r->status->nama_status ?? 'Unknown';
                         $colors = [
                             'Tersedia'   => 'bg-green-50 text-green-700 border-green-200',
                             'Dipakai'    => 'bg-yellow-50 text-yellow-700 border-yellow-200',
@@ -89,7 +89,7 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 fade-in hover-lift">
 
                     <h2 class="text-xl font-semibold text-gray-900 mb-6">
-                        {{ $ruangan->nama_ruangan ?? 'Nama Ruangan' }}
+                        {{ $r->nama_ruangan ?? 'Nama Ruangan' }}
                     </h2>
 
                     <div class="space-y-6">
@@ -106,7 +106,7 @@
                         <div>
                             <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Kode Ruangan</h3>
                             <p class="text-sm font-medium text-gray-900">
-                                {{ $ruangan->kode_ruangan }}
+                                {{ $r->kode_ruangan }}
                             </p>
                         </div>
 
@@ -114,7 +114,7 @@
                         <div>
                             <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Lokasi</h3>
                             <p class="text-sm font-medium text-gray-900">
-                                {{ $ruangan->lokasi->nama_lokasi }}
+                                {{ $r->lokasi->nama_lokasi }}
                             </p>
                         </div>
 
@@ -122,20 +122,23 @@
                         <div>
                             <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Kapasitas</h3>
                             <p class="text-sm font-medium text-gray-900">
-                                {{ $ruangan->kapasitas }} Orang
+                                {{ $r->kapasitas }} Orang
                             </p>
                         </div>
 
                         <div class="flex justify-between pt-4 border-t border-blue-100">
-                            <a href="{{ route('sarpras.ruangan.edit_ruangan', $ruangan->id_ruangan) }}"
-                               class="px-12 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+                            <a href="{{ route('sarpras.ruangan.edit_ruangan', $r->id_ruangan) }}"
+                               class="flex px-8 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+                               <svg class="-ml-1 mr-2 h-5 w-5 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
                                 Edit
                             </a>
 
-                            <button 
+                            <button
                                 type="button"
-                                onclick="openModal('{{ $ruangan->id_ruangan }}')"
-                                class="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 transition">
+                                onclick="openModal('{{ $r->id_ruangan }}')"
+                                class="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-6 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -145,21 +148,21 @@
                             </button>
 
                             <!-- Modal Konfirmasi -->
-                            <div id="modal-{{ $ruangan->id_ruangan }}" 
+                            <div id="modal-{{ $r->id_ruangan }}"
                                 class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
                                 <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm text-center">
                                     <h2 class="text-lg font-semibold text-gray-800 mb-2">Konfirmasi Hapus</h2>
                                     <p class="text-sm text-gray-600 mb-4">
-                                        Apakah Anda yakin ingin menghapus ruangan <b>{{ $ruangan->nama_ruangan }}</b>?
+                                        Apakah Anda yakin ingin menghapus ruangan <b>{{ $r->nama_ruangan }}</b>?
                                     </p>
 
-                                    <form action="{{ route('sarpras.ruangan.destroy', $ruangan->id_ruangan) }}" method="POST">
+                                    <form action="{{ route('sarpras.ruangan.destroy', $r->id_ruangan) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
 
                                         <div class="flex justify-center gap-3 mt-4">
-                                            <button type="button" 
-                                                    onclick="closeModal('{{ $ruangan->id_ruangan }}')"
+                                            <button type="button"
+                                                    onclick="closeModal('{{ $r->id_ruangan }}')"
                                                     class="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700">
                                                 Batal
                                             </button>

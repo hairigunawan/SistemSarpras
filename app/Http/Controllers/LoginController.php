@@ -28,33 +28,30 @@ class LoginController extends Controller
         ]);
 
         // Cek apakah user dengan email ini ada
-        $user = User::where('email', $request->email)->first();
+        $u = User::where('email', $request->email)->first();
 
-        if (!$user) {
+        if (!$u) {
             return back()->withErrors([
                 'email' => 'Email tidak ditemukan.',
             ]);
         }
 
-        // Cek apakah user adalah admin
-        if ($user->userRole->nama_role !== 'Admin') {
-            return back()->withErrors([
-                'email' => 'Hanya admin yang dapat login dengan email dan password. Gunakan login Google untuk user lainnya.',
-            ]);
-        }
-
-        // Cek password untuk admin
-        if (!Hash::check($request->password, $user->password)) {
+        // Cek password
+        if (!Hash::check($request->password, $u->password)) {
             return back()->withErrors([
                 'password' => 'Password salah.',
             ]);
         }
 
-        // Login admin
-        Auth::login($user);
+        // Login user
+        Auth::login($u);
 
-        // Arahkan langsung ke dashboard admin
-        return redirect()->route('admin.dashboard.index');
+        // Arahkan user berdasarkan peran
+        if ($u->userRole->nama_role === 'Admin') {
+            return redirect()->route('admin.dashboard.index');
+        } else {
+            return redirect()->route('public.beranda.index.auth');
+        }
     }
 
     public function logout(Request $request)
@@ -71,6 +68,7 @@ class LoginController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'nomor_telepon' => 'required|string|regex:/^08[0-9]{8,12}$/|unique:users,nomor_telepon',
             'role' => 'required|in:Dosen,Mahasiswa',
             'password' => 'required|string|min:8|confirmed',
         ]);
@@ -81,14 +79,15 @@ class LoginController extends Controller
             return back()->withErrors(['role' => 'Role tidak ditemukan.'])->withInput();
         }
 
-        $user = User::create([
+        $u = User::create([
             'nama' => $validated['nama'],
             'email' => $validated['email'],
+            'nomor_telepon' => $validated['nomor_telepon'],
             'password' => Hash::make($validated['password']),
             'role_id' => $role->id_role,
         ]);
 
-        Auth::login($user);
+        Auth::login($u);
 
         if (in_array($role->nama_role, ['Dosen', 'Mahasiswa'])) {
             return redirect()->route('public.beranda.index.auth');

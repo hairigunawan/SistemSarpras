@@ -35,7 +35,7 @@
                                    focus:ring-1 focus:ring-[#8bc9e2] focus:border-transparent focus:outline-none
                                    transition-all duration-200 appearance-none bg-white">
                             <option value="">Semua Status</option>
-                            @foreach($statuses as $status)
+                            @foreach($s as $status)
                                 <option value="{{ $status->nama_status }}">{{ $status->nama_status }}</option>
                             @endforeach
                         </select>
@@ -64,8 +64,8 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 p-4">
 
             <!-- Menampilkan data ruangan -->
-            @if(isset($ruangans))
-                @foreach ($ruangans as $item)
+            @if(isset($r))
+                @foreach ($r as $item)
                     <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
 
                         <!-- Gambar stabil -->
@@ -105,8 +105,8 @@
             @endif
 
             <!-- Menampilkan data proyektor -->
-            @if(isset($proyektors))
-                @foreach ($proyektors as $item)
+            @if(isset($p))
+                @foreach ($p as $item)
                     <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
 
                         <!-- Gambar stabil -->
@@ -136,7 +136,7 @@
                                 <span class="text-sm text-gray-500">Proyektor</span>
                             </div>
 
-                            <a href="{{ route('sarpras.ruangan.lihat_ruangan', $item->id_proyektor) }}"
+                            <a href="{{ route('sarpras.proyektor.lihat_proyektor', $item->id_proyektor) }}"
                             class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-1.5 border border-gray-200 rounded-lg text-xs font-normal transition">
                                 Lihat Detail
                             </a>

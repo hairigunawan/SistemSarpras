@@ -71,15 +71,33 @@ class LaporanController extends Controller
 
     public function index(Request $request)
     {
-        $periode = $request->get('periode', 'perbulan');
-        $dateRange = $this->getDateRange($periode);
-        $startDate = $dateRange['startDate'];
-        $endDate = $dateRange['endDate'];
+        // Default periode set ke 'persemester' agar sesuai keinginan Anda
+        $periode = $request->get('periode', 'persemester');
 
-        // Hitung total peminjaman dengan filter periode
+        // Inisialisasi variabel tanggal
+        $startDate = null;
+        $endDate = null;
+
+        if ($periode == 'persemester') {
+            $bulanSekarang = Carbon::now()->month;
+            $tahunSekarang = Carbon::now()->year;
+
+            if ($bulanSekarang >= 1 && $bulanSekarang <= 6) {
+                $startDate = Carbon::create($tahunSekarang, 1, 1)->format('Y-m-d');
+                $endDate   = Carbon::create($tahunSekarang, 6, 30)->format('Y-m-d');
+            } else {
+                $startDate = Carbon::create($tahunSekarang, 7, 1)->format('Y-m-d');
+                $endDate   = Carbon::create($tahunSekarang, 12, 31)->format('Y-m-d');
+            }
+        }
+        else {
+            $dateRange = $this->getDateRange($periode);
+            $startDate = $dateRange['startDate'];
+            $endDate   = $dateRange['endDate'];
+        }
+
         $totalPeminjaman = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])->count();
 
-        // Hitung waktu rata-rata peminjaman dengan filter periode
         $waktuRataRata = Peminjaman::selectRaw("
             AVG(
                 TIMESTAMPDIFF(
@@ -275,15 +293,22 @@ class LaporanController extends Controller
             ->take(3)
             ->values();
 
+        // Ambil data peminjaman untuk detail laporan
+        $peminjaman = Peminjaman::with(['user', 'ruangan', 'proyektor'])
+            ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->latest()
+            ->get();
+
         $data = [
             'laporan' => Laporan::where('periode', $periodeLabel)->latest()->first(),
-            'tanggal' => Carbon::now()->format('d M Y H:i:s'),
+            'tanggalCetak' => Carbon::now()->format('d M Y H:i:s'),
             'periode' => $periodeLabel,
             'totalPeminjaman' => $totalPeminjaman,
             'peminjamanHariIni' => $peminjamanHariIni,
             'waktuRataRata' => number_format($waktuRataRata, 1),
             'peminjamTeratas' => $peminjamTeratas,
             'sarprasTerpopuler' => $sarprasTerpopuler,
+            'peminjaman' => $peminjaman,
         ];
 
         $pdf = FacadePdf::loadView('admin.laporan.pdf', $data);
@@ -374,3 +399,4 @@ class LaporanController extends Controller
         return Excel::download($export, $filename);
     }
 }
+

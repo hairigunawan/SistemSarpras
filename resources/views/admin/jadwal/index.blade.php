@@ -1,57 +1,56 @@
 @extends('layouts.app')
 
+@section('title', 'Jadwal Mata Kuliah')
+
 @section('content')
 
-<div class="p-6 bg-white rounded-lg">
+<div class="p-6 bg-white rounded-lg h-full">
     <div class="flex items-center justify-between mb-6">
         <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-800">
-            📅 Daftar Jadwal
+            Daftar Jadwal
         </h2>
 
-        <div class="flex gap-3">
-            {{-- Tombol Import --}}
-            <form action="{{ route('admin.jadwal.import.store') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2">
-                @csrf
-                <input type="file" name="file" accept=".xls,.xlsx" required class="text-sm">
-                <button type="submit" class="flex gap-3 px-4 py-2 text-white transition bg-blue-500 rounded-lg shadow hover:bg-blue-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12-3-3m0 0-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                    </svg>
-                    Import Jadwal
-                </button>
-            </form>
-
+        <div class="flex justify-between gap-4 items-center">
+            <div class="flex gap-3">
+                {{-- Tombol Import --}}
+                <form action="{{ route('admin.jadwal.import.store') }}" method="POST" enctype="multipart/form-data"
+                class="flex flex-row items-center gap-4 bg-white p-2 rounded-lg border border-gray-200 shadow-sm">
+                    @csrf
+                    <input type="file" name="file" accept=".xls,.xlsx" required class="text-sm">
+                    <button type="submit" class="flex gap-3 px-3 py-2 text-white transition bg-blue-500 rounded-lg items-center text-sm shadow hover:bg-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12-3-3m0 0-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                        Import Jadwal
+                    </button>
+                </form>
+            </div>
             {{-- Tombol Tambah --}}
-            <a href="{{ route('admin.jadwal.create') }}"
-               class="flex gap-3 px-4 py-2 text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700">
-               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                </svg>
-               Tambah Jadwal
-            </a>
+            <div>
+                <a href="{{ route('admin.jadwal.create') }}"
+                class="flex gap-3 px-3 py-2 text-sm items-center text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                    </svg>
+                Tambah Jadwal
+                </a>
+            </div>
         </div>
     </div>
-
-    {{-- Notifikasi --}}
-    @if(session('success'))
-        <div class="p-3 mb-4 text-green-700 bg-green-100 border border-green-400 rounded">
-            {{ session('success') }}
-        </div>
-    @endif
 
     {{-- Tabel Jadwal --}}
     <div class="overflow-x-auto bg-white rounded-lg shadow">
         <table class="w-full text-sm text-left text-gray-700">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+            <thead class="text-gray-700 uppercase bg-gray-100">
                 <tr>
-                    <th class="px-4 py-3">Kode MK</th>
-                    <th class="px-4 py-3">Nama Kelas</th>
-                    <th class="px-4 py-3">Kelas</th>
-                    <th class="px-4 py-3">Hari</th>
-                    <th class="px-4 py-3">Jam</th>
-                    <th class="px-4 py-3">Ruangan</th>
-                    <th class="px-4 py-3">Daya Tampung</th>
-                    <th class="px-4 py-3 text-center">Aksi</th>
+                    <th class="px-4 py-3 text-gray-700 font-medium text-sm">Kode MK</th>
+                    <th class="px-4 py-3 text-gray-700 font-medium text-sm">Nama Kelas</th>
+                    <th class="px-4 py-3 text-gray-700 font-medium text-sm">Kelas</th>
+                    <th class="px-4 py-3 text-gray-700 font-medium text-sm">Hari</th>
+                    <th class="px-4 py-3 text-gray-700 font-medium text-sm text-center">Jam</th>
+                    <th class="px-4 py-3 text-gray-700 font-medium text-sm text-center">Ruangan</th>
+                    <th class="px-4 py-3 text-gray-700 font-medium text-sm">Daya Tampung</th>
+                    <th class="px-4 py-3 text-gray-700 font-medium text-sm text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -61,16 +60,22 @@
                         <td class="px-4 py-2">{{ $jadwal->nama_kelas }}</td>
                         <td class="px-4 py-2">{{ $jadwal->kelas_mahasiswa }}</td>
                         <td class="px-4 py-2">{{ $jadwal->hari }}</td>
-                        <td class="px-4 py-2">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
-                        <td class="px-4 py-2">{{ $jadwal->ruangan }}</td>
-                        <td class="px-4 py-2">{{ $jadwal->daya_tampung }}</td>
-                        <td class="flex justify-center gap-2 px-4 py-2">
-                            <a href="{{ route('admin.jadwal.edit', $jadwal->id_jadwal) }}"
-                               class="px-3 py-1 text-white bg-yellow-400 rounded hover:bg-yellow-500">Edit</a>
-                            <form action="{{ route('admin.jadwal.destroy', $jadwal->id_jadwal) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
+                        <td class="px-4 py-2 text-center">
+                            {{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} -
+                            {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}
+                        </td>
+                        <td class="px-4 py-2 text-center">{{ $jadwal->ruangan }}</td>
+                        <td class="px-4 py-2 text-center">{{ $jadwal->daya_tampung }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <a href="{{ route('admin.jadwal.edit', $jadwal->id_jadwal) }}" class="text-blue-600 hover:text-blue-900 px-4 py-1.5 bg-blue-300 text-xs rounded-sm mr-2">Edit</a>
+
+                            {{-- Form Delete --}}
+                            <form action="{{ route('admin.jadwal.destroy', $jadwal->id_jadwal) }}" method="POST" class="inline-block form-delete">
                                 @csrf
                                 @method('DELETE')
-                                <button class="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600">Hapus</button>
+                                <button type="submit" class="text-red-700 px-4 py-1.5 bg-red-300 text-xs rounded-sm hover:text-red-900">
+                                    Hapus
+                                </button>
                             </form>
                         </td>
                     </tr>
@@ -84,3 +89,7 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+    @vite(['resources/js/notif.js'])
+@endpush

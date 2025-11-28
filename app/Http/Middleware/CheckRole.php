@@ -19,12 +19,12 @@ class CheckRole
         if (!Auth::check()) {
             abort(403, 'ANDA TIDAK MEMILIKI AKSES.');
         }
-        
-        $user = Auth::user();
-        if (!$user || !$user->userRole || !in_array($user->userRole->nama_role, $roles)) {
+
+        $u = Auth::user();
+        if (!$u || !$u->userRole || !in_array($u->userRole->nama_role, $roles)) {
             abort(403, 'ANDA TIDAK MEMILIKI AKSES.');
         }
-        
+
         return $next($request);
     }
 }

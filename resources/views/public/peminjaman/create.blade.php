@@ -72,21 +72,20 @@
 
                             {{-- Nomor WhatsApp --}}
                             <div>
-                                <label for="nomor_whatsapp" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="nomor_telepon" class="block text-sm font-medium text-gray-700 mb-2">
                                     Nomor Telepon (WhatsApp)
                                 </label>
                                 <div class="relative">
-                                    <input type="text" name="nomor_whatsapp" id="nomor_whatsapp"
-                                        value="{{ old('nomor_whatsapp', Auth::check() ? Auth::user()->telepon : '') }}"
-                                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
-                                        placeholder="Contoh: 081234567890" required>
+                                    <input type="text" name="nomor_telepon" id="nomor_telepon"
+                                        value="{{ Auth::check() ? Auth::user()->nomor_telepon : '' }}"
+                                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" readonly>
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                                         <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
                                         </svg>
                                     </div>
                                 </div>
-                                @error('nomor_whatsapp')
+                                @error('nomor_telepon')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -200,46 +199,44 @@
                                 @enderror
                             </div>
 
-                            {{-- Tanggal Pinjam & Kembali --}}
-                            <div class="md:col-span-2">
+                            {{-- Tanggal Pinjam --}}
+                            <div>
                                 <label for="tanggal_pinjam" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Periode Peminjaman
+                                    Tanggal Peminjaman
                                 </label>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Tanggal Pinjam -->
-                                    <div>
-                                        <div class="relative">
-                                            <input
-                                                type="date"
-                                                name="tanggal_pinjam"
-                                                id="tanggal_pinjam"
-                                                value="{{ old('tanggal_pinjam') }}"
-                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                                                required
-                                            >
-                                        </div>
-                                        @error('tanggal_pinjam')
-                                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-
-                                    <!-- Tanggal Kembali -->
-                                    <div>
-                                        <div class="relative">
-                                            <input
-                                                type="date"
-                                                name="tanggal_kembali"
-                                                id="tanggal_kembali"
-                                                value="{{ old('tanggal_kembali') }}"
-                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                                                required
-                                            >
-                                        </div>
-                                        @error('tanggal_kembali')
-                                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
+                                <div class="relative">
+                                    <input
+                                        type="date"
+                                        name="tanggal_pinjam"
+                                        id="tanggal_pinjam"
+                                        value="{{ old('tanggal_pinjam') }}"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                                        required
+                                    >
                                 </div>
+                                @error('tanggal_pinjam')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div id="lokasi_proyektor_container" style="display: none;">
+                                <label for="id_ruangan_proyektor" class="block text-sm font-medium text-gray-700 mb-2" >
+                                    Ruangan Proyektor
+                                </label>
+                                <div class="relative">
+                                    <select name="id_ruangan_proyektor" id="id_ruangan_proyektor"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Pilih Ruangan Proyektor Digunakan</option>
+                                            @foreach($ruanganTersedia as $r)
+                                                <option value="{{ $r->id_ruangan }}" {{ (old('id_ruangan_proyektor  ') == $r->id_ruangan || ($selectedSarprasType == 'ruangan' && $selectedSarprasId == $r->id_ruangan)) ? 'selected' : '' }}>
+                                                    {{ $r->nama_ruangan }}
+                                                </option>
+                                            @endforeach
+                                    </select>
+                                </div>
+                                @error('id_ruangan')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             {{-- Jam Mulai & Selesai --}}
@@ -290,11 +287,6 @@
                                 <option value="Kelas Materi">Kelas Materi</option>
                                 <option value="Kelas Praktikum">Kelas Praktikum</option>
                             </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
                         </div>
                         @error('jenis_kegiatan')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -316,119 +308,6 @@
 </div>
 @endsection
 
-
 @push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const proyektorSelect = document.getElementById('id_proyektor');
-        const ruanganSelect = document.getElementById('id_ruangan');
-        const lokasiProyektorContainer = document.getElementById('lokasi_proyektor_container');
-        const form = document.getElementById('peminjamanForm');
-        const selectedSarprasInfo = document.getElementById('selected-sarpras-info');
-        const sarprasList = document.getElementById('sarpras-list');
-
-        // Menyimpan state peminjaman yang sudah diajukan
-        let submittedPins = [];
-
-        function toggleLokasiProyektor() {
-            if (proyektorSelect.value) {
-                lokasiProyektorContainer.style.display = 'block';
-            } else {
-                lokasiProyektorContainer.style.display = 'none';
-            }
-        }
-
-        function updateSelectedSarprasInfo() {
-            const selectedRuangan = ruanganSelect.options[ruanganSelect.selectedIndex].text;
-            const selectedProyektor = proyektorSelect.options[proyektorSelect.selectedIndex].text;
-            
-            let sarprasText = '';
-            
-            if (ruanganSelect.value && proyektorSelect.value) {
-                sarprasText = `${selectedRuangan} dan ${selectedProyektor}`;
-            } else if (ruanganSelect.value) {
-                sarprasText = selectedRuangan;
-            } else if (proyektorSelect.value) {
-                sarprasText = selectedProyektor;
-            }
-            
-            if (sarprasText) {
-                sarprasList.textContent = sarprasText;
-                selectedSarprasInfo.classList.remove('hidden');
-            } else {
-                selectedSarprasInfo.classList.add('hidden');
-            }
-        }
-
-        function checkDuplicatePeminjaman() {
-            const tanggalPinjam = document.getElementById('tanggal_pinjam').value;
-            const jamMulai = document.getElementById('jam_mulai').value;
-            const jamSelesai = document.getElementById('jam_selesai').value;
-            const selectedRuangan = ruanganSelect.value;
-            const selectedProyektor = proyektorSelect.value;
-
-            // Cek apakah sudah ada peminjaman dengan kombinasi yang sama
-            const isDuplicate = submittedPins.some(pin =>
-                pin.tanggalPinjam === tanggalPinjam &&
-                pin.jamMulai === jamMulai &&
-                pin.jamSelesai === jamSelesai &&
-                ((pin.selectedRuangan && selectedRuangan) || (pin.selectedProyektor && selectedProyektor))
-            );
-
-            if (isDuplicate) {
-                alert('Anda sudah mengajukan peminjaman untuk waktu yang sama. Silakan hapus peminjaman sebelumnya atau pilih waktu yang berbeda.');
-                return true;
-            }
-
-            return false;
-        }
-
-        function addSubmittedPin() {
-            const tanggalPinjam = document.getElementById('tanggal_pinjam').value;
-            const jamMulai = document.getElementById('jam_mulai').value;
-            const jamSelesai = document.getElementById('jam_selesai').value;
-            const selectedRuangan = ruanganSelect.value;
-            const selectedProyektor = proyektorSelect.value;
-
-            if (tanggalPinjam && jamMulai && jamSelesai && (selectedRuangan || selectedProyektor)) {
-                submittedPins.push({
-                    tanggalPinjam,
-                    jamMulai,
-                    jamSelesai,
-                    selectedRuangan,
-                    selectedProyektor
-                });
-            }
-        }
-
-        proyektorSelect.addEventListener('change', function() {
-            toggleLokasiProyektor();
-            updateSelectedSarprasInfo();
-        });
-
-        ruanganSelect.addEventListener('change', updateSelectedSarprasInfo);
-
-        // Tambahkan event listener untuk validasi sebelum submit
-        form.addEventListener('submit', function(e) {
-            // Cek apakah minimal satu sarpras dipilih
-            if (!ruanganSelect.value && !proyektorSelect.value) {
-                e.preventDefault();
-                alert('Pilih minimal satu Ruangan atau Proyektor.');
-                return;
-            }
-
-            if (checkDuplicatePeminjaman()) {
-                e.preventDefault();
-                return;
-            }
-
-            // Tambahkan peminjaman ke daftar yang sudah diajukan
-            addSubmittedPin();
-        });
-
-        // Initial check on page load
-        toggleLokasiProyektor();
-        updateSelectedSarprasInfo();
-    });
-</script>
+    @vite(['resources/js/peminjaman.js'])
 @endpush

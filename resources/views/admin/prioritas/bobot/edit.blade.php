@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Edit Bobot')
+
 @section('content')
 <div class="container">
 

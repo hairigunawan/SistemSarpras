@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class AkunController extends Controller
@@ -34,21 +33,20 @@ class AkunController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role_id' => 'required|exists:roles,id_role',
+        // 1. Validasi Input
+        $validatedData = $request->validate([
+            'nama'          => 'required|string|max:255',
+            'email'         => 'required|string|email|max:255|unique:users',
+            'nomor_telepon' => 'nullable|string|max:20',
+            'password'      => 'required|string|min:8|confirmed',
+            'role_id'       => 'required|exists:roles,id_role',
         ]);
 
-        User::create([
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role_id' => $request->role_id,
-        ]);
+        // 2. Panggil Model untuk menyimpan (Enkapsulasi)
+        User::storeAkun($validatedData);
 
-        return redirect()->route('admin.akun.index')->with('success', 'Akun berhasil ditambahkan.');
+        return redirect()->route('admin.akun.index')
+            ->with('success', 'Akun berhasil ditambahkan.');
     }
 
     /**
@@ -65,24 +63,20 @@ class AkunController extends Controller
      */
     public function update(Request $request, User $akun)
     {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($akun->id_akun, 'id_akun')],
-            'role_id' => 'required|exists:roles,id_role',
-            'password' => 'nullable|string|min:8|confirmed',
+        // 1. Validasi Input
+        $validatedData = $request->validate([
+            'nama'          => 'required|string|max:255',
+            'email'         => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($akun->id_akun, 'id_akun')],
+            'nomor_telepon' => 'nullable|string|max:20',
+            'role_id'       => 'required|exists:roles,id_role',
+            'password'      => 'nullable|string|min:8|confirmed',
         ]);
 
-        $akun->nama = $request->nama;
-        $akun->email = $request->email;
-        $akun->role_id = $request->role_id;
+        // 2. Panggil Model untuk update (Enkapsulasi)
+        $akun->updateAkun($validatedData);
 
-        if ($request->filled('password')) {
-            $akun->password = Hash::make($request->password);
-        }
-
-        $akun->save();
-
-        return redirect()->route('admin.akun.index')->with('success', 'Akun berhasil diperbarui.');
+        return redirect()->route('admin.akun.index')
+            ->with('success', 'Akun berhasil diperbarui.');
     }
 
     /**
@@ -90,18 +84,21 @@ class AkunController extends Controller
      */
     public function hapus_akun(User $akun)
     {
-        // Tambahkan validasi agar tidak bisa menghapus akun sendiri jika perlu
+        // Validasi logika bisnis (Policy) tetap bisa di controller atau dipindah ke Model/Policy
         if (Auth::check() && Auth::id() === $akun->id_akun) {
             return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
-        $akun->delete();
-        return redirect()->route('admin.akun.index')->with('success', 'Akun berhasil dihapus.');
+        // Panggil Model untuk hapus
+        $akun->deleteAkun();
+
+        return redirect()->route('admin.akun.index')
+            ->with('success', 'Akun berhasil dihapus.');
     }
+
     public function lihat_akun($id)
     {
         $u = User::findOrFail($id);
-
         return view('admin.akun.lihat_akun', compact('u'));
     }
 }

@@ -43,19 +43,16 @@ class PeminjamanHelper
 
         // Pengecekan konflik waktu yang lebih komprehensif
         $tanggalPinjam = $request->tanggal_pinjam ?? $request->tanggal_pinjam;
-        $tanggalKembali = $request->tanggal_kembali ?? $request->tanggal_kembali;
         $jamMulai = $request->jam_mulai ?? $request->jam_mulai;
         $jamSelesai = $request->jam_selesai ?? $request->jam_selesai;
 
-        $query->where(function ($timeQuery) use ($tanggalPinjam, $tanggalKembali, $jamMulai, $jamSelesai) {
-            $timeQuery->where(function ($subQuery) use ($tanggalPinjam, $tanggalKembali, $jamMulai, $jamSelesai) {
-                // Cek apakah ada tumpang tindih waktu:
-                // tanggal_pinjam <= tanggal_kembali_peminjaman_lama AND
-                // tanggal_kembali >= tanggal_pinjam_peminjaman_lama AND
+        $query->where(function ($timeQuery) use ($tanggalPinjam, $jamMulai, $jamSelesai) {
+            $timeQuery->where(function ($subQuery) use ($tanggalPinjam, $jamMulai, $jamSelesai) {
+                // Cek apakah ada tumpang tindih waktu untuk 1 hari peminjaman:
+                // tanggal_pinjam sama dengan tanggal_pinjam_peminjaman_lama AND
                 // jam_mulai < jam_selesai_peminjaman_lama AND
                 // jam_selesai > jam_mulai_peminjaman_lama
-                $subQuery->where('tanggal_pinjam', '<=', $tanggalKembali)
-                         ->where('tanggal_kembali', '>=', $tanggalPinjam)
+                $subQuery->where('tanggal_pinjam', $tanggalPinjam)
                          ->where('jam_mulai', '<', $jamSelesai)
                          ->where('jam_selesai', '>', $jamMulai);
             });
@@ -167,10 +164,9 @@ class PeminjamanHelper
                 }
             })
             ->where(function ($timeQuery) use ($approvedPeminjaman) {
-                // Pengecekan konflik waktu yang komprehensif
+                // Pengecekan konflik waktu untuk 1 hari peminjaman
                 $timeQuery->where(function ($subQuery) use ($approvedPeminjaman) {
-                    $subQuery->where('tanggal_pinjam', '<=', $approvedPeminjaman->tanggal_kembali)
-                             ->where('tanggal_kembali', '>=', $approvedPeminjaman->tanggal_pinjam)
+                    $subQuery->where('tanggal_pinjam', $approvedPeminjaman->tanggal_pinjam)
                              ->where('jam_mulai', '<', $approvedPeminjaman->jam_selesai)
                              ->where('jam_selesai', '>', $approvedPeminjaman->jam_mulai);
                 });

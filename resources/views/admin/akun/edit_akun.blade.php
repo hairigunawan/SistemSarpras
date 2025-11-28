@@ -1,62 +1,180 @@
 @extends('layouts.app')
-@section('title', 'Akun - Edit Akun')
+@section('title', 'Edit Akun Pengguna')
+
 @section('content')
+<div class="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
 
-<div class="max-w-xl mx-auto py-8">
+        <!-- Navigation Breadcrumb -->
+        <nav class="mb-8 flex items-center justify-between">
+            <a href="{{ route('admin.akun.index') }}" class="group inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors">
+                <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-white border border-slate-200 shadow-sm group-hover:border-slate-300 transition-all">
+                    <svg class="h-4 w-4 text-slate-500 group-hover:text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </div>
+                Kembali ke Daftar Akun
+            </a>
+        </nav>
 
-    <h1 class="text-2xl font-bold mb-6">Edit Akun</h1>
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            
+            <div class="px-8 pb-8">
+                <!-- Header Icon & Title -->
+                <div class="flex items-end mt-5 mb-8 gap-5">
+                    <div class="pb-1">
+                        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Edit Akun</h1>
+                        <p class="text-sm text-slate-500">Perbarui data profil dan hak akses pengguna.</p>
+                    </div>
+                </div>
 
-    <form method="POST" action="{{ route('admin.akun.update', $akun) }}" 
-          class="bg-white p-6 rounded-lg shadow">
-        @csrf
-        @method('PUT')
+                <!-- Form -->
+                <form method="POST" action="{{ route('admin.akun.update', $akun->id_akun) }}">
+                    @csrf
+                    @method('PATCH')
 
-        <div class="mb-4">
-            <label class="block font-medium">Nama</label>
-            <input name="nama" value="{{ old('nama', $akun->nama) }}" 
-                   class="w-full p-2 border rounded-md">
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <!-- Nama -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="nama" value="{{ old('nama', $akun->nama) }}" 
+                                           class="pl-10 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors" 
+                                           placeholder="Masukkan nama lengkap">
+                                </div>
+                                @error('nama') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Alamat Email</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <input type="email" name="email" value="{{ old('email', $akun->email) }}" 
+                                           class="pl-10 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors" 
+                                           placeholder="nama@email.com">
+                                </div>
+                                @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- Nomor Telepon -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">WhatsApp / Telepon</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="nomor_telepon" value="{{ old('nomor_telepon', $akun->nomor_telepon) }}" 
+                                           class="pl-10 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors" 
+                                           placeholder="0812...">
+                                </div>
+                                @error('nomor_telepon') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 mt-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <!-- Role -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Role / Peran</label>
+                                <select name="role_id" class="pl-10 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors">
+                                    @foreach($roles ?? [] as $r)
+                                        <option value="{{ $r->id_role }}" {{ old('role_id', $akun->role_id) == $r->id_role ? 'selected' : '' }}>
+                                            {{ $r->nama_role }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-slate-500">Menentukan hak akses yang dimiliki pengguna di dalam sistem.</p>
+                                @error('role_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- Password -->
+                            <div class="mb-4">
+                        <label class="font-medium text-gray-700 text-sm">Password</label>
+                        <div class="relative">
+                            <input type="password" name="password" id="password"
+                                class="pl-3 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors"
+                                placeholder="Minimal 8 Karakter">
+                            <button type="button" id="togglePassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                                <svg id="eye-icon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                <svg id="eye-slash-icon" class="h-5 w-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="font-medium text-gray-700 text-sm">Konfirmasi Password</label>
+                        <div class="relative">
+                            <input type="password" name="password_confirmation" id="password_confirmation"
+                                class="pl-3 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors"
+                                placeholder="Ulangi Password">
+                            <button type="button" id="toggleConfirmPassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                                <svg id="eye-confirm-icon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                <svg id="eye-confirm-slash-icon" class="h-5 w-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-10 pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+                        <a href="{{ route('admin.akun.index') }}" 
+                           class="inline-flex justify-center items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-all">
+                            Batal
+                        </a>
+                        <button type="submit" 
+                                class="inline-flex justify-center items-center px-6 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
+                            <svg class="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Simpan Perubahan
+                        </button>
+                    </div>
+
+                </form>
+            </div>
         </div>
-
-        <div class="mb-4">
-            <label class="block font-medium">Email</label>
-            <input name="email" value="{{ old('email', $akun->email) }}" 
-                   class="w-full p-2 border rounded-md">
-        </div>
-
-        <div class="mb-4">
-            <label class="block font-medium">Password (kosongkan jika tidak diubah)</label>
-            <input type="password" name="password"
-                   class="w-full p-2 border rounded-md">
-        </div>
-
-        <div class="mb-4">
-            <label class="block font-medium">Konfirmasi Password</label>
-            <input type="password" name="password_confirmation"
-                   class="w-full p-2 border rounded-md">
-        </div>
-
-        <div class="mb-4">
-            <label class="block font-medium">Role</label>
-            <select name="role_id" class="w-full p-2 border rounded-md">
-                @foreach($roles ?? [] as $r)
-                    <option value="{{ $r->id_role }}"
-                        {{ old('role_id', $akun->role_id) == $r->id_role ? 'selected' : '' }}>
-                        {{ $r->nama_role }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        <button type="submit" 
-                class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-            Simpan Perubahan
-        </button>
-    </form>
-
-    <a href="{{ route('admin.akun.index') }}" 
-       class="inline-block mt-4 text-blue-600 hover:underline">
-       ← Kembali
-    </a>
-
+    </div>
 </div>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.6s ease-out;
+    }
+  </style>
 @endsection
+@push('scripts')
+    @vite(['resources/js/hidenPassword.js'])
+@endpush

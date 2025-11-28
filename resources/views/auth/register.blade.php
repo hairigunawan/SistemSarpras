@@ -6,114 +6,146 @@
     <title>Register - SIMPERSITE</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen py-8">
 
-    <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold text-center mb-6">SIMPERSITE | Register</h1>
+<body class="min-h-screen flex flex-col justify-between bg-gradient-to-br from-blue-50 to-white">
 
-        <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4 text-sm">
-            <strong>Informasi:</strong><br>
-            Daftar sebagai Dosen atau Mahasiswa untuk mengajukan peminjaman sarana dan prasarana
-        </div>
+    <!-- ================= MAIN CARD ================= -->
+    <div class="flex-grow w-full flex items-center justify-center p-4">
+        <div class="w-full max-w-5xl bg-white rounded-2xl border border-gray-200 grid grid-cols-1 md:grid-cols-2 overflow-hidden shadow-sm">
 
-        @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                <strong class="font-bold">Oops!</strong>
-                <ul class="mt-2 list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+            <!-- ================= LEFT SIDE ================= -->
+            <div class="relative h-72 md:h-auto flex items-center justify-center text-white">
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+                <img src="{{ asset('storage/images/GKT.jpg') }}"
+                     class="absolute inset-0 w-full h-full object-cover opacity-90">
 
-            <div class="mb-4">
-                <label for="nama" class="block text-gray-700 text-sm font-bold mb-2">Nama Lengkap</label>
-                <input type="text" name="nama" id="nama" placeholder="Nama Lengkap" value="{{ old('nama') }}" required autofocus
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('nama') border-red-500 @enderror">
-                @error('nama')
-                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+                <div class="absolute inset-0 bg-black/40"></div>
 
-            <div class="mb-4">
-                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Alamat Email</label>
-                <input type="email" name="email" id="email" placeholder="Email" value="{{ old('email') }}" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') border-red-500 @enderror">
-                @error('email')
-                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="mb-4">
-                <label for="role" class="block text-gray-700 text-sm font-bold mb-2">Daftar Sebagai</label>
-                <select name="role" id="role" required
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('role') border-red-500 @enderror">
-                    <option value="">Pilih Role</option>
-                    <option value="Dosen" {{ old('role') == 'Dosen' ? 'selected' : '' }}>Dosen</option>
-                    <option value="Mahasiswa" {{ old('role') == 'Mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
-                </select>
-                @error('role')
-                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="mb-4">
-                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                <input type="password" name="password" placeholder="Password" id="password" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('password') border-red-500 @enderror">
-                @error('password')
-                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-                @enderror
-                <p class="text-gray-600 text-xs italic mt-1">Minimal 8 karakter</p>
-            </div>
-
-            <div class="mb-6">
-                <label for="password_confirmation" class="block text-gray-700 text-sm font-bold mb-2">Konfirmasi Password</label>
-                <input type="password" name="password_confirmation" placeholder="Konfirmasi Password" id="password_confirmation" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-
-            <div class="flex items-center justify-between mb-4">
-                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
-                    Daftar
-                </button>
-            </div>
-        </form>
-
-        <div class="mt-6">
-            <div class="relative">
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-300"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-white text-gray-500">Atau</span>
+                <div class="relative z-10 text-center px-6">
+                    <h1 class="text-4xl font-bold mb-3">SIMPERSITE</h1>
+                    <p class="text-blue-100 text-sm leading-relaxed">
+                        Sistem Peminjaman Sarana & Prasarana Kampus<br>
+                        untuk Prodi Teknologi Informasi
+                    </p>
                 </div>
             </div>
 
-            <div class="mt-6">
-                <a href="{{ route('auth.google') }}" class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                    </svg>
-                    Daftar dengan Google
+            <!-- ================= RIGHT SIDE (FORM) ================= -->
+            <div class="p-10">
+
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Buat Akun Baru</h2>
+                <p class="text-gray-600 mb-6">Gunakan email kampus untuk mendaftar sistem</p>
+
+                <!-- Google -->
+                <a href="{{ route('auth.google') }}"
+                   class="w-full flex items-center justify-center border rounded-xl py-3 text-gray-700 font-medium shadow-sm hover:bg-gray-50 transition">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5">
+                    <span class="ml-3">Daftar dengan Google</span>
                 </a>
-            </div>
 
-            <div class="mt-4 text-center">
-                <p class="text-sm text-gray-600">
+                <!-- Divider -->
+                <div class="flex items-center my-6">
+                    <div class="flex-grow border-t"></div>
+                    <span class="mx-3 text-gray-500 text-sm">atau daftar dengan Email</span>
+                    <div class="flex-grow border-t"></div>
+                </div>
+
+                <!-- FORM -->
+                <form method="POST" action="{{ route('register') }}">
+                    @csrf
+
+                    <div class="mb-4">
+                        <label class="font-medium text-gray-700 text-sm">Nama Lengkap</label>
+                        <input type="text" name="nama" value="{{ old('nama') }}"
+                            class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                            placeholder="Masukkan nama lengkap" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="font-medium text-gray-700 text-sm">Email</label>
+                        <input type="email" name="email" value="{{ old('email') }}"
+                            class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                            placeholder="example@email.com" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="font-medium text-gray-700 text-sm">Nomor WhatsApp</label>
+                        <input type="tel" name="nomor_telepon" value="{{ old('nomor_telepon') }}"
+                            class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                            placeholder="081234567890" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="font-medium text-gray-700 text-sm">Daftar Sebagai</label>
+                        <select name="role"
+                                class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                                required>
+                            <option value="">Pilih Role</option>
+                            <option value="Dosen">Dosen</option>
+                            <option value="Mahasiswa">Mahasiswa</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="font-medium text-gray-700 text-sm">Password</label>
+                        <div class="relative">
+                            <input type="password" name="password" id="password"
+                                class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-2 focus:ring-blue-400 outline-none pr-12"
+                                placeholder="Minimal 8 Karakter" required>
+                            <button type="button" id="togglePassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                                <svg id="eye-icon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                <svg id="eye-slash-icon" class="h-5 w-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="font-medium text-gray-700 text-sm">Konfirmasi Password</label>
+                        <div class="relative">
+                            <input type="password" name="password_confirmation" id="password_confirmation"
+                                class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-2 focus:ring-blue-400 outline-none pr-12"
+                                placeholder="Ulangi Password" required>
+                            <button type="button" id="toggleConfirmPassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                                <svg id="eye-confirm-icon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                <svg id="eye-confirm-slash-icon" class="h-5 w-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full bg-blue-600 text-sm hover:bg-blue-700 text-white font-semibold py-3 rounded-xl shadow-md transition">
+                        Daftar
+                    </button>
+                </form>
+
+                <p class="text-gray-600 mt-6 text-center text-sm">
                     Sudah punya akun?
-                    <a href="{{ route('login') }}" class="text-green-600 hover:text-green-800 font-semibold">Login di sini</a>
+                    <a href="{{ route('login') }}" class="text-blue-600 font-semibold hover:underline">
+                        Masuk Sekarang
+                    </a>
                 </p>
+
             </div>
         </div>
     </div>
 
+    <!-- ================= FOOTER ================= -->
+    <p class="text-center text-gray-500 text-sm pb-4">
+        © 2025 SIMPERSITE. All rights reserved.
+    </p>
+
+    @vite('resources/js/hidenPassword.js')
 </body>
 </html>

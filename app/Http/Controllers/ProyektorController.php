@@ -5,21 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Proyektor;
 use App\Models\Status;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Helpers\ProyektorStatusHelper;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class ProyektorController extends Controller
 {
     public function tambah_proyektor()
     {
-        $statuses = Status::all();
-        // cari id_status untuk "Tersedia"
+        $s = Status::all();
         $defaultStatus = Status::where('nama_status', 'Tersedia')->value('id_status');
 
-        return view('admin.sarpras.proyektor.tambah_proyektor', compact('statuses', 'defaultStatus'));
+        return view('admin.sarpras.proyektor.tambah_proyektor', compact('s', 'defaultStatus'));
     }
 
-    public function store(Request $request)
+    public function store_proyektor(Request $request)
     {
         $validated = $request->validate([
             'nama_proyektor' => 'required|string|max:255',
@@ -29,77 +29,83 @@ class ProyektorController extends Controller
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        if ($request->hasFile('gambar')) {
-            $validated['gambar'] = $request->file('gambar')->store('proyektor', 'public');
+        try {
+            // Panggil method di Model
+            Proyektor::Submit($validated, $request->file('gambar'));
+
+            return redirect()->route('admin.sarpras.index')
+                ->with('success', 'Proyektor berhasil ditambahkan!');
+        } catch (Exception $e) {
+            Log::error('Gagal menambah Proyektor: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menambah data: ' . $e->getMessage())->withInput();
         }
+    }
 
-        Proyektor::create($validated);
-
-        return redirect()->route('admin.sarpras.index')->with('success', 'Proyektor berhasil ditambahkan!');
+    public function store(Request $request)
+    {
+        return $this->store_proyektor($request);
     }
 
     public function lihat_proyektor($id)
     {
-        $proyektor = Proyektor::findOrFail($id);
+        $p = Proyektor::findOrFail($id);
 
         // Perbarui status proyektor berdasarkan peminjaman aktif
         ProyektorStatusHelper::checkProyektorStatus($id);
 
-        return view('admin.sarpras.proyektor.lihat_proyektor', compact('proyektor'));
+        return view('admin.sarpras.proyektor.lihat_proyektor', compact('p'));
     }
 
     public function edit_proyektor($id)
     {
-        $proyektor = Proyektor::findOrFail($id);
-        $statuses = Status::all();
+        $p = Proyektor::findOrFail($id);
+        $s = Status::all();
 
-        return view('admin.sarpras.proyektor.edit_proyektor', compact('proyektor', 'statuses'));
+        return view('admin.sarpras.proyektor.edit_proyektor', compact('p', 's'));
     }
 
-    public function update(Request $request, $id)
+    public function update_proyektor(Request $request, $id)
     {
-        $proyektor = Proyektor::findOrFail($id);
+        $p = Proyektor::findOrFail($id);
 
         $validated = $request->validate([
             'nama_proyektor' => 'required|string|max:255',
             'merk' => 'required|string|max:255',
-            'kode_proyektor' => 'nullable|string|max:255|unique:proyektors,kode_proyektor,' . $proyektor->id_proyektor . ',id_proyektor',
+            'kode_proyektor' => 'nullable|string|max:255|unique:proyektors,kode_proyektor,' . $p->id_proyektor . ',id_proyektor',
             'id_status' => 'required|exists:statuses,id_status',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        if ($request->hasFile('gambar')) {
-            if ($proyektor->gambar) {
-                Storage::disk('public')->delete($proyektor->gambar);
-            }
-            $validated['gambar'] = $request->file('gambar')->store('proyektor', 'public');
+        try {
+            // Panggil method di Model
+            $p->updateProyektor($validated, $request->file('gambar'));
+
+            return redirect()->route('admin.sarpras.index')
+                ->with('success', 'Data proyektor berhasil diperbarui!');
+        } catch (Exception $e) {
+            Log::error('Gagal update Proyektor: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage())->withInput();
         }
-
-        $proyektor->update($validated);
-
-        return redirect()->route('admin.sarpras.index')->with('success', 'Data proyektor berhasil diperbarui!');
     }
 
-    public function destroy($id)
+    public function update(Request $request, $id)
     {
-        $proyektor = Proyektor::findOrFail($id);
+        return $this->update_proyektor($request, $id);
+    }
 
-        $statuspeminjam = Status::where('nama_status', 'Dipinjam')->value('id_status');
+    public function hapus_proyektor($id)
+    {
+        try {
+            $p = Proyektor::findOrFail($id);
 
-        if ($proyektor->id_status === $statuspeminjam) {
-            return back()->with('error', 'Proyektor sedang dipinjam dan tidak dapat dihapus.');
+            // Panggil method di Model (akan throw exception jika tidak valid)
+            $p->hapusProyektor();
+
+            return redirect()->route('admin.sarpras.index')
+                ->with('success', 'Data proyektor berhasil dihapus!');
+        } catch (Exception $e) {
+            // Menangkap pesan error dari model (misal: sedang dipinjam)
+            return back()->with('error', $e->getMessage());
         }
-
-        if ($proyektor->peminjamans()->exists()) {
-            return back()->with('error', 'Proyektor memiliki riwayat peminjaman dan tidak dapat dihapus.');
-        }
-
-        if ($proyektor->gambar) {
-            Storage::disk('public')->delete($proyektor->gambar);
-        }
-
-        $proyektor->delete();
-
-        return redirect()->route('admin.sarpras.index')->with('success', 'Data proyektor berhasil dihapus!');
     }
 }

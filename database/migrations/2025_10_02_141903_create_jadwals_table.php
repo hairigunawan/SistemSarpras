@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('kode_mk');
             $table->string('nama_kelas');
             $table->string('kelas_mahasiswa');
-            $table->integer('sebaran_mahasiswa');
+            $table->integer('sebaran_mahasiswa')->default(0);
             $table->string('hari');
             $table->time('jam_mulai');
             $table->time('jam_selesai');

@@ -36,9 +36,19 @@
                         <label class="block text-gray-700 text-sm font-bold mb-2">Role:</label>
                         <p class="text-gray-800">{{ $user->userRole->nama_role ?? 'N/A' }}</p>
                     </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Nomor WhatsApp:</label>
+                        <p class="text-gray-800">{{ $user->nomor_telepon ?? 'Belum diisi' }}</p>
+                    </div>
+                    <div class="mb-4">
+                        <a href="{{ route('public.riwayat-peminjaman') }}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Riwayat Peminjaman
+                        </a>
+                    </div>
                     <!-- Tambahkan informasi profil lainnya sesuai kebutuhan -->
                 </div>
             </div>
         </div>
     </div>
+    @include('public.peminjaman.riwayat_peminjaman_alert')
 </x-app-layout>

@@ -12,8 +12,11 @@ class Status extends Model
     protected $table = 'statuses';
     protected $primaryKey = 'id_status';
     protected $fillable = ['nama_status'];
+    public $timestamps = false;
 
-    public $timestamps = false; // kalau tabel tidak pakai created_at/updated_at
+    // Tambahan ini penting untuk primary key non-standar
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     public function proyektors()
     {

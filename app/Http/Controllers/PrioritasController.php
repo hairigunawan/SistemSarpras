@@ -5,22 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\Peminjaman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class PrioritasController extends Controller
 {
     // === 1️⃣ PRIORITAS PEMINJAMAN RUANGAN ===
     public function ruangan()
     {
-        $peminjaman = Peminjaman::whereNotNull('id_ruangan')->get();
+        // Pastikan relasi 'ruangan' ada di model Peminjaman
+        $peminjaman = Peminjaman::with('ruangan')->whereNotNull('id_ruangan')->get();
 
-        // Ambil kriteria dari database dan normalisasi nama_kriteria
+        // Ambil kriteria dari database
         $dbKriteria = DB::table('kriteria')->get();
 
         $kriteria = [];
         foreach ($dbKriteria as $k) {
             $key = $this->normalizeKriteriaKey($k->nama_kriteria);
             $kriteria[$key] = [
-                'tipe' => strtolower(trim($k->tipe))
+                'id' => $k->id, // PENTING: Simpan ID asli untuk link hapus/edit
+                'tipe' => strtolower(trim($k->tipe)),
+                'nama_asli' => $k->nama_kriteria // Simpan nama asli untuk display
             ];
         }
 
@@ -41,19 +45,16 @@ class PrioritasController extends Controller
         $bobot = $ahp['bobotAkhir'];
         $orderedKeys = $ahp['keys'] ?? array_keys($kriteria);
 
-        // Susun ulang kriteria sesuai orderedKeys agar tampilannya sinkron
+        // Susun ulang kriteria untuk View
         $kriteriaOrdered = [];
-        foreach ($orderedKeys as $key) {
-            // jika kriteria dari DB tidak punya tipe (safety), beri default benefit
-            $kriteriaOrdered[$key] = $kriteria[$key] ?? ['tipe' => 'benefit'];
-        }
-
-        // sinkronisasi bobot dengan kriteria (index-safe) mengikuti orderedKeys
         foreach ($orderedKeys as $idx => $key) {
-            $kriteriaOrdered[$key]['bobot'] = round($bobot[$idx] ?? 0, 3);
+            if (isset($kriteria[$key])) {
+                $kriteriaOrdered[$key] = $kriteria[$key];
+                $kriteriaOrdered[$key]['bobot'] = round($bobot[$idx] ?? 0, 3);
+            }
         }
 
-        // hitung SAW menggunakan kriteria terurut
+        // Hitung SAW
         [$hasil, $alternatif] = $this->hitungSAW($peminjaman, $kriteriaOrdered);
 
         return view('admin.prioritas.ruangan', [
@@ -71,7 +72,8 @@ class PrioritasController extends Controller
     // === 2️⃣ PRIORITAS PEMINJAMAN PROYEKTOR ===
     public function proyektor()
     {
-        $peminjaman = Peminjaman::whereNotNull('id_proyektor')->get();
+        // Pastikan relasi 'proyektor' ada di model Peminjaman
+        $peminjaman = Peminjaman::with('proyektor')->whereNotNull('id_proyektor')->get();
 
         $dbKriteria = DB::table('kriteria')->get();
 
@@ -79,7 +81,9 @@ class PrioritasController extends Controller
         foreach ($dbKriteria as $k) {
             $key = $this->normalizeKriteriaKey($k->nama_kriteria);
             $kriteria[$key] = [
-                'tipe' => strtolower(trim($k->tipe))
+                'id' => $k->id, // PENTING: Simpan ID asli
+                'tipe' => strtolower(trim($k->tipe)),
+                'nama_asli' => $k->nama_kriteria
             ];
         }
 
@@ -101,12 +105,11 @@ class PrioritasController extends Controller
         $orderedKeys = $ahp['keys'] ?? array_keys($kriteria);
 
         $kriteriaOrdered = [];
-        foreach ($orderedKeys as $key) {
-            $kriteriaOrdered[$key] = $kriteria[$key] ?? ['tipe' => 'benefit'];
-        }
-
         foreach ($orderedKeys as $idx => $key) {
-            $kriteriaOrdered[$key]['bobot'] = round($bobot[$idx] ?? 0, 3);
+            if (isset($kriteria[$key])) {
+                $kriteriaOrdered[$key] = $kriteria[$key];
+                $kriteriaOrdered[$key]['bobot'] = round($bobot[$idx] ?? 0, 3);
+            }
         }
 
         [$hasil, $alternatif] = $this->hitungSAW($peminjaman, $kriteriaOrdered);
@@ -123,41 +126,13 @@ class PrioritasController extends Controller
         ]);
     }
 
-    // === 3️⃣ TAMBAH, SIMPAN, DAN HAPUS KRITERIA ===
-    public function tambahKriteria()
-    {
-        return view('kriteria.tambah_kruang');
-    }
-
-    public function storeKriteria(Request $request)
-    {
-        $validated = $request->validate([
-            'nama_kriteria' => 'required|string|max:100',
-            'tipe' => 'required|in:benefit,cost',
-        ]);
-
-        DB::table('kriteria')->insert([
-            'nama_kriteria' => $validated['nama_kriteria'],
-            'tipe' => $validated['tipe'],
-        ]);
-
-        return redirect()->route('admin.prioritas.ruangan')
-            ->with('success', 'Kriteria baru berhasil ditambahkan.');
-    }
-
-    public function deleteKriteria($nama)
-    {
-        DB::table('kriteria')->where('nama_kriteria', $nama)->delete();
-        return back()->with('success', 'Kriteria berhasil dihapus.');
-    }
-
-    // === 4️⃣ HITUNG BOBOT AHP (OTOMATIS & SESUAI EXCEL) ===
+    // === HITUNG AHP ===
     private function hitungBobotAHP($data, $kriteria)
     {
-        // original keys (from provided kriteria array)
         $origKeys = array_keys($kriteria);
         $n = count($origKeys);
 
+        if ($n === 0) return ['pairwiseMatrix' => [], 'normalizedMatrix' => [], 'bobotAkhir' => [], 'cr' => 0, 'keys' => []];
         if ($n === 1) {
             return [
                 'pairwiseMatrix' => [[1]],
@@ -168,7 +143,7 @@ class PrioritasController extends Controller
             ];
         }
 
-        // === priority order (Excel reference). Semakin awal = semakin penting.
+        // Prioritas Hardcoded (semakin atas semakin penting)
         $priorityOrder = [
             'jenis_kegiatan',
             'jumlah_peserta',
@@ -176,7 +151,7 @@ class PrioritasController extends Controller
             'durasi'
         ];
 
-        // Build orderedKeys: take those in priorityOrder first (in that order), then append any other keys
+        // Susun urutan key berdasarkan priorityOrder + sisa key lainnya
         $orderedKeys = [];
         foreach ($priorityOrder as $p) {
             if (in_array($p, $origKeys)) $orderedKeys[] = $p;
@@ -188,28 +163,28 @@ class PrioritasController extends Controller
         $keys = $orderedKeys;
         $n = count($keys);
 
-        // build priorityRank using canonical priorityOrder positions (lower = more important)
+        // Map key ke rank integer untuk perbandingan
         $priorityRank = [];
         foreach ($keys as $k) {
             $pos = array_search($k, $priorityOrder);
-            if ($pos === false) $pos = count($priorityOrder); // new keys get lowest priority
+            if ($pos === false) $pos = 99; // Kriteria baru/unknown dianggap prioritas rendah
             $priorityRank[$k] = $pos;
         }
 
-        // === build pairwise matrix (rows = keys order, cols = keys order)
+        // Buat matriks
         $matrix = array_fill(0, $n, array_fill(0, $n, 1.0));
         for ($i = 0; $i < $n; $i++) {
             for ($j = 0; $j < $n; $j++) {
-                if ($i === $j) {
-                    $matrix[$i][$j] = 1.0;
-                    continue;
-                }
-                // diff in rank
-                $diff = abs($priorityRank[$keys[$i]] - $priorityRank[$keys[$j]]);
-                $ratio = 1 + $diff; // difference 0 ->1, diff1->2, diff2->3, etc
+                if ($i === $j) continue;
 
-                // If row i is higher priority (smaller rank number) than col j => row vs col = ratio (big)
-                if ($priorityRank[$keys[$i]] < $priorityRank[$keys[$j]]) {
+                $rankI = $priorityRank[$keys[$i]];
+                $rankJ = $priorityRank[$keys[$j]];
+
+                $diff = abs($rankI - $rankJ);
+                $ratio = ($diff == 0) ? 1 : (1 + $diff);
+
+                // Rank lebih kecil = Lebih penting
+                if ($rankI < $rankJ) {
                     $matrix[$i][$j] = $ratio;
                 } else {
                     $matrix[$i][$j] = 1 / $ratio;
@@ -217,7 +192,7 @@ class PrioritasController extends Controller
             }
         }
 
-        // === normalize columns ===
+        // Normalisasi Kolom
         $sumKolom = array_fill(0, $n, 0.0);
         for ($j = 0; $j < $n; $j++) {
             for ($i = 0; $i < $n; $i++) $sumKolom[$j] += $matrix[$i][$j];
@@ -230,18 +205,13 @@ class PrioritasController extends Controller
             }
         }
 
-        // === bobot = rata-rata baris ===
+        // Bobot (Rata-rata Baris)
         $bobot = [];
         for ($i = 0; $i < $n; $i++) {
             $bobot[$i] = array_sum($normal[$i]) / $n;
         }
 
-        // normalize bobot
-        $total = array_sum($bobot);
-        if ($total <= 0) $total = 1;
-        foreach ($bobot as &$b) $b = $b / $total;
-
-        // consistency check
+        // Hitung CR
         $lambdaMax = 0.0;
         for ($i = 0; $i < $n; $i++) {
             $temp = 0.0;
@@ -252,7 +222,7 @@ class PrioritasController extends Controller
 
         $ci = ($lambdaMax - $n) / max($n - 1, 1);
         $riList = [0, 0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45];
-        $ri = $riList[$n] ?? end($riList);
+        $ri = $riList[$n] ?? 1.49;
         $cr = ($ri > 0) ? $ci / $ri : 0;
 
         return [
@@ -260,11 +230,11 @@ class PrioritasController extends Controller
             'normalizedMatrix' => $normal,
             'bobotAkhir' => $bobot,
             'cr' => round($cr, 3),
-            'keys' => $keys, // ordered keys used in matrix
+            'keys' => $keys,
         ];
     }
 
-    // === 5️⃣ HITUNG SAW ===
+    // === HITUNG SAW ===
     private function hitungSAW($data, $kriteria)
     {
         $alternatif = [];
@@ -277,38 +247,37 @@ class PrioritasController extends Controller
             foreach ($kriteria as $key => $v) {
                 $alt[$key] = $this->nilaiSkala($p, $key);
             }
-
             $alternatif[] = $alt;
         }
 
+        // Cari Max/Min untuk normalisasi SAW
         $maxMin = [];
         foreach ($kriteria as $key => $val) {
-            $nilai = array_column($alternatif, $key);
-            if (empty($nilai)) {
-                $max = 1;
-                $min = 1;
+            $colValues = array_column($alternatif, $key);
+            if (empty($colValues)) {
+                $maxMin[$key] = ['max' => 1, 'min' => 1];
             } else {
-                $max = max($nilai);
-                $min = min($nilai);
+                $maxMin[$key] = [
+                    'max' => max($colValues),
+                    'min' => min($colValues),
+                ];
             }
-            $maxMin[$key] = [
-                'max' => $max,
-                'min' => $min,
-            ];
         }
 
         $hasil = [];
         foreach ($alternatif as $alt) {
             $total = 0;
             foreach ($kriteria as $key => $val) {
+                $nilaiAlt = $alt[$key];
+                $maxVal = $maxMin[$key]['max'];
+                $minVal = $maxMin[$key]['min'];
 
-                $nilaiAlt = max($alt[$key] ?? 0, 0.0001);
-                $maxVal   = max($maxMin[$key]['max'] ?? 0, 0.0001);
-                $minVal   = max($maxMin[$key]['min'] ?? 0, 0.0001);
-
-                $r = ($val['tipe'] === 'benefit')
-                    ? ($nilaiAlt / $maxVal)
-                    : ($minVal / $nilaiAlt);
+                // Normalisasi SAW
+                if ($val['tipe'] == 'cost') {
+                    $r = ($minVal / max($nilaiAlt, 1e-9));
+                } else {
+                    $r = ($nilaiAlt / max($maxVal, 1e-9));
+                }
 
                 $total += ($val['bobot'] ?? 0) * $r;
             }
@@ -319,73 +288,81 @@ class PrioritasController extends Controller
             ];
         }
 
+        // Ranking
         usort($hasil, fn($a, $b) => $b['nilai'] <=> $a['nilai']);
         foreach ($hasil as $i => &$h) $h['ranking'] = $i + 1;
 
         return [$hasil, $alternatif];
     }
 
-    // === 6️⃣ KONVERSI NILAI SKALA ===
+    // === NILAI SKALA (Logika Bisnis) ===
     private function nilaiSkala($p, $key)
     {
-        switch ($key) {
-            case 'jenis_kegiatan':
-                $jenis = strtolower($p->jenis_kegiatan ?? '');
-                if (str_contains($jenis, 'seminar pkl')) return 5;
-                if (str_contains($jenis, 'seminar tugas akhir')) return 5;
-                if (str_contains($jenis, 'bimbingan')) return 4;
-                if (str_contains($jenis, 'praktikum')) return 3;
-                if (str_contains($jenis, 'materi')) return 3;
-                return 1;
-
-            case 'jumlah_peserta':
-                $j = $p->jumlah_peserta ?? 0;
-                if ($j > 100) return 5;
-                if ($j > 50) return 4;
-                if ($j > 25) return 3;
-                if ($j > 10) return 2;
-                return 1;
-
-            case 'durasi':
-                $durasiJam = 0;
-                if ($p->jam_mulai && $p->jam_selesai) {
-                    $durasiJam = max(1, (strtotime($p->jam_selesai) - strtotime($p->jam_mulai)) / 3600);
-                }
-                if ($durasiJam <= 2) return 5;
-                if ($durasiJam <= 4) return 4;
-                if ($durasiJam <= 6) return 3;
-                if ($durasiJam <= 8) return 2;
-                return 1;
-
-            case 'pengajuan':
-                $tanggalPinjam = strtotime($p->tanggal_pinjam);
-                $tanggalPengajuan = strtotime($p->created_at);
-                $selisihHari = max(1, ($tanggalPinjam - $tanggalPengajuan) / (3600 * 24));
-
-                if ($selisihHari >= 10) return 5;
-                if ($selisihHari >= 7) return 4;
-                if ($selisihHari >= 4) return 3;
-                if ($selisihHari >= 2) return 2;
-                return 1;
-
-            default:
-                return 3;
+        // 1. Logika untuk JENIS KEGIATAN
+        if ($key === 'jenis_kegiatan') {
+            $jenis = strtolower($p->jenis_kegiatan ?? $p->keperluan ?? '');
+            if (str_contains($jenis, 'pkl') || str_contains($jenis, 'skripsi') || str_contains($jenis, 'ta')) return 5;
+            if (str_contains($jenis, 'seminar')) return 5;
+            if (str_contains($jenis, 'bimbingan')) return 4;
+            if (str_contains($jenis, 'kuliah') || str_contains($jenis, 'praktikum')) return 3;
+            if (str_contains($jenis, 'rapat')) return 2;
+            return 1;
         }
+
+        // 2. Logika untuk JUMLAH PESERTA
+        if ($key === 'jumlah_peserta') {
+            $j = intval($p->jumlah_peserta ?? 0);
+            if ($j > 100) return 5;
+            if ($j > 50) return 4;
+            if ($j > 25) return 3;
+            if ($j > 10) return 2;
+            return 1;
+        }
+
+        // 3. Logika untuk DURASI
+        if ($key === 'durasi') {
+            $durasiJam = 0;
+            if ($p->jam_mulai && $p->jam_selesai) {
+                $durasiJam = (strtotime($p->jam_selesai) - strtotime($p->jam_mulai)) / 3600;
+            }
+            // Asumsi Benefit: Semakin lama semakin prioritas?
+            // Atau Cost: Semakin lama semakin buruk? (Default logic disini benefit untuk efisiensi ruang)
+            if ($durasiJam > 5) return 5;
+            if ($durasiJam > 3) return 4;
+            if ($durasiJam > 1.5) return 3;
+            if ($durasiJam > 0) return 2;
+            return 1;
+        }
+
+        // 4. Logika untuk PENGAJUAN (Selisih Hari)
+        if ($key === 'pengajuan') {
+            $tglPinjam = strtotime($p->tanggal_pinjam);
+            $tglBuat = strtotime($p->created_at);
+            $selisih = max(0, ($tglPinjam - $tglBuat) / (3600 * 24));
+
+            // Semakin jauh hari booking, semakin prioritas (disiplin)
+            if ($selisih >= 7) return 5;
+            if ($selisih >= 5) return 4;
+            if ($selisih >= 3) return 3;
+            if ($selisih >= 1) return 2;
+            return 1;
+        }
+
+        // Default value jika ada kriteria baru yg belum di-coding logikanya
+        return 3;
     }
 
-    /**
-     * Normalisasi / mapping nama_kriteria dari DB ke key canonical that is recognized in nilaiSkala() and priorityOrder.
-     */
     private function normalizeKriteriaKey($raw)
     {
         $s = strtolower(trim($raw));
-        $s_single = preg_replace('/\s+/', ' ', $s);
+        // Membersihkan karakter aneh
+        $s = preg_replace('/[^a-z0-9\s]/', '', $s);
 
-        if (strpos($s_single, 'kegiatan') !== false) return 'jenis_kegiatan';
-        if (strpos($s_single, 'jumlah peserta') !== false || strpos($s_single, 'jumlah') !== false || strpos($s_single, 'peserta') !== false) return 'jumlah_peserta';
-        if (strpos($s_single, 'durasi') !== false) return 'durasi';
-        if (strpos($s_single, 'pengajuan') !== false || strpos($s_single, 'ajuan') !== false) return 'pengajuan';
+        if (str_contains($s, 'kegiatan') || str_contains($s, 'acara')) return 'jenis_kegiatan';
+        if (str_contains($s, 'peserta') || str_contains($s, 'orang')) return 'jumlah_peserta';
+        if (str_contains($s, 'durasi') || str_contains($s, 'waktu') || str_contains($s, 'lama')) return 'durasi';
+        if (str_contains($s, 'ajuan') || str_contains($s, 'booking')) return 'pengajuan';
 
-        return str_replace(' ', '_', $s_single);
+        return str_replace(' ', '_', $s);
     }
 }

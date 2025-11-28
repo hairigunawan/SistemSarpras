@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -18,11 +19,12 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
+        'nomor_telepon',
         'provider',
         'provider_id',
         'token',
         'avatar',
-        'refresh_token',  
+        'refresh_token',
     ];
 
     protected function casts(): array
@@ -41,5 +43,38 @@ class User extends Authenticatable
     public function peminjamans()
     {
         return $this->hasMany(Peminjaman::class, 'id_akun', 'id_akun');
+    }
+
+    public static function storeAkun(array $data)
+    {
+        return self::create([
+            'nama'          => $data['nama'],
+            'email'         => $data['email'],
+            'nomor_telepon' => $data['nomor_telepon'] ?? null,
+            'role_id'       => $data['role_id'],
+            'password'      => $data['password'], 
+        ]);
+    }
+
+    public function updateAkun(array $data)
+    {
+        $updateData = [
+            'nama'          => $data['nama'],
+            'email'         => $data['email'],
+            'nomor_telepon' => $data['nomor_telepon'] ?? null,
+            'role_id'       => $data['role_id'],
+        ];
+
+        // Cek apakah ada password baru yang diinput
+        if (!empty($data['password'])) {
+            $updateData['password'] = $data['password']; 
+        }
+
+        return $this->update($updateData);
+    }
+
+    public function deleteAkun()
+    {
+        return $this->delete();
     }
 }

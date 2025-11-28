@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Tambah Jadwal')
+
 @section('content')
 <div class="p-6 max-w-3xl mx-auto bg-white shadow-sm rounded-xl border border-gray-100">
     <h2 class="text-lg font-semibold mb-6 text-gray-800 border-b pb-3">➕ Tambah Jadwal</h2>

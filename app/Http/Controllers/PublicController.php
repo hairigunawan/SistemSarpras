@@ -11,9 +11,12 @@ use App\Models\Prioritas;
 use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 use App\Helpers\PeminjamanHelper;
 use App\Helpers\ProyektorStatusHelper;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use App\Exports\RiwayatPeminjamanExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PublicController extends Controller
 {
@@ -25,16 +28,21 @@ class PublicController extends Controller
         $totalRuangan = Ruangan::count();
         $totalProyektor = Proyektor::count();
 
-        $idStatusTersedia = Status::where('nama_status', 'Tersedia')->first()->id_status ?? null;
-        $idStatusDipinjam = Status::where('nama_status', 'Dipinjam')->first()->id_status ?? null;
-        $idStatusPerbaikan = Status::where('nama_status', 'Perbaikan')->first()->id_status ?? null;
+        $statusTersedia = Status::where('nama_status', 'Tersedia')->first();
+        $idStatusTersedia = $statusTersedia ? $statusTersedia->id_status : null;
+
+        $statusDipinjam = Status::where('nama_status', 'Dipinjam')->first();
+        $idStatusDipinjam = $statusDipinjam ? $statusDipinjam->id_status : null;
+
+        $statusPerbaikan = Status::where('nama_status', 'Perbaikan')->first();
+        $idStatusPerbaikan = $statusPerbaikan ? $statusPerbaikan->id_status : null;
 
         $RuanganTersedia = Ruangan::where('id_status', $idStatusTersedia)->count();
-        $RuanganTerpakai = Ruangan::where('id_status', $idStatusDipinjam)->count();
+        $RuanganTerpakai = $totalRuangan - $RuanganTersedia;
         $RuanganPerbaikan = Ruangan::where('id_status', $idStatusPerbaikan)->count();
 
         $ProyektorTersedia = Proyektor::where('id_status',  $idStatusTersedia)->count();
-        $ProyektorTerpakai = Proyektor::where('id_status', $idStatusDipinjam)->count();
+        $ProyektorTerpakai = $totalProyektor - $ProyektorTersedia;
         $ProyektorPerbaikan = Proyektor::where('id_status', $idStatusPerbaikan)->count();
 
         $p = Peminjaman::with(['ruangan'])
@@ -80,10 +88,8 @@ class PublicController extends Controller
             $selectedSarprasId = $selectedProyektorId;
         }
 
-        // Perbarui status proyektor berdasarkan peminjaman aktif
         ProyektorStatusHelper::updateProyektorStatus();
 
-        // Menggunakan helper untuk mendapatkan sumber daya yang tersedia
         $resources = PeminjamanHelper::getAvailableResources(true);
         $ruanganTersedia = $resources['ruangan']->sortBy('nama_ruangan');
         $proyektorTersedia = $resources['proyektor']->sortBy('nama_proyektor');
@@ -101,164 +107,40 @@ class PublicController extends Controller
         ));
     }
 
-    public function create()
-    {
-        // Perbarui status proyektor berdasarkan peminjaman aktif
-        ProyektorStatusHelper::updateProyektorStatus();
-
-        // Menggunakan helper untuk mendapatkan sumber daya yang tersedia
-        $resources = PeminjamanHelper::getAvailableResources(true);
-        $ruanganTersedia = $resources['ruangan']->sortBy('nama_ruangan');
-        $proyektorTersedia = $resources['proyektor']->sortBy('nama_proyektor');
-
-        $selectedSarprasType = request('sarpras_type');
-        $selectedSarprasId = request('sarpras_id');
-
-        return view('public.peminjaman.create', compact('ruanganTersedia', 'proyektorTersedia', 'selectedSarprasType', 'selectedSarprasId'));
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nama_peminjam' => 'required|string|max:255',
-            'tanggal_pinjam' => 'required|date',
-            'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
-            'jam_mulai' => 'required',
-            'jam_selesai' => 'required|after:jam_mulai',
-            'jenis_kegiatan' => 'required|string',
-            'jumlah_peserta' => 'required|integer|min:1',
-            'sarpras_type' => 'required|in:ruangan,proyektor',
-            'sarpras_id' => 'required|integer',
-            'id_lokasi' => 'nullable|integer',
-        ]);
-
-        // Cek konflik menggunakan helper
-        $conflictRequest = new \stdClass();
-        $conflictRequest->tanggal_pinjam = $request->tanggal_pinjam;
-        $conflictRequest->tanggal_kembali = $request->tanggal_kembali;
-        $conflictRequest->jam_mulai = $request->jam_mulai;
-        $conflictRequest->jam_selesai = $request->jam_selesai;
-        $conflictRequest->include_waiting = true;
-
-        if ($request->sarpras_type === 'ruangan') {
-            $conflictRequest->id_ruangan = $request->sarpras_id;
-        } else {
-            $conflictRequest->id_proyektor = $request->sarpras_id;
-        }
-
-        if (PeminjamanHelper::checkConflict($conflictRequest)) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Ruangan dan Proyektor yang dipilih sudah dipinjam atau sedang menunggu persetujuan pada waktu tersebut.');
-        }
-
-        $peminjaman = new Peminjaman();
-        $peminjaman->nama_peminjam = $request->nama_peminjam;
-        $peminjaman->tanggal_pinjam = $request->tanggal_pinjam;
-        $peminjaman->tanggal_kembali = $request->tanggal_kembali;
-        $peminjaman->jam_mulai = $request->jam_mulai;
-        $peminjaman->jam_selesai = $request->jam_selesai;
-        $peminjaman->jenis_kegiatan = $request->jenis_kegiatan;
-        $peminjaman->jumlah_peserta = $request->jumlah_peserta;
-        $peminjaman->status_peminjaman = 'Menunggu';
-        $peminjaman->id_akun = Auth::id();
-
-        if ($request->sarpras_type === 'ruangan') {
-            $peminjaman->id_ruangan = $request->sarpras_id;
-        } else {
-            $peminjaman->id_proyektor = $request->sarpras_id;
-        }
-
-        if ($request->id_lokasi) {
-            $peminjaman->id_lokasi = $request->id_lokasi;
-        }
-
-        $peminjaman->save();
-
-        return redirect()->route('public.peminjaman.daftarpeminjaman')->with('success', 'Peminjaman berhasil diajukan. Menunggu persetujuuan admin.');
-    }
-
+    // STORE PUBLIC (REFACTORED TO USE MODEL LOGIC)
     public function storePeminjaman(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'id_ruangan' => 'nullable|exists:ruangans,id_ruangan',
             'id_proyektor' => 'nullable|exists:proyektors,id_proyektor',
             'lokasi_id' => 'required_with:id_proyektor|nullable|exists:lokasis,id_lokasi',
             'tanggal_pinjam' => 'required|date|after_or_equal:today',
-            'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
             'jam_mulai' => 'required',
             'jam_selesai' => 'required|after:jam_mulai',
-            'nomor_whatsapp' => 'required|string|max:15',
             'jumlah_peserta' => 'required|integer|min:1',
             'jenis_kegiatan' => 'required|string|max:500',
         ]);
 
-        // Menyiapkan data untuk disimpan
-        $dataToSave = [
-            'id_akun' => Auth::id(),
-            'id_lokasi' => $request->lokasi_id,
-            'tanggal_pinjam' => $request->tanggal_pinjam,
-            'tanggal_kembali' => $request->tanggal_kembali,
-            'jam_mulai' => $request->jam_mulai,
-            'jam_selesai' => $request->jam_selesai,
-            'jumlah_peserta' => $request->jumlah_peserta,
-            'jenis_kegiatan' => $request->jenis_kegiatan,
-            'nama_peminjam' => Auth::user()->nama,
-            'email_peminjam' => Auth::user()->email,
-            'nomor_whatsapp' => $request->nomor_whatsapp,
-            'status_peminjaman' => 'Menunggu',
-        ];
+        // Persiapkan data agar sesuai dengan format yang diterima Model
+        $dataToSubmit = $validated;
 
-        // Menambahkan ID sumber daya
-        if (!empty($request->id_ruangan)) {
-            $dataToSave['id_ruangan'] = $request->id_ruangan;
-            $dataToSave['id_lokasi'] = Ruangan::find($request->id_ruangan)->lokasi_id;
-        }
-        if (!empty($request->id_proyektor)) {
-            $dataToSave['id_proyektor'] = $request->id_proyektor;
-            $dataToSave['id_lokasi'] = $request->lokasi_id;
+        // Logic mapping lokasi dan sarpras tambahan
+        if (!empty($validated['id_ruangan'])) {
+            $dataToSubmit['id_lokasi'] = Ruangan::find($validated['id_ruangan'])->lokasi_id;
+        } elseif (!empty($validated['id_proyektor'])) {
+            $dataToSubmit['id_lokasi'] = $validated['lokasi_id'];
         }
 
+        try {
+            // MENGGUNAKAN Peminjaman::submit()
+            // Ini akan otomatis mengecek Role User & Status 'Disetujui'
+            Peminjaman::submit($dataToSubmit);
 
-        // Cek konflik menggunakan helper
-        $conflictRequest = new \stdClass();
-        $conflictRequest->tanggal_pinjam = $request->tanggal_pinjam;
-        $conflictRequest->tanggal_kembali = $request->tanggal_kembali;
-        $conflictRequest->jam_mulai = $request->jam_mulai;
-        $conflictRequest->jam_selesai = $request->jam_selesai;
-        $conflictRequest->include_waiting = true;
-
-        if ( $request->id_ruangan ) {
-            $conflictRequest->id_ruangan = $request->id_ruangan;
+            $successMessage = 'Peminjaman berhasil diajukan. Menunggu persetujuan admin.';
+            return redirect()->route('public.peminjaman.daftarpeminjaman')->with('success', $successMessage);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
-        if ( $request->id_proyektor ) {
-            $conflictRequest->id_proyektor = $request->id_proyektor;
-        }
-
-        if (PeminjamanHelper::checkConflict($conflictRequest)) {
-            $conflictItems = [];
-            if (($request->id_ruangan)) {
-                $conflictItems[] = 'Ruangan';
-            }
-            if (($request->id_proyektor)) {
-                $conflictItems[] = 'Proyektor';
-            }
-            $bentrokMessage = implode(' dan ', $conflictItems) . ' yang dipilih sudah dipinjam atau sedang menunggu persetujuan pada waktu tersebut.';
-            return back()->withErrors(['bentrok' => $bentrokMessage])->withInput();
-        }
-
-        Peminjaman::create($dataToSave);
-
-        $successMessage = 'Peminjaman berhasil diajukan.';
-        if (!empty($request->id_ruangan) && !empty($request->id_proyektor)) {
-            $successMessage = 'Peminjaman ruangan dan proyektor berhasil diajukan.';
-        } elseif (!empty($request->id_ruangan)) {
-            $successMessage = 'Peminjaman ruangan berhasil diajukan.';
-        } elseif (!empty($request->id_proyektor)) {
-            $successMessage = 'Peminjaman proyektor berhasil diajukan.';
-        }
-
-        return redirect()->route('public.peminjaman.daftarpeminjaman')->with('success', $successMessage);
     }
 
     public function daftarpeminjaman()
@@ -267,6 +149,7 @@ class PublicController extends Controller
             ->latest()
             ->get();
 
+        // Code lainnya tetap sama...
         $p = Peminjaman::with(['ruangan'])
             ->where('status_peminjaman', 'Disetujui')
             ->whereNotNull('id_ruangan')
@@ -282,84 +165,109 @@ class PublicController extends Controller
                 ];
             })->toArray();
 
-        return view('public.peminjaman.daftarpeminjaman', compact('peminjaman', 'p'));
+        return view('public.peminjaman.index', compact('peminjaman', 'p'));
     }
 
     public function halamansarpras(Request $request)
-     {
-        // Perbarui status proyektor berdasarkan peminjaman aktif
+    {
+        // Update status otomatis (jika diperlukan)
         ProyektorStatusHelper::updateProyektorStatus();
 
-        // Mengambil data ruangan dengan relasi status dan lokasi
-        $ruangans = Ruangan::with('status', 'lokasi')->get();
+        // 1. Ambil Input Filter
+        $jenisSarprasFilter = $request->query('jenis_sarpras', 'all');
+        $lokasiRuanganFilter = $request->query('lokasi_ruangan', 'all');
 
-        // Mengambil data proyektor dengan relasi status
-        $proyektors = Proyektor::with('status')->get();
+        // 2. Siapkan wadah kosong (Collection) agar tidak error di View jika tidak ada data
+        $ruangans = collect();
+        $proyektors = collect();
 
-        return view('public.sarana_perasarana.halamansarpras', compact('ruangans', 'proyektors'));
+        // 3. Logika Filter RUANGAN
+        // Jalankan jika user memilih 'all' atau 'ruangan'
+        if ($jenisSarprasFilter === 'all' || $jenisSarprasFilter === 'ruangan') {
+            $queryRuangan = Ruangan::with('status', 'lokasi');
+
+            // PERBAIKAN DI SINI:
+            // Gunakan whereHas untuk memfilter berdasarkan relasi 'lokasi'
+            if ($jenisSarprasFilter === 'ruangan' && $lokasiRuanganFilter !== 'all') {
+                $queryRuangan->whereHas('lokasi', function ($q) use ($lokasiRuanganFilter) {
+                    // 'id_lokasi' ini merujuk ke primary key di tabel lokasis (bukan ruangans)
+                    $q->where('id_lokasi', $lokasiRuanganFilter);
+                });
+            }
+
+            $ruangans = $queryRuangan->get();
+        }
+
+        // 4. Logika Filter PROYEKTOR
+        // Jalankan jika user memilih 'all' atau 'proyektor'
+        if ($jenisSarprasFilter === 'all' || $jenisSarprasFilter === 'proyektor') {
+            // Proyektor ditampilkan.
+            // Catatan: Jika logika bisnis Anda mengharuskan proyektor sembunyi saat lokasi dipilih,
+            // tambahkan kondisi: && $lokasiRuanganFilter === 'all'
+            $proyektors = Proyektor::with('status')->get();
+        }
+
+        // 5. Data Pendukung untuk Dropdown
+        $lokasis = Lokasi::orderBy('nama_lokasi', 'asc')->get()->unique('nama_lokasi');
+
+        // Reset filter lokasi ke 'all' jika user pindah ke tab 'proyektor' (untuk UI saja)
+        if ($jenisSarprasFilter === 'proyektor') {
+            $lokasiRuanganFilter = 'all';
+        }
+
+        return view('public.sarana_perasarana.halamansarpras', compact(
+            'ruangans',
+            'proyektors',
+            'lokasis',
+            'jenisSarprasFilter',
+            'lokasiRuanganFilter'
+        ));
     }
-
-    /**
-     * Menampilkan detail ruangan untuk publik
-     */
 
     public function detail_sarpras($type = null, $id = null)
     {
         if ($type && $id) {
             if ($type === 'ruangan') {
                 $sarpras = Ruangan::with(['status', 'lokasi'])->findOrFail($id);
-                // Cari peminjaman terkait ruangan ini
                 $mainPeminjaman = Peminjaman::where('id_ruangan', $id)
                     ->whereIn('status_peminjaman', ['Menunggu', 'Dipinjam'])
                     ->latest()
                     ->first();
-                // Ambil feedback untuk ruangan ini
                 $feedbacks = Feedback::with('user')
                     ->where('id_ruangan', $id)
                     ->orderBy('created_at', 'desc')
                     ->get();
             } elseif ($type === 'proyektor') {
                 $sarpras = Proyektor::with('status')->findOrFail($id);
-                // Perbarui status proyektor berdasarkan peminjaman aktif
                 ProyektorStatusHelper::checkProyektorStatus($id);
-                // Refresh data proyektor setelah status diperbarui
                 $sarpras = Proyektor::with('status')->findOrFail($id);
-                // Cari peminjaman terkait proyektor ini
                 $mainPeminjaman = Peminjaman::where('id_proyektor', $id)
                     ->whereIn('status_peminjaman', ['Menunggu', 'Dipinjam'])
                     ->latest()
                     ->first();
-                // Ambil feedback untuk proyektor ini
                 $feedbacks = Feedback::with('user')
                     ->where('id_proyektor', $id)
                     ->orderBy('created_at', 'desc')
-                    ->get();
+                    ->paginate(10);
             } else {
                 abort(404, 'Sarana tidak ditemukan.');
             }
 
-            // Ambil status dari sumber daya untuk digunakan di view
             $resourceStatus = $sarpras->status->nama_status ?? 'Tersedia';
-
             return view('public.sarana_perasarana.detail_sarpras', compact('sarpras', 'type', 'mainPeminjaman', 'resourceStatus', 'feedbacks'));
         }
 
         $ruangans = Ruangan::with(['status', 'lokasi'])->get();
         $proyektors = Proyektor::with('status')->get();
-
         return view('public.sarana_perasarana.halamansarpras', compact('ruangans', 'proyektors'));
     }
 
-
-
     public function destroyPeminjaman(Peminjaman $peminjaman)
     {
-        // Ensure only the owner can delete
         if (Auth::id() !== $peminjaman->id_akun) {
             abort(403, 'Anda tidak memiliki akses untuk menghapus peminjaman ini.');
         }
 
-        // Hapus peminjaman jika statusnya masih Menunggu
         if ($peminjaman->status_peminjaman === 'Menunggu') {
             $peminjaman->delete();
             return redirect()->route('public.peminjaman.daftarpeminjaman')
@@ -376,9 +284,10 @@ class PublicController extends Controller
         return view('public.profile.index', compact('user'));
     }
 
-    public function riwayat_peminjaman(){
+    public function riwayat_peminjaman()
+    {
 
-        $peminjaman = Peminjaman::where('id_akun')->with(['ruangan', 'proyektor'])->latest()->get();
+        $peminjaman = Peminjaman::where('id_akun', Auth::id())->with(['ruangan', 'proyektor'])->latest()->get();
 
         $p = Peminjaman::with(['ruangan'])
             ->where('status_peminjaman', 'Disetujui')
@@ -396,5 +305,34 @@ class PublicController extends Controller
             })->toArray();
 
         return view('public.peminjaman.riwayat_peminjaman', compact('peminjaman', 'p'));
+    }
+    public function downloadPdf()
+    {
+        $peminjaman = Peminjaman::where('id_akun', Auth::id())->with(['ruangan', 'proyektor'])->latest()->get();
+        $user = Auth::user();
+        $tanggalCetak = Carbon::now()->translatedFormat('d F Y H:i:s');
+
+        $pdf = Pdf::loadView('admin.laporan.pdf', compact('peminjaman', 'user', 'tanggalCetak'));
+        return $pdf->download('riwayat_peminjaman_' . $user->nama . '.pdf');
+    }
+
+    public function exportExcel()
+    {
+        $peminjaman = Peminjaman::where('id_akun', Auth::id())->with(['ruangan', 'proyektor'])->latest()->get();
+        $user = Auth::user();
+        $tanggalCetak = Carbon::now()->translatedFormat('d F Y H:i:s');
+
+        $export = new RiwayatPeminjamanExport($peminjaman, $user, $tanggalCetak);
+        $filename = 'riwayat_peminjaman_' . $user->nama . '_' . date('Y-m-d') . '.xlsx';
+        return Excel::download($export, $filename);
+    }
+
+    public function printRiwayat()
+    {
+        $peminjaman = Peminjaman::where('id_akun', Auth::id())->with(['ruangan', 'proyektor'])->latest()->get();
+        $user = Auth::user();
+        $tanggalCetak = Carbon::now()->translatedFormat('d F Y H:i:s');
+
+        return view('admin.laporan.pdf', compact('peminjaman', 'user', 'tanggalCetak'));
     }
 }

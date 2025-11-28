@@ -92,7 +92,6 @@
                                 Prioritas
                             </span>
 
-                            <!-- 🔻 Panah dropdown -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                 viewBox="0 0 24 24"
                                 class="transition-transform duration-200 group-open:rotate-180">

@@ -31,11 +31,9 @@ class ProyektorStatusHelper
             $activePeminjaman = Peminjaman::where('id_proyektor', $proyektor->id_proyektor)
                 ->whereIn('status_peminjaman', ['Disetujui', 'Dipinjam'])
                 ->where(function ($query) {
-                    $query->whereDate('tanggal_kembali', '>=', Carbon::today())
-                          ->orWhere(function ($subQuery) {
-                              $subQuery->whereDate('tanggal_kembali', Carbon::today())
-                                       ->whereTime('jam_selesai', '>=', Carbon::now()->format('H:i'));
-                          });
+                    $query->whereDate('tanggal_pinjam', Carbon::today())
+                          ->whereTime('jam_mulai', '<=', Carbon::now()->format('H:i'))
+                          ->whereTime('jam_selesai', '>=', Carbon::now()->format('H:i'));
                 })
                 ->first();
 
@@ -65,11 +63,9 @@ class ProyektorStatusHelper
         $activePeminjaman = Peminjaman::where('id_proyektor', $proyektor->id_proyektor)
             ->whereIn('status_peminjaman', ['Disetujui', 'Dipinjam'])
             ->where(function ($query) {
-                $query->whereDate('tanggal_kembali', '>=', Carbon::today())
-                      ->orWhere(function ($subQuery) {
-                          $subQuery->whereDate('tanggal_kembali', Carbon::today())
-                                   ->whereTime('jam_selesai', '>=', Carbon::now()->format('H:i'));
-                      });
+                $query->whereDate('tanggal_pinjam', Carbon::today())
+                      ->whereTime('jam_mulai', '<=', Carbon::now()->format('H:i'))
+                      ->whereTime('jam_selesai', '>=', Carbon::now()->format('H:i'));
             })
             ->first();
 

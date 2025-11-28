@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('id_proyektor')->constrained('proyektors', 'id_proyektor');
             $table->string('nama_peminjam');
             $table->string('email_peminjam');
-            $table->string('nomor_whatsapp');
             $table->integer('jumlah_peserta');
             $table->date('tanggal_pinjam');
             $table->date('tanggal_kembali');

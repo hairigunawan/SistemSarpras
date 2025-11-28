@@ -43,7 +43,7 @@
                     <label for="id_status" class="block text-sm font-medium text-gray-700">Status</label>
                     <select name="id_status" id="id_status" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                         <option value="">Pilih Status</option>
-                        @foreach($statuses as $status)
+                        @foreach($s as $status)
                             <option value="{{ $status->id_status }}" {{ old('id_status', $defaultStatus) == $status->id_status ? 'selected' : '' }}>
                                 {{ $status->nama_status }}
                             </option>

@@ -3,93 +3,96 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jadwal;
-use App\Model\Ruangan;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\JadwalImport;
 
 class JadwalController extends Controller
 {
-    // Menampilkan daftar jadwal
     public function index()
     {
         $jadwals = Jadwal::all();
         return view('admin.jadwal.index', compact('jadwals'));
     }
 
-    // Form tambah jadwal
     public function create()
     {
         return view('admin.jadwal.create');
     }
 
-    // Simpan data baru
     public function store(Request $request)
     {
-        $request->validate([
-            'kode_mk' => 'required',
-            'nama_kelas' => 'required',
-            'kelas_mahasiswa' => 'required',
-            'sebaran_mahasiswa' => 'required|integer',
-            'hari' => 'required',
-            'jam_mulai' => 'required',
-            'jam_selesai' => 'required',
-            'ruangan' => 'required',
-            'daya_tampung' => 'required|integer',
-        ]);
+        // Validasi tetap di controller (atau dipisah ke FormRequest agar lebih OOP)
+        $validatedData = $this->validateRequest($request);
 
-        Jadwal::create($request->all());
+        // Panggil method di Model
+        Jadwal::storeJadwal($validatedData);
 
-        return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil ditambahkan');
+        return redirect()->route('admin.jadwal.index')
+            ->with('success', 'Jadwal berhasil ditambahkan');
     }
 
-    // Form edit jadwal
     public function edit($id)
     {
         $jadwal = Jadwal::findOrFail($id);
         return view('admin.jadwal.edit', compact('jadwal'));
     }
 
-    // Update data jadwal
-    public function update(Request $request, Jadwal $jadwal)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'kode_mk' => 'required',
-            'nama_kelas' => 'required',
-            'kelas_mahasiswa' => 'required',
-            'sebaran_mahasiswa' => 'required|integer',
-            'hari' => 'required',
-            'jam_mulai' => 'required',
-            'jam_selesai' => 'required',
-            'ruangan' => 'required',
-            'daya_tampung' => 'required|integer',
-        ]);
+        $jadwal = Jadwal::findOrFail($id);
 
-        $jadwal->update($request->all());
+        $validatedData = $this->validateRequest($request);
 
-        return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil diperbarui');
+        // Panggil method di Model (Instance method)
+        $jadwal->updateJadwal($validatedData);
+
+        return redirect()->route('admin.jadwal.index')
+            ->with('success', 'Jadwal berhasil diperbarui');
     }
 
-    //import excel
-    public function importStore(Request $request)
-{
-    $request->validate([
-        'file' => 'required|mimes:xls,xlsx'
-    ]);
-
-    Excel::import(new JadwalImport, $request->file('file'));
-
-    return redirect()->route('admin.jadwal.index')
-        ->with('success', 'Data jadwal berhasil di-import!');
-}
-
-
-    // Hapus data
     public function destroy($id)
     {
         $jadwal = Jadwal::findOrFail($id);
-        $jadwal->delete();
 
-        return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil dihapus');
+        // Panggil method di Model
+        $jadwal->deleteJadwal();
+
+        return redirect()->route('admin.jadwal.index')
+            ->with('success', 'Jadwal berhasil dihapus');
+    }
+
+    public function importStore(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xls,xlsx|max:2048'
+        ]);
+
+        try {
+            Excel::import(new JadwalImport, $request->file('file'));
+            return redirect()->route('admin.jadwal.index')
+                ->with('success', 'Data jadwal berhasil di-import!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal import data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Private method untuk enkapsulasi validasi agar tidak berulang (DRY Principle)
+     */
+    private function validateRequest(Request $request)
+    {
+        return $request->validate([
+            'kode_mk'           => 'required',
+            'nama_kelas'        => 'required',
+            'kelas_mahasiswa'   => 'required',
+            'sebaran_mahasiswa' => 'required|integer',
+            'hari'              => 'required',
+            'jam_mulai'         => 'required|date_format:H:i',
+            'jam_selesai'       => 'required|date_format:H:i',
+            'ruangan'           => 'required',
+            'daya_tampung'      => 'required|integer',
+        ]);
     }
 }

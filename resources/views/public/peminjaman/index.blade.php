@@ -12,8 +12,8 @@
         Berikut adalah daftar semua pengajuan peminjaman yang telah diajukan
       </p>
 
-      <div class="flex justify-center">
-        <a href="{{ route('public.peminjaman.create') }}" class="flex justify-center space-x-4">
+      <div class="flex justify-center space-x-4">
+        <a href="{{ route('public.peminjaman.create') }}">
             <button class="bg-[#179ACE] text-white px-5 py-2 font-medium rounded-md hover:bg-[#0E7CBA]">Ajukan Peminjaman</button>
         </a>
       </div>
@@ -111,7 +111,7 @@
                     <h2 class="text-xl font-semibold text-gray-800">Jadwal Ruangan Terpakai</h2>
 
                     @if(isset($p) && count($p) > 0)
-                        <span class="bg-gradient-to-r from-red-500 to-red-600 text-white text-[10px] font-medium px-5 py-1 rounded-xl">
+                        <span class="bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[10px] font-medium px-5 py-1 rounded-xl">
                             {{ count($p) }} Ruangan Terpakai
                         </span>
                     @endif
