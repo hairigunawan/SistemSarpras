@@ -11,8 +11,9 @@ use App\Models\Prioritas;
 use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Helpers\PeminjamanHelper;
-use App\Helpers\ProyektorStatusHelper;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use App\Exports\RiwayatPeminjamanExport;
@@ -88,8 +89,6 @@ class PublicController extends Controller
             $selectedSarprasId = $selectedProyektorId;
         }
 
-        ProyektorStatusHelper::updateProyektorStatus();
-
         $resources = PeminjamanHelper::getAvailableResources(true);
         $ruanganTersedia = $resources['ruangan']->sortBy('nama_ruangan');
         $proyektorTersedia = $resources['proyektor']->sortBy('nama_proyektor');
@@ -107,34 +106,19 @@ class PublicController extends Controller
         ));
     }
 
-    // STORE PUBLIC (REFACTORED TO USE MODEL LOGIC)
+    // STORE PUBLIC (KONSISTEN DENGAN PEMINJAMANCONTROLLER)
     public function storePeminjaman(Request $request)
     {
-        $validated = $request->validate([
-            'id_ruangan' => 'nullable|exists:ruangans,id_ruangan',
-            'id_proyektor' => 'nullable|exists:proyektors,id_proyektor',
-            'lokasi_id' => 'required_with:id_proyektor|nullable|exists:lokasis,id_lokasi',
-            'tanggal_pinjam' => 'required|date|after_or_equal:today',
-            'jam_mulai' => 'required',
-            'jam_selesai' => 'required|after:jam_mulai',
-            'jumlah_peserta' => 'required|integer|min:1',
-            'jenis_kegiatan' => 'required|string|max:500',
-        ]);
-
-        // Persiapkan data agar sesuai dengan format yang diterima Model
-        $dataToSubmit = $validated;
-
-        // Logic mapping lokasi dan sarpras tambahan
-        if (!empty($validated['id_ruangan'])) {
-            $dataToSubmit['id_lokasi'] = Ruangan::find($validated['id_ruangan'])->lokasi_id;
-        } elseif (!empty($validated['id_proyektor'])) {
-            $dataToSubmit['id_lokasi'] = $validated['lokasi_id'];
-        }
-
         try {
+            // Mapping lokasi jika menggunakan ruangan
+            if (!empty($request->id_ruangan)) {
+                $lokasiId = Ruangan::find($request->id_ruangan)->lokasi_id;
+                $request->merge(['id_lokasi' => $lokasiId]);
+            }
+
             // MENGGUNAKAN Peminjaman::submit()
             // Ini akan otomatis mengecek Role User & Status 'Disetujui'
-            Peminjaman::submit($dataToSubmit);
+            Peminjaman::submit($request);
 
             $successMessage = 'Peminjaman berhasil diajukan. Menunggu persetujuan admin.';
             return redirect()->route('public.peminjaman.daftarpeminjaman')->with('success', $successMessage);
@@ -142,7 +126,6 @@ class PublicController extends Controller
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
-
     public function daftarpeminjaman()
     {
         $peminjaman = Peminjaman::with(['ruangan', 'proyektor'])
@@ -170,23 +153,19 @@ class PublicController extends Controller
 
     public function halamansarpras(Request $request)
     {
-        // Update status otomatis (jika diperlukan)
-        ProyektorStatusHelper::updateProyektorStatus();
-
         // 1. Ambil Input Filter
         $jenisSarprasFilter = $request->query('jenis_sarpras', 'all');
         $lokasiRuanganFilter = $request->query('lokasi_ruangan', 'all');
 
         // 2. Siapkan wadah kosong (Collection) agar tidak error di View jika tidak ada data
-        $ruangans = collect();
-        $proyektors = collect();
+        $r = collect();
+        $p = collect();
 
         // 3. Logika Filter RUANGAN
         // Jalankan jika user memilih 'all' atau 'ruangan'
         if ($jenisSarprasFilter === 'all' || $jenisSarprasFilter === 'ruangan') {
             $queryRuangan = Ruangan::with('status', 'lokasi');
 
-            // PERBAIKAN DI SINI:
             // Gunakan whereHas untuk memfilter berdasarkan relasi 'lokasi'
             if ($jenisSarprasFilter === 'ruangan' && $lokasiRuanganFilter !== 'all') {
                 $queryRuangan->whereHas('lokasi', function ($q) use ($lokasiRuanganFilter) {
@@ -195,20 +174,35 @@ class PublicController extends Controller
                 });
             }
 
-            $ruangans = $queryRuangan->get();
+            $r = $queryRuangan->latest()->paginate(9);
         }
 
         // 4. Logika Filter PROYEKTOR
         // Jalankan jika user memilih 'all' atau 'proyektor'
         if ($jenisSarprasFilter === 'all' || $jenisSarprasFilter === 'proyektor') {
-            // Proyektor ditampilkan.
-            // Catatan: Jika logika bisnis Anda mengharuskan proyektor sembunyi saat lokasi dipilih,
-            // tambahkan kondisi: && $lokasiRuanganFilter === 'all'
-            $proyektors = Proyektor::with('status')->get();
+            $queryProyektor = Proyektor::with('status');
+
+            // Filter berdasarkan status jika ada
+            $namaStatus = $request->input('nama_status');
+            if ($namaStatus) {
+                $statusId = Status::where('nama_status', $namaStatus)->value('id_status');
+                if ($statusId) {
+                    $queryProyektor->where('id_status', $statusId);
+                }
+            }
+
+            // Filter berdasarkan pencarian jika ada
+            $search = $request->input('search');
+            if ($search) {
+                $queryProyektor->where('nama_proyektor', 'like', "%{$search}%");
+            }
+
+            $p = $queryProyektor->latest()->paginate(9);
         }
 
         // 5. Data Pendukung untuk Dropdown
         $lokasis = Lokasi::orderBy('nama_lokasi', 'asc')->get()->unique('nama_lokasi');
+        $statuses = Status::all();
 
         // Reset filter lokasi ke 'all' jika user pindah ke tab 'proyektor' (untuk UI saja)
         if ($jenisSarprasFilter === 'proyektor') {
@@ -216,9 +210,10 @@ class PublicController extends Controller
         }
 
         return view('public.sarana_perasarana.halamansarpras', compact(
-            'ruangans',
-            'proyektors',
+            'r',
+            'p',
             'lokasis',
+            'statuses',
             'jenisSarprasFilter',
             'lokasiRuanganFilter'
         ));
@@ -239,7 +234,7 @@ class PublicController extends Controller
                     ->get();
             } elseif ($type === 'proyektor') {
                 $sarpras = Proyektor::with('status')->findOrFail($id);
-                ProyektorStatusHelper::checkProyektorStatus($id);
+                $this->checkProyektorStatus($id);
                 $sarpras = Proyektor::with('status')->findOrFail($id);
                 $mainPeminjaman = Peminjaman::where('id_proyektor', $id)
                     ->whereIn('status_peminjaman', ['Menunggu', 'Dipinjam'])

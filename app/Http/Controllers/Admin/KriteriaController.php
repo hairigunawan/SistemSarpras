@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Kriteria;
+use Illuminate\Validation\Rule;
 
 class KriteriaController extends Controller
 {
@@ -12,7 +14,8 @@ class KriteriaController extends Controller
      */
     public function index()
     {
-        //
+        $kriteria = Kriteria::orderBy('created_at', 'desc')->get();
+        return view('admin.prioritas.kriteria.index', compact('kriteria'));
     }
 
     /**
@@ -20,7 +23,7 @@ class KriteriaController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.prioritas.kriteria.create');
     }
 
     /**
@@ -28,7 +31,15 @@ class KriteriaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nama_kriteria' => 'required|string|max:255',
+            'tipe' => 'required|in:benefit,cost',
+            'keterangan' => 'nullable|string'
+        ]);
+
+        Kriteria::create($request->all());
+
+        return redirect()->route('admin.kriteria.index')->with('success', 'Kriteria berhasil ditambahkan.');
     }
 
     /**
@@ -36,7 +47,8 @@ class KriteriaController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $kriteria = Kriteria::findOrFail($id);
+        return view('admin.prioritas.kriteria.show', compact('kriteria'));
     }
 
     /**
@@ -44,7 +56,8 @@ class KriteriaController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $kriteria = Kriteria::findOrFail($id);
+        return view('admin.prioritas.kriteria.edit', compact('kriteria'));
     }
 
     /**
@@ -52,7 +65,17 @@ class KriteriaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $kriteria = Kriteria::findOrFail($id);
+
+        $request->validate([
+            'nama_kriteria' => 'required|string|max:255',
+            'tipe' => 'required|in:benefit,cost',
+            'keterangan' => 'nullable|string'
+        ]);
+
+        $kriteria->update($request->all());
+
+        return redirect()->route('admin.kriteria.index')->with('success', 'Kriteria berhasil diperbarui.');
     }
 
     /**
@@ -60,6 +83,9 @@ class KriteriaController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $kriteria = Kriteria::findOrFail($id);
+        $kriteria->delete();
+
+        return redirect()->route('admin.kriteria.index')->with('success', 'Kriteria berhasil dihapus.');
     }
 }

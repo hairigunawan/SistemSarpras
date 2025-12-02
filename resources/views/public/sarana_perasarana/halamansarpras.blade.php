@@ -43,14 +43,14 @@
             @endif
         </div>
 
-        @if($ruangans->isEmpty() && $proyektors->isEmpty())
+        @if($r->isEmpty() && $p->isEmpty())
             <div class="text-center py-16 bg-white rounded-xl border border-dashed border-gray-300">
                 <p class="text-gray-500 text-sm">Data tidak ditemukan.</p>
             </div>
         @else
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
 
-                @foreach ($ruangans as $item)
+                @foreach ($r as $item)
                     <div class="group bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col h-full">
                         <div class="h-40 w-full bg-gray-100 relative overflow-hidden">
                             @if($item->gambar)
@@ -100,12 +100,12 @@
                     </div>
                 @endforeach
 
-                @foreach ($proyektors as $item)
+                @foreach ($p as $item)
                     <div class="group bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col h-full">
                         <div class="h-40 w-full bg-gray-100 relative overflow-hidden">
                             @if($item->gambar)
                                 <img src="{{ asset('storage/' . str_replace('public/', '', $item->gambar)) }}"
-                                     alt="{{ $item->nama_proyektor }}"
+                                     alt="{{ $item->nama_proyektor }}""
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-gray-300">
@@ -134,11 +134,8 @@
                                        ($item->status->nama_status == 'Diperbaiki' ? 'bg-orange-50 text-orange-700 border-orange-100' : 'bg-red-50 text-red-700 border-red-100')) }}">
                                     {{ $item->status->nama_status }}
                                 </span>
-                                @if($item->kode_proyektor)
-                                    <span class="text-[10px] font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">
-                                        {{ $item->kode_proyektor }}
-                                    </span>
-                                @endif
+                                    <span class="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">{{ $item->kode_proyektor }}
+                                </span>
                             </div>
 
                             <div class="mt-auto">

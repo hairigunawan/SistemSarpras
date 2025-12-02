@@ -24,28 +24,42 @@
                             <th>No</th>
                             <th>Nama Kriteria</th>
                             <th>Tipe</th>
+                            <th>Keterangan</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="ligth-body">
-                        @foreach ($kriteria as $item)
+                        @forelse ($kriteria as $item)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $item->nama_kriteria }}</td>
-                            <td>{{ $item->tipe }}</td>
+                            <td>
+                                @if($item->tipe === 'benefit')
+                                    <span class="badge badge-success">Benefit</span>
+                                @else
+                                    <span class="badge badge-danger">Cost</span>
+                                @endif
+                            </td>
+                            <td>{{ $item->keterangan ?? '-' }}</td>
                             <td>
                                 <div class="d-flex align-items-center list-action">
-                                    <a class="badge badge-info mr-2" data-toggle="tooltip" data-placement="top" title="Edit"
+                                    <a class="badge badge-info mr-2" data-toggle="tooltip" data-placement="top" title="Lihat"
+                                        href="{{ route('admin.kriteria.show', $item->id) }}"><i class="ri-eye-line mr-0"></i></a>
+                                    <a class="badge badge-primary mr-2" data-toggle="tooltip" data-placement="top" title="Edit"
                                         href="{{ route('admin.kriteria.edit', $item->id) }}"><i class="ri-pencil-line mr-0"></i></a>
-                                    <form action="{{ route('admin.kriteria.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kriteria ini?');">
+                                    <form action="{{ route('admin.kriteria.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kriteria ini?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="badge badge-warning mr-2" data-toggle="tooltip" data-placement="top" title="Delete"><i class="ri-delete-bin-line mr-0"></i></button>
+                                        <button type="submit" class="badge badge-warning" data-toggle="tooltip" data-placement="top" title="Delete"><i class="ri-delete-bin-line mr-0"></i></button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center">Tidak ada data kriteria.</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

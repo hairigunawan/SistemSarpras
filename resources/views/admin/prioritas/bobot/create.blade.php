@@ -21,7 +21,7 @@
         </div>
 
         <button class="btn btn-success">Simpan</button>
-        <a href="{{ route('admin.bobot.index') }}" class="btn btn-secondary">Kembali</a>
+        <a href="{{ route('admin.prioritas.bobot.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 
 </div>

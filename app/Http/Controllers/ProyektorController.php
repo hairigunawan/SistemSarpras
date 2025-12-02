@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Proyektor;
 use App\Models\Status;
 use Illuminate\Http\Request;
-use App\Helpers\ProyektorStatusHelper;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
@@ -51,41 +50,20 @@ class ProyektorController extends Controller
         $p = Proyektor::findOrFail($id);
 
         // Perbarui status proyektor berdasarkan peminjaman aktif
-        ProyektorStatusHelper::checkProyektorStatus($id);
+        $s = Status::all();
 
-        return view('admin.sarpras.proyektor.lihat_proyektor', compact('p'));
+        return view('admin.sarpras.proyektor.lihat_proyektor', compact('p', 's'));
     }
 
     public function edit_proyektor($id)
     {
-        $p = Proyektor::findOrFail($id);
-        $s = Status::all();
-
-        return view('admin.sarpras.proyektor.edit_proyektor', compact('p', 's'));
+        $data = Proyektor::edit(request(), $id);
+        return view('admin.sarpras.proyektor.edit_proyektor', $data);
     }
 
     public function update_proyektor(Request $request, $id)
     {
-        $p = Proyektor::findOrFail($id);
-
-        $validated = $request->validate([
-            'nama_proyektor' => 'required|string|max:255',
-            'merk' => 'required|string|max:255',
-            'kode_proyektor' => 'nullable|string|max:255|unique:proyektors,kode_proyektor,' . $p->id_proyektor . ',id_proyektor',
-            'id_status' => 'required|exists:statuses,id_status',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
-
-        try {
-            // Panggil method di Model
-            $p->updateProyektor($validated, $request->file('gambar'));
-
-            return redirect()->route('admin.sarpras.index')
-                ->with('success', 'Data proyektor berhasil diperbarui!');
-        } catch (Exception $e) {
-            Log::error('Gagal update Proyektor: ' . $e->getMessage());
-            return back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage())->withInput();
-        }
+        return Proyektor::proyektorUpdate($request, $id);
     }
 
     public function update(Request $request, $id)

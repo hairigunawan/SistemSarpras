@@ -203,6 +203,39 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- === PERBANDINGAN AHP VS SAW === -->
+            <div class="bg-white shadow-md rounded-lg border border-gray-200 p-6">
+                <h3 class="text-xl font-bold mb-4 text-purple-900">Perbandingan Hasil AHP vs SAW</h3>
+
+                <table class="min-w-full border text-sm">
+                    <thead class="bg-purple-50">
+                        <tr>
+                            <th class="border px-4 py-2">No</th>
+                            <th class="border px-4 py-2">Nama Peminjam</th>
+                            <th class="border px-4 py-2">Ranking AHP</th>
+                            <th class="border px-4 py-2">Nilai AHP</th>
+                            <th class="border px-4 py-2">Ranking SAW</th>
+                            <th class="border px-4 py-2">Nilai SAW</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($nilai_ahp as $index => $ahp)
+                            @php
+                                $saw = $nilai_saw[$index] ?? null;
+                            @endphp
+                            <tr>
+                                <td class="border px-4 py-2 text-center">{{ $index + 1 }}</td>
+                                <td class="border px-4 py-2">{{ $ahp['nama'] }}</td>
+                                <td class="border px-4 py-2 text-center">{{ $ahp['ranking'] ?? '-' }}</td>
+                                <td class="border px-4 py-2 text-center">{{ number_format($ahp['nilai'] ?? 0, 4) }}</td>
+                                <td class="border px-4 py-2 text-center">{{ $saw['ranking'] ?? '-' }}</td>
+                                <td class="border px-4 py-2 text-center">{{ number_format($saw['nilai'] ?? 0, 4) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

@@ -7,6 +7,8 @@ use App\Models\Ruangan;
 use App\Models\Proyektor;
 use App\Models\Status;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class PeminjamanHelper
 {
@@ -53,8 +55,8 @@ class PeminjamanHelper
                 // jam_mulai < jam_selesai_peminjaman_lama AND
                 // jam_selesai > jam_mulai_peminjaman_lama
                 $subQuery->where('tanggal_pinjam', $tanggalPinjam)
-                         ->where('jam_mulai', '<', $jamSelesai)
-                         ->where('jam_selesai', '>', $jamMulai);
+                    ->where('jam_mulai', '<', $jamSelesai)
+                    ->where('jam_selesai', '>', $jamMulai);
             });
         });
 
@@ -71,20 +73,45 @@ class PeminjamanHelper
         } elseif ($status === 'Selesai') {
             $namaStatus = 'Tersedia';
         } else {
-            return; // Tidak perlu update status untuk status lain
+            return; 
         }
 
-        $idStatus = Status::where('nama_status', $namaStatus)->first()->id_status;
+        // Gunakan transaction untuk menghindari race condition
+        DB::transaction(function () use ($peminjaman, $namaStatus) {
+            $idStatus = Status::where('nama_status', $namaStatus)->first()->id_status;
 
-        // Update status ruangan jika ada
-        if ($peminjaman->id_ruangan) {
-            Ruangan::where('id_ruangan', $peminjaman->id_ruangan)->update(['id_status' => $idStatus]);
-        }
+            if (!$idStatus) {
+                Log::error("Status '{$namaStatus}' tidak ditemukan untuk update resource status");
+                return;
+            }
 
-        // Update status proyektor jika ada
-        if ($peminjaman->id_proyektor) {
-            Proyektor::where('id_proyektor', $peminjaman->id_proyektor)->update(['id_status' => $idStatus]);
-        }
+            if ($peminjaman->id_ruangan) {
+                $ruangan = Ruangan::lockForUpdate()->find($peminjaman->id_ruangan);
+                if ($ruangan) {
+                    $ruangan->update(['id_status' => $idStatus]);
+                    Log::info("Status ruangan ID {$peminjaman->id_ruangan} diubah ke {$namaStatus}");
+                }
+            }
+
+            if ($peminjaman->id_proyektor) {
+                $proyektor = Proyektor::lockForUpdate()->find($peminjaman->id_proyektor);
+                if ($proyektor) {
+                    $proyektor->update(['id_status' => $idStatus]);
+                    Log::info("Status proyektor ID {$peminjaman->id_proyektor} diubah ke {$namaStatus}");
+                }
+            }
+
+            if ($peminjaman->id_ruangan && $peminjaman->id_proyektor) {
+                $proyektor = Proyektor::lockForUpdate()->find($peminjaman->id_proyektor);
+                $ruangan = Ruangan::lockForUpdate()->find($peminjaman->id_ruangan);
+                if ($ruangan && $proyektor) {
+                    $ruangan->update(['id_status' => $idStatus]);
+                    Log::info("Status proyektor ID {$peminjaman->id_ruangan} diubah ke {$namaStatus}");
+                    $proyektor->update(['id_status' => $idStatus]);
+                    Log::info("Status proyektor ID {$peminjaman->id_proyektor} diubah ke {$namaStatus}");
+                }
+            }
+        });
     }
 
     /**
@@ -167,8 +194,8 @@ class PeminjamanHelper
                 // Pengecekan konflik waktu untuk 1 hari peminjaman
                 $timeQuery->where(function ($subQuery) use ($approvedPeminjaman) {
                     $subQuery->where('tanggal_pinjam', $approvedPeminjaman->tanggal_pinjam)
-                             ->where('jam_mulai', '<', $approvedPeminjaman->jam_selesai)
-                             ->where('jam_selesai', '>', $approvedPeminjaman->jam_mulai);
+                        ->where('jam_mulai', '<', $approvedPeminjaman->jam_selesai)
+                        ->where('jam_selesai', '>', $approvedPeminjaman->jam_mulai);
                 });
             })
             ->get();

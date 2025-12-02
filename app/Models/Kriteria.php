@@ -9,6 +9,16 @@ class Kriteria extends Model
 {
     use HasFactory;
 
-    protected $table = 'kriteria';
-    protected $fillable = ['nama_kriteria', 'tipe'];
+    protected $table = 'kriterias';
+    
+    protected $fillable = [
+        'nama_kriteria',
+        'tipe',
+        'keterangan'
+    ];
+
+    public function bobots()
+    {
+        return $this->hasMany(Bobot::class, 'kriteria_id');
+    }
 }

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class Proyektor extends Model
 {
@@ -39,11 +41,7 @@ class Proyektor extends Model
         return $this->hasMany(Feedback::class, 'id_proyektor', 'id_proyektor');
     }
 
-    // --- LOGIKA BISNIS (OOP / CRUD Methods) ---
 
-    /**
-     * Scope untuk memfilter data (Search & Filter Status)
-     */
     public function scopeFilter($query, array $filters)
     {
         $query->with(['status']);
@@ -61,6 +59,30 @@ class Proyektor extends Model
         return $query;
     }
 
+    public static function proyektorUpdate(Request $request, $id)
+    {
+
+        $p = Proyektor::findOrFail($id);
+
+        $validated = $request->validate([
+            'nama_proyektor' => 'required|string|max:255',
+            'merk' => 'required|string|max:255',
+            'kode_proyektor' => 'nullable|string|max:255|unique:proyektors,kode_proyektor,' . $p->id_proyektor . ',id_proyektor',
+            'id_status' => 'required|exists:statuses,id_status',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        try {
+            // Panggil method di Model
+            $p->updateProyektor($validated, $request->file('gambar'));
+
+            return redirect()->route('admin.sarpras.index')
+                ->with('success', 'Data proyektor berhasil diperbarui!');
+        } catch (Exception $e) {
+            Log::error('Gagal update Proyektor: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage())->withInput();
+        }
+    }
     /**
      * Handle logika Create Proyektor beserta upload gambar
      */
@@ -111,6 +133,13 @@ class Proyektor extends Model
         // Jika lolos, hapus gambar dan record
         $this->removeImage();
         return $this->delete();
+    }
+
+    public static function edit(Request $request, $id){
+        $p = Proyektor::findOrFail($id);
+        $s = Status::all();
+
+        return compact('p', 's');
     }
 
     // --- HELPER PRIVATE ---

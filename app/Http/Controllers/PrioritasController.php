@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Peminjaman;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Kriteria;
+use App\Models\Bobot;
 use App\Http\Controllers\Controller;
 
 class PrioritasController extends Controller
@@ -16,7 +17,7 @@ class PrioritasController extends Controller
         $peminjaman = Peminjaman::with('ruangan')->whereNotNull('id_ruangan')->get();
 
         // Ambil kriteria dari database
-        $dbKriteria = DB::table('kriteria')->get();
+        $dbKriteria = Kriteria::all();
 
         $kriteria = [];
         foreach ($dbKriteria as $k) {
@@ -38,6 +39,8 @@ class PrioritasController extends Controller
                 'kriteria' => [],
                 'hasil' => [],
                 'alternatif' => [],
+                'nilai_ahp' => [],
+                'nilai_saw' => [],
             ]);
         }
 
@@ -66,6 +69,8 @@ class PrioritasController extends Controller
             'kriteria' => $kriteriaOrdered,
             'hasil' => $hasil,
             'alternatif' => $alternatif,
+            'nilai_ahp' => $this->hitungAHPValues($peminjaman, $kriteriaOrdered),
+            'nilai_saw' => $hasil,
         ]);
     }
 
@@ -75,7 +80,7 @@ class PrioritasController extends Controller
         // Pastikan relasi 'proyektor' ada di model Peminjaman
         $peminjaman = Peminjaman::with('proyektor')->whereNotNull('id_proyektor')->get();
 
-        $dbKriteria = DB::table('kriteria')->get();
+        $dbKriteria = Kriteria::all();
 
         $kriteria = [];
         foreach ($dbKriteria as $k) {
@@ -97,6 +102,8 @@ class PrioritasController extends Controller
                 'kriteria' => [],
                 'hasil' => [],
                 'alternatif' => [],
+                'nilai_ahp' => [],
+                'nilai_saw' => [],
             ]);
         }
 
@@ -123,6 +130,8 @@ class PrioritasController extends Controller
             'kriteria' => $kriteriaOrdered,
             'hasil' => $hasil,
             'alternatif' => $alternatif,
+            'nilai_ahp' => $this->hitungAHPValues($peminjaman, $kriteriaOrdered),
+            'nilai_saw' => $hasil,
         ]);
     }
 
@@ -143,51 +152,25 @@ class PrioritasController extends Controller
             ];
         }
 
-        // Prioritas Hardcoded (semakin atas semakin penting)
-        $priorityOrder = [
-            'jenis_kegiatan',
-            'jumlah_peserta',
-            'pengajuan',
-            'durasi'
-        ];
+        // Ambil bobot dari tabel bobots untuk digunakan sebagai perbandingan kriteria
+        $bobotKriteria = Bobot::whereIn('nama', $origKeys)->get()->keyBy('nama');
 
-        // Susun urutan key berdasarkan priorityOrder + sisa key lainnya
-        $orderedKeys = [];
-        foreach ($priorityOrder as $p) {
-            if (in_array($p, $origKeys)) $orderedKeys[] = $p;
-        }
-        foreach ($origKeys as $k) {
-            if (!in_array($k, $orderedKeys)) $orderedKeys[] = $k;
-        }
-
-        $keys = $orderedKeys;
-        $n = count($keys);
-
-        // Map key ke rank integer untuk perbandingan
-        $priorityRank = [];
-        foreach ($keys as $k) {
-            $pos = array_search($k, $priorityOrder);
-            if ($pos === false) $pos = 99; // Kriteria baru/unknown dianggap prioritas rendah
-            $priorityRank[$k] = $pos;
-        }
-
-        // Buat matriks
+        // Buat matriks perbandingan berdasarkan bobot kriteria
         $matrix = array_fill(0, $n, array_fill(0, $n, 1.0));
         for ($i = 0; $i < $n; $i++) {
             for ($j = 0; $j < $n; $j++) {
-                if ($i === $j) continue;
-
-                $rankI = $priorityRank[$keys[$i]];
-                $rankJ = $priorityRank[$keys[$j]];
-
-                $diff = abs($rankI - $rankJ);
-                $ratio = ($diff == 0) ? 1 : (1 + $diff);
-
-                // Rank lebih kecil = Lebih penting
-                if ($rankI < $rankJ) {
-                    $matrix[$i][$j] = $ratio;
+                if ($i === $j) {
+                    $matrix[$i][$j] = 1.0;
                 } else {
-                    $matrix[$i][$j] = 1 / $ratio;
+                    $nilai_i = $bobotKriteria->get($origKeys[$i])->nilai ?? 0.5; // Default bobot
+                    $nilai_j = $bobotKriteria->get($origKeys[$j])->nilai ?? 0.5;
+
+                    // Jika nilai_j adalah 0, kita perlu handling
+                    if ($nilai_j == 0) {
+                        $matrix[$i][$j] = 999; // Atau nilai besar lainnya
+                    } else {
+                        $matrix[$i][$j] = $nilai_i / $nilai_j;
+                    }
                 }
             }
         }
@@ -230,7 +213,7 @@ class PrioritasController extends Controller
             'normalizedMatrix' => $normal,
             'bobotAkhir' => $bobot,
             'cr' => round($cr, 3),
-            'keys' => $keys,
+            'keys' => $origKeys,
         ];
     }
 
@@ -241,6 +224,7 @@ class PrioritasController extends Controller
 
         foreach ($data as $p) {
             $alt = [
+                'id' => $p->id,
                 'nama' => $p->nama_peminjam ?? 'Tidak Diketahui',
             ];
 
@@ -283,6 +267,7 @@ class PrioritasController extends Controller
             }
 
             $hasil[] = [
+                'id' => $alt['id'],
                 'nama' => $alt['nama'],
                 'nilai' => round($total, 4),
             ];
@@ -293,6 +278,47 @@ class PrioritasController extends Controller
         foreach ($hasil as $i => &$h) $h['ranking'] = $i + 1;
 
         return [$hasil, $alternatif];
+    }
+
+    // === Hitung AHP Values untuk ditampilkan ===
+    private function hitungAHPValues($data, $kriteria)
+    {
+        $alternatif = [];
+
+        foreach ($data as $p) {
+            $alt = [
+                'id' => $p->id,
+                'nama' => $p->nama_peminjam ?? 'Tidak Diketahui',
+            ];
+
+            foreach ($kriteria as $key => $v) {
+                $alt[$key] = $this->nilaiSkala($p, $key);
+            }
+            $alternatif[] = $alt;
+        }
+
+        // Perhitungan AHP untuk setiap alternatif
+        $hasil = [];
+        foreach ($alternatif as $alt) {
+            $total = 0;
+            foreach ($kriteria as $key => $val) {
+                $nilaiAlt = $alt[$key];
+                $bobot = $val['bobot'] ?? 0;
+                $total += $nilaiAlt * $bobot;
+            }
+
+            $hasil[] = [
+                'id' => $alt['id'],
+                'nama' => $alt['nama'],
+                'nilai' => round($total, 4),
+            ];
+        }
+
+        // Ranking
+        usort($hasil, fn($a, $b) => $b['nilai'] <=> $a['nilai']);
+        foreach ($hasil as $i => &$h) $h['ranking'] = $i + 1;
+
+        return $hasil;
     }
 
     // === NILAI SKALA (Logika Bisnis) ===
@@ -364,5 +390,55 @@ class PrioritasController extends Controller
         if (str_contains($s, 'ajuan') || str_contains($s, 'booking')) return 'pengajuan';
 
         return str_replace(' ', '_', $s);
+    }
+
+    // === HASIL PERHITUNGAN ===
+    public function hasil()
+    {
+        // Ambil data peminjaman ruangan
+        $peminjaman_ruangan = Peminjaman::with('ruangan')->whereNotNull('id_ruangan')->get();
+        $kriteria_ruangan = Kriteria::all();
+        $bobot_ruangan = Bobot::all();
+
+        $kriteria = [];
+        foreach ($kriteria_ruangan as $k) {
+            $key = $this->normalizeKriteriaKey($k->nama_kriteria);
+            $kriteria[$key] = [
+                'id' => $k->id,
+                'tipe' => strtolower(trim($k->tipe)),
+                'nama_asli' => $k->nama_kriteria
+            ];
+        }
+
+        $ahp_ruangan = $this->hitungBobotAHP($peminjaman_ruangan, $kriteria);
+        $kriteriaOrdered = $this->orderKriteria($kriteria, $ahp_ruangan['bobotAkhir'], $ahp_ruangan['keys']);
+        $nilai_ahp_ruangan = $this->hitungAHPValues($peminjaman_ruangan, $kriteriaOrdered);
+        [$nilai_saw_ruangan, $_] = $this->hitungSAW($peminjaman_ruangan, $kriteriaOrdered);
+
+        // Ambil data peminjaman proyektor
+        $peminjaman_proyektor = Peminjaman::with('proyektor')->whereNotNull('id_proyektor')->get();
+        $ahp_proyektor = $this->hitungBobotAHP($peminjaman_proyektor, $kriteria);
+        $kriteriaOrdered = $this->orderKriteria($kriteria, $ahp_proyektor['bobotAkhir'], $ahp_proyektor['keys']);
+        $nilai_ahp_proyektor = $this->hitungAHPValues($peminjaman_proyektor, $kriteriaOrdered);
+        [$nilai_saw_proyektor, $_] = $this->hitungSAW($peminjaman_proyektor, $kriteriaOrdered);
+
+        return view('admin.prioritas.hasil', [
+            'ruangan' => $nilai_ahp_ruangan,
+            'proyektor' => $nilai_ahp_proyektor,
+            'nilai_saw_ruangan' => $nilai_saw_ruangan,
+            'nilai_saw_proyektor' => $nilai_saw_proyektor,
+        ]);
+    }
+
+    private function orderKriteria($kriteria, $bobotAkhir, $keys)
+    {
+        $kriteriaOrdered = [];
+        foreach ($keys as $idx => $key) {
+            if (isset($kriteria[$key])) {
+                $kriteriaOrdered[$key] = $kriteria[$key];
+                $kriteriaOrdered[$key]['bobot'] = round($bobotAkhir[$idx] ?? 0, 3);
+            }
+        }
+        return $kriteriaOrdered;
     }
 }

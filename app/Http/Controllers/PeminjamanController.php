@@ -27,33 +27,12 @@ class PeminjamanController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi HTTP tetap di Controller (atau pindahkan ke FormRequest class terpisah)
-        $validated = $request->validate([
-            'id_ruangan'       => 'nullable|exists:ruangans,id_ruangan',
-            'id_proyektor'     => 'nullable|exists:proyektors,id_proyektor',
-            'tanggal_pinjam'   => 'required|date|after_or_equal:today',
-            'jam_mulai'        => 'required|date_format:H:i',
-            'jam_selesai'      => 'required|date_format:H:i|after:jam_mulai',
-            'jumlah_peserta'   => 'required|integer|min:1',
-            'jenis_kegiatan'   => 'required|string|max:500',
-        ]);
-
-        // Validasi Logic Sarpras (Bisa juga dipindah ke Custom Validation Rule)
-        if (empty($validated['id_ruangan']) && empty($validated['id_proyektor'])) {
-            return back()->withErrors(['id_sarpras' => 'Pilih ruangan atau proyektor.'])->withInput();
-        }
-        if (!empty($validated['id_ruangan']) && !empty($validated['id_proyektor'])) {
-            return back()->withErrors(['id_sarpras' => 'Hanya boleh memilih salah satu sarpras.']);
-        }
-
         try {
-            // PANGGIL LOGIKA BISNIS DARI MODEL (OOP: Model bertindak)
-            Peminjaman::submit($validated);
+            Peminjaman::submit($request);
 
             return redirect()->route('admin.peminjaman.index')
                 ->with('success', 'Pengajuan dikirim.');
         } catch (\Exception $e) {
-            // Tangkap error bisnis (seperti bentrok)
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
@@ -63,7 +42,6 @@ class PeminjamanController extends Controller
         try {
             $peminjaman = Peminjaman::findOrFail($id);
 
-            // ENKAPSULASI: Controller hanya menyuruh "approve", tidak perlu tahu caranya
             $peminjaman->approve();
 
             return $this->jsonResponse(true, 'Peminjaman berhasil disetujui.');

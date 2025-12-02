@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\PeminjamanHelper;
 use App\Services\FonnteService;
+use Illuminate\Http\Request;
 
 class Peminjaman extends Model
 {
@@ -95,7 +96,7 @@ class Peminjaman extends Model
         return $query->where(function ($q) use ($data, $isRuangan) {
             if ($isRuangan) {
                 $q->where('id_ruangan', $data['id_ruangan']);
-            } else {
+            } elseif (!empty($data['id_proyektor'])) {
                 $q->where('id_proyektor', $data['id_proyektor']);
             }
         })
@@ -113,17 +114,33 @@ class Peminjaman extends Model
     /**
      * Create Logic: Validasi bisnis dan pembuatan data
      */
-    public static function submit(array $data)
+    public static function submit(Request $request)
     {
+        $validated = $request->validate([
+            'id_ruangan'       => 'nullable|exists:ruangans,id_ruangan',
+            'id_proyektor'     => 'nullable|exists:proyektors,id_proyektor',
+            'id_lokasi'        => 'nullable|exists:lokasis,id_lokasi',
+            'tanggal_pinjam'   => 'required|date|after_or_equal:today',
+            'jam_mulai'        => 'required|date_format:H:i',
+            'jam_selesai'      => 'required|date_format:H:i|after:jam_mulai',
+            'jumlah_peserta'   => 'required|integer|min:1',
+            'jenis_kegiatan'   => 'required|string|max:500',
+        ]);
+
+        if (empty($validated['id_ruangan']) && empty($validated['id_proyektor'])) {
+            throw new \Exception('Pilih ruangan atau proyektor.');
+        }
+        if (!empty($validated['id_proyektor']) && empty($validated['id_lokasi'])) {
+            throw new \Exception('Lokasi harus dipilih untuk peminjaman proyektor.');
+        }
+
         $user = Auth::user();
 
-        // CEK VALIDASI ROLE & STATUS AKTIF
-        // Jika bukan Admin, cek apakah ada peminjaman yang sedang berjalan (Disetujui)
         $role = optional($user->userRole)->nama_role;
 
         if ($role !== 'Admin') {
             $hasActiveLoan = self::where('id_akun', $user->id_akun)
-                ->where('status_peminjaman', 'Disetujui') // Hanya cek yang sudah disetujui tapi belum selesai
+                ->where('status_peminjaman', 'Disetujui')
                 ->exists();
 
             if ($hasActiveLoan) {
@@ -131,22 +148,29 @@ class Peminjaman extends Model
             }
         }
 
-        // 1. Normalisasi Data
-        $data['id_akun'] = $user->id_akun ?? Auth::id();
-        $data['nama_peminjam'] = $user->nama;
-        $data['email_peminjam'] = $user->email;
-        $data['status_peminjaman'] = 'Menunggu';
+        // Siapkan data untuk pembuatan record
+        $createData = array_merge($validated, [
+            'id_akun' => $user->id_akun ?? Auth::id(),
+            'nama_peminjam' => $user->nama,
+            'email_peminjam' => $user->email,
+            'status_peminjaman' => 'Menunggu',
+            'id_lokasi' => $validated['id_lokasi'] ?? null,
+        ]);
 
-        // 2. Cek Bentrok (Menggunakan Scope di atas)
-        $isBentrok = self::isConflicting($data)->exists();
+        // Siapkan data untuk pengecekan konflik
+        $conflictCheckData = array_merge($validated, [
+            'id_ruangan' => $validated['id_ruangan'] ?? null,
+            'id_proyektor' => $validated['id_proyektor'] ?? null,
+        ]);
+
+        $isBentrok = self::isConflicting($conflictCheckData)->exists();
 
         if ($isBentrok) {
             self::sendNotification($user->nomor_telepon, "Peminjaman Gagal\nJadwal bentrok dengan peminjaman lain.");
             throw new \Exception('Jadwal bentrok dengan peminjaman lain.');
         }
 
-        // 3. Simpan
-        return self::create($data);
+        return self::create($createData);
     }
 
     /**
@@ -178,9 +202,6 @@ class Peminjaman extends Model
         self::sendNotification($this->user->nomor_telepon, $msg);
     }
 
-    /**
-     * Reject Logic
-     */
     public function reject($alasan)
     {
         if ($this->status_peminjaman !== 'Menunggu') {

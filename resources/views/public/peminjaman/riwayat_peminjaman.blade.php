@@ -173,11 +173,6 @@
                                 </div>
                                 <h3 class="text-sm font-semibold text-slate-900">Belum ada riwayat</h3>
                                 <p class="mt-1 text-sm text-slate-500">Anda belum memiliki riwayat peminjaman sarana atau prasarana.</p>
-                                <div class="mt-6">
-                                    <a href="{{ route('public.peminjaman.create') }}" class="text-blue-600 hover:text-blue-500 text-sm font-semibold hover:underline">
-                                        Buat Pengajuan Baru &rarr;
-                                    </a>
-                                </div>
                             </td>
                         </tr>
                         @endforelse

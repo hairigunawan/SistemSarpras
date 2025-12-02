@@ -113,12 +113,27 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
             Route::post('/ruangan/hitung', [PrioritasController::class, 'hitungRuangan'])->name('admin.prioritas.ruangan.hitung');
             Route::get('/hasil', [PrioritasController::class, 'hasil'])->name('admin.prioritas.hasil');
 
-            Route::get('kriteria', [KriteriaController::class, 'index'])->name('admin.prioritas.kriteria');
-            Route::get('kriteria/create', [KriteriaController::class, 'create'])->name('admin.kriteria.create');
-            Route::patch('kriteria/{id}/edit', [KriteriaController::class, 'edit'])->name('admin.kriteria.edit');
-            Route::patch('kriteria/{id}/destroy', [KriteriaController::class, 'destroy'])->name('admin.kriteria.destroy');
+            // Kriteria resource routes
+            Route::resource('kriteria', KriteriaController::class)->names([
+                'index' => 'admin.kriteria.index',
+                'create' => 'admin.kriteria.create',
+                'store' => 'admin.kriteria.store',
+                'show' => 'admin.kriteria.show',
+                'edit' => 'admin.kriteria.edit',
+                'update' => 'admin.kriteria.update',
+                'destroy' => 'admin.kriteria.destroy'
+            ]);
 
-            Route::get('/bobot', [BobotController::class, 'index'])->name('admin.prioritas.bobot.index');
+            // Bobot resource routes
+            Route::resource('bobot', BobotController::class)->names([
+                'index' => 'admin.prioritas.bobot.index',
+                'create' => 'admin.prioritas.bobot.create',
+                'store' => 'admin.bobot.store',
+                'show' => 'admin.prioritas.bobot.show',
+                'edit' => 'admin.prioritas.bobot.edit',
+                'update' => 'admin.prioritas.bobot.update',
+                'destroy' => 'admin.prioritas.bobot.destroy'
+            ]);
         });
 
         //Jadwal

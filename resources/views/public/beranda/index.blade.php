@@ -21,7 +21,7 @@
                 Sistem Informasi <br>
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Sarana dan Prasarana</span>
             </h1>
-            <p class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl leading-relaxed">
+            <p class="text-sm md:text-sm text-gray-200 mb-10 max-w-2xl leading-relaxed">
                 Solusi digital terintegrasi untuk pengelolaan dan peminjaman fasilitas Jurusan Teknologi Informasi yang lebih transparan, cepat, dan efisien.
             </p>
 
