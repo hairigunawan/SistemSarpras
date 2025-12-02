@@ -20,6 +20,9 @@ use App\Http\Controllers\KriteriaController as GlobalKriteriaController;
 use App\Http\Controllers\AlternatifController;
 use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\SpkController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+
 /*
 |--------------------------------------------------------------------------
 | Rute untuk Publik (Tidak Perlu Login)
@@ -190,4 +193,17 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
         Route::delete('/{feedback}', [FeedbackController::class, 'destroy'])->name('destroy');
     });
 
+   
 });
+
+ // LUPA PASSWORD – INPUT EMAIL
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showEmailForm'])->name('password.forgot');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('password.sendOtp');
+
+// HALAMAN VERIFIKASI OTP
+Route::get('/verify-otp', [ForgotPasswordController::class, 'showOtpForm'])->name('password.otpForm');
+Route::post('/verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('password.verifyOtp');
+
+// FORM RESET PASSWORD
+Route::get('/reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('password.resetForm');
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.resetPassword');
