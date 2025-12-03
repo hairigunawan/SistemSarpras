@@ -28,7 +28,6 @@ class LoginController extends Controller
 
         return redirect()->route('public.beranda.index');
     }
-
     public function register(Request $request)
     {
         $u = User::Register($request);
@@ -37,7 +36,6 @@ class LoginController extends Controller
             return back()->withErrors(['register' => 'Pendaftaran gagal.'])->withInput();
         }
 
-        // Check if user has role loaded
         if ($u->relationLoaded('userRole') && $u->userRole) {
             if (in_array($u->userRole->nama_role, ['Dosen', 'Mahasiswa'])) {
                 return redirect()->route('public.beranda.index.auth');

@@ -1,0 +1,394 @@
+<?php $__env->startSection('title', 'Form Peminjaman Sarpras'); ?>
+
+<?php echo app('Illuminate\Foundation\Vite')(['resources/js/app.js']); ?>
+
+<?php $__env->startSection('content'); ?>
+<div>
+<div class="pt-10">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            <div class=" text-gray-700">
+                <div class="text-center pt-5">
+                    <h1 class="text-3xl text-gray-700 font-bold mb-2">Formulir Peminjaman Sarpras</h1>
+                    <p class=" text-gray-500 max-w-2xl mx-auto">
+                        Lengkapi detail berikut untuk mengajukan peminjaman fasilitas sarana dan prasarana.
+                    </p>
+                </div>
+            </div>
+
+            
+            <div class="px-6 py-8 sm:px-10">
+                <form action="<?php echo e(route('public.peminjaman.store')); ?>" method="POST" id="peminjamanForm">
+                    <?php echo csrf_field(); ?>
+                    
+                    <div class="mb-10">
+                        <div class="flex items-center mb-6">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-xl font-semibold text-gray-800">Informasi Peminjam</h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <div class="md:col-span-2">
+                                <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Nama Lengkap
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="nama"
+                                        value="<?php echo e(Auth::check() ? (Auth::user()->name ?? Auth::user()->nama) : ''); ?>"
+                                        class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-gray-700 cursor-not-allowed focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
+                                        readonly>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Alamat Email
+                                </label>
+                                <div class="relative">
+                                    <input type="email" id="email"
+                                        value="<?php echo e(Auth::check() ? Auth::user()->email : ''); ?>"
+                                        class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-gray-700 cursor-not-allowed focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
+                                        readonly>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                            <div>
+                                <label for="nomor_telepon" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Nomor Telepon (WhatsApp)
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="nomor_telepon" id="nomor_telepon"
+                                        value="<?php echo e(Auth::check() ? Auth::user()->nomor_telepon : ''); ?>"
+                                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" readonly>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <?php $__errorArgs = ['nomor_telepon'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="mb-10">
+                        <div class="flex items-center mb-6">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-xl font-semibold text-gray-800">Detail Peminjaman</h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Pilih Sarana/Prasarana
+                                </label>
+                                <p class="text-sm text-gray-500 mb-3">Anda dapat memilih ruangan, proyektor, atau keduanya sekaligus.</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="id_ruangan" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Ruangan
+                                        </label>
+                                        <div class="relative">
+                                            <select name="id_ruangan" id="id_ruangan"
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                                                <option value="">Pilih Ruangan</option>
+                                                <?php $__currentLoopData = $ruanganTersedia; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ruangan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($ruangan->id_ruangan); ?>" <?php echo e((old('id_ruangan') == $ruangan->id_ruangan || ($selectedSarprasType == 'ruangan' && $selectedSarprasId == $ruangan->id_ruangan)) ? 'selected' : ''); ?>>
+                                                        <?php echo e($ruangan->nama_ruangan); ?>
+
+                                                    </option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            </select>
+                                        </div>
+                                        <?php $__errorArgs = ['id_ruangan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    </div>
+                                    <div>
+                                        <label for="id_proyektor" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Proyektor
+                                        </label>
+                                        <div class="relative">
+                                            <select name="id_proyektor" id="id_proyektor"
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                                                <option value="">Pilih Proyektor</option>
+                                                <?php $__currentLoopData = $proyektorTersedia; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $proyektor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($proyektor->id_proyektor); ?>" <?php echo e((old('id_proyektor') == $proyektor->id_proyektor || ($selectedSarprasType == 'proyektor' && $selectedSarprasId == $proyektor->id_proyektor)) ? 'selected' : ''); ?>>
+                                                        <?php echo e($proyektor->nama_proyektor); ?>
+
+                                                    </option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            </select>
+                                        </div>
+                                        <?php $__errorArgs = ['id_proyektor'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    </div>
+                                </div>
+                                <div id="selected-sarpras-info" class="mt-3 p-3 bg-blue-50 rounded-lg hidden">
+                                    <p class="text-sm text-blue-800">
+                                        <strong>Sarpras yang dipilih:</strong> <span id="sarpras-list"></span>
+                                    </p>
+                                </div>
+                            </div>
+
+
+                            <div>
+                                <label for="jumlah_peserta" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Jumlah Peserta
+                                </label>
+                                <div class="relative">
+                                    <input type="number" name="jumlah_peserta" id="jumlah_peserta"
+                                        value="<?php echo e(old('jumlah_peserta')); ?>"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                                        placeholder="Masukkan estimasi jumlah peserta" min="1" required>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <?php $__errorArgs = ['jumlah_peserta'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            
+                            <div id="lokasi_proyektor_container" style="display: none;">
+                                <label for="lokasi_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Lokasi Peminjaman Proyektor
+                                </label>
+                                <div>
+                                    <select name="lokasi_id" id="lokasi_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Pilih Lokasi</option>
+                                        <?php $__currentLoopData = $lokasiList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $lokasi): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($id); ?>" <?php echo e(old('lokasi_id') == $id ? 'selected' : ''); ?>>
+                                                <?php echo e($lokasi); ?>
+
+                                            </option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                    <?php $__errorArgs = ['lokasi_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                </div>
+                                <?php $__errorArgs = ['lokasi_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            
+                            <div>
+                                <label for="tanggal_pinjam" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Tanggal Peminjaman
+                                </label>
+                                <div class="relative">
+                                    <input
+                                        type="date"
+                                        name="tanggal_pinjam"
+                                        id="tanggal_pinjam"
+                                        value="<?php echo e(old('tanggal_pinjam')); ?>"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                                        required
+                                    >
+                                </div>
+                                <?php $__errorArgs = ['tanggal_pinjam'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <div id="lokasi_proyektor_container" style="display: none;">
+                                <label for="id_ruangan_proyektor" class="block text-sm font-medium text-gray-700 mb-2" >
+                                    Ruangan Proyektor
+                                </label>
+                                <div class="relative">
+                                    <select name="id_ruangan_proyektor" id="id_ruangan_proyektor"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Pilih Ruangan Proyektor Digunakan</option>
+                                            <?php $__currentLoopData = $ruanganTersedia; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($r->id_ruangan); ?>" <?php echo e((old('id_ruangan_proyektor  ') == $r->id_ruangan || ($selectedSarprasType == 'ruangan' && $selectedSarprasId == $r->id_ruangan)) ? 'selected' : ''); ?>>
+                                                    <?php echo e($r->nama_ruangan); ?>
+
+                                                </option>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                </div>
+                                <?php $__errorArgs = ['id_ruangan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Waktu Penggunaan
+                                </label>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <div class="relative">
+                                            <input type="time" name="jam_mulai" id="jam_mulai"
+                                                value="<?php echo e(old('jam_mulai')); ?>"
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                                                required>
+                                        </div>
+                                        <?php $__errorArgs = ['jam_mulai'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    </div>
+                                    <div>
+                                        <div class="relative">
+                                            <input type="time" name="jam_selesai" id="jam_selesai"
+                                                value="<?php echo e(old('jam_selesai')); ?>"
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                                                required>
+                                        </div>
+                                        <?php $__errorArgs = ['jam_selesai'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div id="peminjamInfo" class="mb-4"></div>
+
+                    <div>
+                        <label for="jenis_kegiatan" class="block text-sm font-medium text-gray-700 mb-2">
+                            Jenis Kegiatan / Keperluan
+                        </label>
+                        <div class="relative">
+                            <select name="jenis_kegiatan" id="jenis_kegiatan" aria-placeholder="Pilih Kegiatan" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
+                                <option value="">Pilih Jenis Kegiatan</option>
+                                <option value="Seminar Tugas Akhir">Seminar Tugas Akhir</option>
+                                <option value="Seminar PKL">Seminar PKL</option>
+                                <option value="Kelas Materi">Kelas Materi</option>
+                                <option value="Kelas Praktikum">Kelas Praktikum</option>
+                            </select>
+                        </div>
+                        <?php $__errorArgs = ['jenis_kegiatan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-6">
+                        <a href="<?php echo e(route('public.beranda.index.auth')); ?>" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                            Batal
+                        </a>
+                        <button type="submit" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-offset-2 transition">
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/js/peminjaman.js']); ?>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.guest', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\SIMPERSITE\SistemSarpras\resources\views/public/peminjaman/create.blade.php ENDPATH**/ ?>

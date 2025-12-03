@@ -1,242 +1,360 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto py-10 px-4"
-     x-data="{ showAHP: false, showSAW: false, showRank: false }">
 
-    <h2 class="text-2xl font-bold mb-8">Prioritas Peminjaman Ruangan</h2>
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
 
-    <!-- === TABEL PEMINJAMAN === -->
-    <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden mb-6">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-blue-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase">No</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase">Nama Peminjam</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase">Sarana/Prasarana</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase">Keperluan</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase">Tanggal</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase">Jam</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @php $no = 1; @endphp
-                    @foreach ($peminjaman as $p)
-                    <tr>
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ $no++ }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ $p->nama_peminjam ?? '-' }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900 text-center">
-                            {{-- Menggunakan optional helper jika relasi null --}}
-                            {{ optional($p->ruangan)->nama_ruangan ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4 max-w-xs text-sm text-gray-900">{{ $p->keperluan ?? $p->jenis_kegiatan ?? '-' }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900 text-center">{{ \Carbon\Carbon::parse($p->tanggal_pinjam)->format('d M Y') }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900 text-center">{{ $p->jam_mulai }} - {{ $p->jam_selesai }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+    <div class="max-w-7xl mx-auto" x-data="{ showAHP: false, showSAW: false }">
+
+        <!-- Header Section -->
+        <div class="mb-8 text-center">
+            <h2 class="text-3xl font-light text-gray-800 mb-2">
+                Prioritas Peminjaman Proyektor
+            </h2>
+            <div class="w-24 h-0.5 bg-gray-300 mx-auto"></div>
         </div>
-    </div>
 
-    <!-- Tombol Hitung AHP -->
-    <div class="text-right mb-4">
-        <button
-            @click="showAHP = !showAHP"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition">
-            Hitung Bobot AHP
-        </button>
-    </div>
-
-    <!-- === BAGIAN AHP === -->
-    <div x-show="showAHP" x-transition>
-        <div class="bg-white shadow-md rounded-lg border border-gray-200 mb-6 p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-bold text-blue-800">Perhitungan AHP (Analytic Hierarchy Process)</h3>
-
-                {{-- PERBAIKAN: Route diarahkan ke index kriteria (Master Data) --}}
-                <a href="{{ route('admin.kriteria.create') }}"
-                   class="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-4 py-2 rounded-lg">
-                    + Tambah Kriteria
-                </a>
+        <!-- TABEL PEMINJAMAN -->
+        <div class="bg-white rounded-lg border border-gray-200 mb-8">
+            <div class="border-b border-gray-200 px-6 py-4">
+                <h3 class="text-lg font-medium text-gray-700 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    Data Peminjaman Proyektor
+                </h3>
             </div>
 
-            {{-- Matriks Perbandingan --}}
-            <h4 class="font-semibold mb-2 text-gray-800">1️⃣ Matriks Perbandingan Berpasangan</h4>
-            <div class="overflow-x-auto mb-4">
-                <table class="min-w-full border text-sm">
-                    <thead class="bg-blue-50">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="border px-3 py-2">Kriteria</th>
-                            @foreach ($kriteria as $key => $value)
-                                {{-- Gunakan nama_asli jika ada, atau format key --}}
-                                <th class="border px-3 py-2 text-center">{{ $value['nama_asli'] ?? ucfirst(str_replace('_', ' ', $key)) }}</th>
-                            @endforeach
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">No</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nama Peminjam</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Proyektor</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Keperluan</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Tanggal</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Jam</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach ($pairwiseMatrix as $i => $row)
-                        <tr>
-                            @php
-                                $rowKey = array_keys($kriteria)[$i];
-                                $rowName = $kriteria[$rowKey]['nama_asli'] ?? ucfirst(str_replace('_', ' ', $rowKey));
-                            @endphp
-                            <td class="border px-3 py-2 font-semibold">{{ $rowName }}</td>
-                            @foreach ($row as $val)
-                                <td class="border px-3 py-2 text-center">{{ number_format($val, 3) }}</td>
-                            @endforeach
+                    <tbody class="bg-white divide-y divide-gray-100">
+                        @php $no = 1; @endphp
+                        @forelse ($peminjaman as $p)
+                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                            <td class="px-6 py-4 text-sm text-gray-500">{{ $no++ }}</td>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $p->nama_peminjam ?? '-' }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">
+                                {{ optional($p->proyektor)->nama_proyektor ?? '-' }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">{{ $p->keperluan ?? $p->jenis_kegiatan ?? '-' }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600 text-center">{{ \Carbon\Carbon::parse($p->tanggal_pinjam)->format('d M Y') }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600 text-center">
+                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                                    {{ $p->jam_mulai }} - {{ $p->jam_selesai }}
+                                </span>
+                            </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="6" class="px-6 py-10 text-center text-gray-500">
+                                <div class="flex flex-col items-center">
+                                    <svg class="w-10 h-10 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                                    </svg>
+                                    Tidak ada data peminjaman yang perlu diprioritaskan.
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
-            </div>
-
-            {{-- Normalisasi --}}
-            <h4 class="font-semibold mb-2 text-gray-800">2️⃣ Normalisasi Matriks</h4>
-            <div class="overflow-x-auto mb-4">
-                <table class="min-w-full border text-sm">
-                    <thead class="bg-blue-50">
-                        <tr>
-                            <th class="border px-3 py-2">Kriteria</th>
-                            @foreach ($kriteria as $key => $value)
-                                <th class="border px-3 py-2 text-center">{{ $value['nama_asli'] ?? ucfirst(str_replace('_', ' ', $key)) }}</th>
-                            @endforeach
-                            <th class="border px-3 py-2 text-center">Bobot</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($normalizedMatrix as $i => $row)
-                        <tr>
-                            @php
-                                $rowKey = array_keys($kriteria)[$i];
-                                $rowName = $kriteria[$rowKey]['nama_asli'] ?? ucfirst(str_replace('_', ' ', $rowKey));
-                            @endphp
-                            <td class="border px-3 py-2 font-semibold">{{ $rowName }}</td>
-                            @foreach ($row as $val)
-                                <td class="border px-3 py-2 text-center">{{ number_format($val, 3) }}</td>
-                            @endforeach
-                            <td class="border px-3 py-2 text-center font-semibold">{{ number_format($bobotAkhir[$i], 3) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            {{-- Bobot Akhir --}}
-            <h4 class="font-semibold mb-2 text-gray-800">3️⃣ Bobot Akhir Tiap Kriteria</h4>
-            <table class="min-w-full border text-sm mb-4">
-                <thead class="bg-green-50">
-                    <tr>
-                        <th class="border px-4 py-2">Kriteria</th>
-                        <th class="border px-4 py-2">Tipe</th>
-                        <th class="border px-4 py-2">Bobot Akhir</th>
-                        <th class="border px-4 py-2 text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($kriteria as $key => $value)
-                    <tr>
-                        <td class="border px-4 py-2">{{ $value['nama_asli'] ?? ucfirst(str_replace('_', ' ', $key)) }}</td>
-                        <td class="border px-4 py-2">{{ ucfirst($value['tipe']) }}</td>
-                        <td class="border px-4 py-2 text-center">{{ number_format($value['bobot'], 3) }}</td>
-                        <td class="border px-4 py-2 text-center">
-                            {{-- PERBAIKAN: Menggunakan ID ($value['id']) dan route destroy yang benar --}}
-                            <form action="{{ route('admin.kriteria.destroy', $value['id']) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kriteria ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:underline">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-            {{-- Rasio Konsistensi --}}
-            <p class="text-sm text-gray-700 mt-2">
-                <strong>Rasio Konsistensi (CR):</strong> {{ number_format($cr, 3) }}
-                @if($cr <= 0.1)
-                    ✅ <span class="text-blue-600 font-semibold">Konsisten</span>
-                @else
-                    ⚠️ <span class="text-red-600 font-semibold">Tidak Konsisten (Perbaiki matriks/priority)</span>
-                @endif
-            </p>
-
-            <!-- Tombol Hitung SAW -->
-            <div class="text-right mt-6">
-                <button
-                    @click="showSAW = !showSAW"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition">
-                    Hitung SAW
-                </button>
             </div>
         </div>
 
-        <!-- === BAGIAN SAW === -->
-        <div x-show="showSAW" x-transition>
-            <div class="bg-white shadow-md rounded-lg border border-gray-200 p-6">
-                <h3 class="text-xl font-bold mb-4 text-blue-900">Perhitungan SAW</h3>
+        <!-- Tombol Hitung AHP -->
+        <div class="flex justify-end mb-6">
+            <button
+                @click="showAHP = !showAHP; showSAW = false"
+                :class="showAHP ? 'bg-gray-700 text-white' : 'bg-white text-gray-700 border border-gray-300'"
+                class="font-medium px-6 py-2 rounded-lg transition-all duration-200 flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                </svg>
+                <span x-text="showAHP ? 'Tutup Detail AHP' : 'Hitung Bobot AHP'"></span>
+            </button>
+        </div>
 
-                <table class="min-w-full border text-sm mb-4">
-                    <thead class="bg-blue-50">
-                        <tr>
-                            <th class="border px-4 py-2">Alternatif</th>
-                            @foreach ($kriteria as $key => $value)
-                                <th class="border px-4 py-2">{{ $value['nama_asli'] ?? ucfirst($key) }}</th>
-                            @endforeach
-                            <th class="border px-4 py-2">Total</th>
-                            <th class="border px-4 py-2">Rank</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($hasil as $index => $h)
-                        <tr>
-                            <td class="border px-4 py-2">{{ $h['nama'] }}</td>
-                            @foreach ($kriteria as $key => $value)
-                                <td class="border px-4 py-2 text-center">{{ number_format($alternatif[$index][$key] ?? 0, 2) }}</td>
-                            @endforeach
-                            <td class="border px-4 py-2 text-center font-bold">{{ $h['nilai'] }}</td>
-                            <td class="border px-4 py-2 text-center">{{ $h['ranking'] }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+        <!-- BAGIAN AHP -->
+        <div x-show="showAHP"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform translate-y-2"
+             x-transition:enter-end="opacity-100 transform translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+
+            <div class="bg-white rounded-lg border border-gray-200 mb-8">
+                <div class="border-b border-gray-200 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-700 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            Perhitungan AHP (Analytic Hierarchy Process)
+                        </h3>
+                        <a href="{{ route('admin.kriteria.create') }}"
+                           class="text-gray-600 hover:text-gray-800 font-medium px-4 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Tambah Kriteria
+                        </a>
+                    </div>
+                </div>
+
+                <div class="p-6 space-y-8">
+                    <!-- Matriks Perbandingan -->
+                    <div>
+                        <h4 class="text-base font-medium mb-3 text-gray-700 flex items-center">
+                            <span class="text-gray-500 mr-2">1.</span>
+                            Matriks Perbandingan Berpasangan
+                        </h4>
+                        <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                            <table class="min-w-full">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="border-r border-gray-200 px-4 py-3 text-left text-xs font-medium text-gray-600">Kriteria</th>
+                                        @foreach ($kriteria as $key => $value)
+                                            <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600">{{ $value['nama_asli'] }}</th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-100">
+                                    @foreach ($pairwiseMatrix as $i => $row)
+                                    <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                        @php
+                                            $rowKey = array_keys($kriteria)[$i];
+                                            $rowName = $kriteria[$rowKey]['nama_asli'];
+                                        @endphp
+                                        <td class="border-r border-gray-200 px-4 py-3 font-medium bg-gray-50 text-sm text-gray-700">{{ $rowName }}</td>
+                                        @foreach ($row as $val)
+                                            <td class="border-r border-gray-200 px-4 py-3 text-center text-sm @if($val == 1) bg-gray-100 font-semibold @endif text-gray-600">
+                                                {{ number_format($val, 3) }}
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Normalisasi -->
+                    <div>
+                        <h4 class="text-base font-medium mb-3 text-gray-700 flex items-center">
+                            <span class="text-gray-500 mr-2">2.</span>
+                            Normalisasi Matriks
+                        </h4>
+                        <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                            <table class="min-w-full">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="border-r border-gray-200 px-4 py-3 text-left text-xs font-medium text-gray-600">Kriteria</th>
+                                        @foreach ($kriteria as $key => $value)
+                                            <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600">{{ $value['nama_asli'] }}</th>
+                                        @endforeach
+                                        <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600 bg-gray-100">Bobot</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-100">
+                                    @foreach ($normalizedMatrix as $i => $row)
+                                    <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                        @php
+                                            $rowKey = array_keys($kriteria)[$i];
+                                            $rowName = $kriteria[$rowKey]['nama_asli'];
+                                        @endphp
+                                        <td class="border-r border-gray-200 px-4 py-3 font-medium bg-gray-50 text-sm text-gray-700">{{ $rowName }}</td>
+                                        @foreach ($row as $val)
+                                            <td class="border-r border-gray-200 px-4 py-3 text-center text-sm text-gray-600">{{ number_format($val, 3) }}</td>
+                                        @endforeach
+                                        <td class="border-r border-gray-200 px-4 py-3 text-center font-semibold text-gray-700 bg-gray-50 text-sm">
+                                            {{ number_format($bobotAkhir[$i], 3) }}
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Bobot Akhir -->
+                    <div>
+                        <h4 class="text-base font-medium mb-3 text-gray-700 flex items-center">
+                            <span class="text-gray-500 mr-2">3.</span>
+                            Bobot Akhir Tiap Kriteria
+                        </h4>
+                        <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                            <table class="min-w-full">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="border-r border-gray-200 px-4 py-3 text-left text-xs font-medium text-gray-600">Kriteria</th>
+                                        <th class="border-r border-gray-200 px-4 py-3 text-left text-xs font-medium text-gray-600">Tipe</th>
+                                        <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600">Bobot Akhir</th>
+                                        <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-100">
+                                    @foreach ($kriteria as $value)
+                                    <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                        <td class="border-r border-gray-200 px-4 py-3 font-medium text-sm text-gray-700">{{ $value['nama_asli'] }}</td>
+                                        <td class="border-r border-gray-200 px-4 py-3 text-sm">
+                                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium
+                                                @if($value['tipe'] == 'benefit') bg-green-50 text-green-700 @else bg-red-50 text-red-700 @endif">
+                                                {{ ucfirst($value['tipe']) }}
+                                            </span>
+                                        </td>
+                                        <td class="border-r border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-700">{{ number_format($value['bobot'], 3) }}</td>
+                                        <td class="border-r border-gray-200 px-4 py-3 text-center">
+                                            <form action="{{ route('admin.kriteria.destroy', $value['id']) }}" method="POST"
+                                                  onsubmit="return confirm('Yakin ingin menghapus kriteria ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="text-red-600 hover:text-red-800 font-medium transition-colors duration-200 flex items-center mx-auto">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Konsistensi Ratio -->
+                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                            <div class="mb-4 sm:mb-0">
+                                <p class="text-base font-medium text-gray-700 mb-1">Rasio Konsistensi (CR)</p>
+                                <p class="text-2xl font-semibold text-gray-800">{{ number_format($cr, 3) }}</p>
+                            </div>
+
+                            @if($cr <= 0.1)
+                                <div class="flex items-center px-4 py-2 bg-green-50 text-green-700 rounded-lg font-medium">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Konsisten (CR ≤ 0.1)
+                                </div>
+                            @else
+                                <div class="flex items-center px-4 py-2 bg-red-50 text-red-700 rounded-lg font-medium">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Tidak Konsisten (CR > 0.1)
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Tombol Hitung SAW -->
+                    <div class="flex justify-end">
+                        <button
+                            @click="showSAW = !showSAW"
+                            :disabled="!showAHP"
+                            :class="showSAW ? 'bg-gray-700 text-white' : 'bg-white text-gray-700 border border-gray-300'"
+                            class="font-medium px-6 py-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            <span x-text="showSAW ? 'Tutup Hasil SAW' : 'Hitung Perankingan SAW'"></span>
+                        </button>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <!-- === PERBANDINGAN AHP VS SAW === -->
-            <div class="bg-white shadow-md rounded-lg border border-gray-200 p-6">
-                <h3 class="text-xl font-bold mb-4 text-purple-900">Perbandingan Hasil AHP vs SAW</h3>
+        <!-- BAGIAN SAW -->
+        <div x-show="showSAW"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform translate-y-2"
+             x-transition:enter-end="opacity-100 transform translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
 
-                <table class="min-w-full border text-sm">
-                    <thead class="bg-purple-50">
-                        <tr>
-                            <th class="border px-4 py-2">No</th>
-                            <th class="border px-4 py-2">Nama Peminjam</th>
-                            <th class="border px-4 py-2">Ranking AHP</th>
-                            <th class="border px-4 py-2">Nilai AHP</th>
-                            <th class="border px-4 py-2">Ranking SAW</th>
-                            <th class="border px-4 py-2">Nilai SAW</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($nilai_ahp as $index => $ahp)
-                            @php
-                                $saw = $nilai_saw[$index] ?? null;
-                            @endphp
-                            <tr>
-                                <td class="border px-4 py-2 text-center">{{ $index + 1 }}</td>
-                                <td class="border px-4 py-2">{{ $ahp['nama'] }}</td>
-                                <td class="border px-4 py-2 text-center">{{ $ahp['ranking'] ?? '-' }}</td>
-                                <td class="border px-4 py-2 text-center">{{ number_format($ahp['nilai'] ?? 0, 4) }}</td>
-                                <td class="border px-4 py-2 text-center">{{ $saw['ranking'] ?? '-' }}</td>
-                                <td class="border px-4 py-2 text-center">{{ number_format($saw['nilai'] ?? 0, 4) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="bg-white rounded-lg border border-gray-200">
+                <div class="border-b border-gray-200 px-6 py-4">
+                    <h3 class="text-lg font-medium text-gray-700 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                        </svg>
+                        Hasil Akhir Perankingan (SAW)
+                    </h3>
+                </div>
+
+                <div class="p-6">
+                    <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="border-r border-gray-200 px-4 py-3 text-left text-xs font-medium text-gray-600">Alternatif</th>
+                                    @foreach ($kriteria as $key => $value)
+                                        <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600">{{ $value['nama_asli'] }}</th>
+                                    @endforeach
+                                    <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600 bg-gray-100">Total</th>
+                                    <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600 bg-gray-100">Rank</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-100">
+                                @foreach ($hasil as $index => $h)
+                                <tr class="hover:bg-gray-50 transition-colors duration-150 @if($h['ranking'] == 1) bg-yellow-50 border-l-2 border-yellow-400 @endif">
+                                    <td class="border-r border-gray-200 px-4 py-3 font-medium text-sm @if($h['ranking'] == 1) text-yellow-700 @else text-gray-700 @endif">
+                                        @if($h['ranking'] == 1)
+                                            <div class="flex items-center">
+                                                <svg class="w-4 h-4 mr-1 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                                {{ $h['nama'] }}
+                                            </div>
+                                        @else
+                                            {{ $h['nama'] }}
+                                        @endif
+                                    </td>
+
+                                    @foreach ($kriteria as $key => $value)
+                                        <td class="border-r border-gray-200 px-4 py-3 text-center text-sm text-gray-600">
+                                            {{ number_format($alternatif[$index][$key], 2) }}
+                                        </td>
+                                    @endforeach
+
+                                    <td class="border-r border-gray-200 px-4 py-3 text-center font-semibold text-gray-700 bg-gray-50 text-sm">
+                                        {{ $h['nilai'] }}
+                                    </td>
+
+                                    <td class="border-r border-gray-200 px-4 py-3 text-center font-semibold text-lg bg-gray-50">
+                                        @if ($h['ranking'] == 1)
+                                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-yellow-400 text-white text-sm">
+                                                1
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-200 text-gray-600 text-sm">
+                                                {{ $h['ranking'] }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 @endsection

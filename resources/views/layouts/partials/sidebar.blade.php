@@ -114,10 +114,9 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('admin.prioritas.bobot.index') }}"
-                                    class="{{ request()->routeIs('admin.prioritas.bobot.*') ? 'block text-sm pl-5 bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded'
-                                    : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
-                                    Bobot
+                                <a href="{{ Route('admin.kriteria.index') }}"
+                                    class="{{ request()->routeIs('admin.kriteria*') ? 'block text-sm pl-5 bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
+                                    Kriteria
                                 </a>
                             </li>
                         </ul>

@@ -45,11 +45,11 @@
                     @else
                         <div class="relative">
                             <button @click="profileOpen = !profileOpen" @keydown.escape.window="profileOpen = false"
-                                    class="flex items-center gap-2 pl-2 pr-1 py-1 hover:bg-gray-100 transition">
+                                    class="flex items-center gap-1 pl-2 pr-1 py-1 hover:bg-gray-100 transition">
 
-                                <div class="text-right hidden lg:block mr-2">
+                                <div class="text-right items-center hidden lg:block mr-2">
                                     <p class="text-sm font-medium text-gray-800 leading-none">{{ Str::limit(Auth::user()->nama, 15) }}</p>
-                                    <p class="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">{{ Auth::user()->userRole->nama_role ?? 'User' }}</p>
+                                    <p class="text-[10px] text-gray-500 uppercase mt-0.5">{{ Auth::user()->userRole->nama_role ?? 'User' }}</p>
                                 </div>
 
                                 @if(Auth::user()->avatar)

@@ -15,8 +15,7 @@ use App\Http\Controllers\ProyektorController;
 use App\Http\Controllers\SarprasController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\Admin\BobotController;
-use App\Http\Controllers\Admin\KriteriaController;
-use App\Http\Controllers\KriteriaController as GlobalKriteriaController;
+use App\Http\Controllers\KriteriaController;
 use App\Http\Controllers\AlternatifController;
 use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\SpkController;
@@ -115,28 +114,17 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
             Route::post('/proyektor/hitung', [PrioritasController::class, 'hitungProyektor'])->name('admin.prioritas.proyektor.hitung');
             Route::post('/ruangan/hitung', [PrioritasController::class, 'hitungRuangan'])->name('admin.prioritas.ruangan.hitung');
             Route::get('/hasil', [PrioritasController::class, 'hasil'])->name('admin.prioritas.hasil');
+        });
 
-            // Kriteria resource routes
-            Route::resource('kriteria', KriteriaController::class)->names([
-                'index' => 'admin.kriteria.index',
-                'create' => 'admin.kriteria.create',
-                'store' => 'admin.kriteria.store',
-                'show' => 'admin.kriteria.show',
-                'edit' => 'admin.kriteria.edit',
-                'update' => 'admin.kriteria.update',
-                'destroy' => 'admin.kriteria.destroy'
-            ]);
-
-            // Bobot resource routes
-            Route::resource('bobot', BobotController::class)->names([
-                'index' => 'admin.prioritas.bobot.index',
-                'create' => 'admin.prioritas.bobot.create',
-                'store' => 'admin.bobot.store',
-                'show' => 'admin.prioritas.bobot.show',
-                'edit' => 'admin.prioritas.bobot.edit',
-                'update' => 'admin.prioritas.bobot.update',
-                'destroy' => 'admin.prioritas.bobot.destroy'
-            ]);
+        // Kriteria
+        Route::prefix('kriteria')->name('admin.kriteria.')->group(function () {
+            Route::get('/', [KriteriaController::class, 'index'])->name('index');
+            Route::get('/create', [KriteriaController::class, 'create'])->name('create');
+            Route::post('/', [KriteriaController::class, 'store'])->name('store');
+            Route::get('/{kriteria}', [KriteriaController::class, 'show'])->name('show');
+            Route::get('/{kriteria}/edit', [KriteriaController::class, 'edit'])->name('edit');
+            Route::put('/{kriteria}', [KriteriaController::class, 'update'])->name('update');
+            Route::delete('/{kriteria}', [KriteriaController::class, 'destroy'])->name('destroy');
         });
 
         //Jadwal
@@ -152,7 +140,7 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
     //Ruangan
     Route::get('/sarpras/ruangan/create', [RuanganController::class, 'tambah_ruangan'])->name('sarpras.ruangan.tambah_ruangan');
     Route::post('/sarpras/ruangan/store', [RuanganController::class, 'store'])->name('sarpras.ruangan.store');
-Route::get('/sarpras/ruangan/{r}', [RuanganController::class, 'lihat_ruangan'])->name('sarpras.ruangan.lihat_ruangan');
+    Route::get('/sarpras/ruangan/{r}', [RuanganController::class, 'lihat_ruangan'])->name('sarpras.ruangan.lihat_ruangan');
     Route::get('/sarpras/ruangan/{r}/edit', [RuanganController::class, 'edit_ruangan'])->name('sarpras.ruangan.edit_ruangan');
     Route::put('/sarpras/ruangan/{r}', [RuanganController::class, 'update_ruangan'])->name('sarpras.ruangan.update_ruangan');
     Route::delete('/sarpras/ruangan/{r}', [RuanganController::class, 'destroy'])->name('sarpras.ruangan.destroy');
@@ -192,11 +180,9 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
         Route::post('/store', [FeedbackController::class, 'store'])->name('store');
         Route::delete('/{feedback}', [FeedbackController::class, 'destroy'])->name('destroy');
     });
-
-   
 });
 
- // LUPA PASSWORD – INPUT EMAIL
+// LUPA PASSWORD – INPUT EMAIL
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showEmailForm'])->name('password.forgot');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('password.sendOtp');
 
