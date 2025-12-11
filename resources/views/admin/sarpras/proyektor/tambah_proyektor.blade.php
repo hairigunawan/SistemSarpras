@@ -17,19 +17,19 @@
             </a>
         </div>
 
-        <form action="{{ route('sarpras.proyektor.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('sarpras.proyektor.store_proyektor') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="space-y-4">
 
                 <div>
                     <label for="nama_proyektor" class="block text-sm font-medium text-gray-700">Nama Proyektor</label>
-                    <input type="text" name="nama_proyektor" id="nama_proyektor" placeholder="Epson EB-2255" value="{{ old('nama_proyektor') }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" name="nama_proyektor" id="nama_proyektor" placeholder="Epson EB-2255" value="{{ old('nama_proyektor') }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" onblur="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)">
                     @error('nama_proyektor') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label for="merk" class="block text-sm font-medium text-gray-700">Merk Proyektor</label>
-                    <input type="text" name="merk" placeholder="Epson" id="merk" value="{{ old('merk') }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" name="merk" placeholder="Epson" id="merk" value="{{ old('merk') }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" oninput="this.value = this.value.toUpperCase().trimStart()">
                     @error('merk') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 
@@ -52,24 +52,51 @@
                     @error('id_status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 
-                <div>
+                <div x-data="{
+                        previewUrl: null,
+                        previewFile(event) {
+                            const file = event.target.files[0];
+                            if (file) {
+                                this.previewUrl = URL.createObjectURL(file);
+                            }
+                        }
+                    }">
+
                     <label for="gambar" class="block text-sm font-medium text-gray-700">Gambar</label>
+
                     <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                         <div class="space-y-1 text-center">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+
+                            <!-- Preview Image -->
+                            <template x-if="previewUrl">
+                                <img :src="previewUrl" class="mx-auto h-40 object-cover rounded-md" />
+                            </template>
+
+                            <!-- Default Icon (hilang ketika ada gambar) -->
+                            <svg x-show="!previewUrl" class="mx-auto h-12 w-12 text-gray-400"
+                                stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
+
+                            <!-- Upload Button -->
                             <div class="flex text-sm text-gray-600">
-                                <label for="gambar" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                <label for="gambar" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500">
                                     <span>Upload file</span>
-                                    <input id="gambar" name="gambar" type="file" class="sr-only" accept=".jpeg,.png,.jpg,.webp">
+                                    <input id="gambar" name="gambar" type="file" class="sr-only"
+                                        accept=".jpeg,.png,.jpg,.webp"
+                                        @change="previewFile">
                                 </label>
                                 <p class="pl-1">atau drag and drop</p>
                             </div>
+
                             <p class="text-xs text-gray-500">PNG, JPG, WEBP up to 2MB</p>
                         </div>
                     </div>
-                    @error('gambar') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                    @error('gambar')
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="text-right">

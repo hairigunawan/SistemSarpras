@@ -7,7 +7,7 @@
     <!-- Header -->
     <div class="px-6 py-4 border-b border-gray-200">
         <div class="flex items-center gap-4">
-            <a href="{{ route('admin.peminjaman.lihat_peminjaman', $peminjaman->id_peminjaman) }}" class="flex gap-2 text-xl items-center text-gray-800 font-semibold mb-2 sm:mb-0 hover:text-indigo-600 transition-colors">
+            <a href="{{ route('admin.peminjaman.lihat_peminjaman', $p->id_peminjaman) }}" class="flex gap-2 text-xl items-center text-gray-800 font-semibold mb-2 sm:mb-0 hover:text-indigo-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-indigo-600">
                     <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 18l-6-6l6-6"/>
                 </svg>
@@ -18,7 +18,7 @@
 
     <!-- Form -->
     <div class="px-6 py-8">
-        <form action="{{ route('peminjaman.reject', $peminjaman->id_peminjaman) }}" method="POST">
+        <form action="{{ route('peminjaman.reject', $p->id_peminjaman) }}" method="POST">
             @csrf
             @method('PATCH')
 
@@ -29,26 +29,26 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <p class="text-sm text-gray-500">Nama Peminjam</p>
-                            <p class="font-medium text-gray-700">{{ $peminjaman->nama_peminjam ?? $peminjaman->user->name ?? 'N/A' }}</p>
+                            <p class="font-medium text-gray-700">{{ $p->nama_peminjam ?? $p->user->name ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Email</p>
-                            <p class="font-medium text-gray-700">{{ $peminjaman->user->email ?? 'Tidak diketahui' }}</p>
+                            <p class="font-medium text-gray-700">{{ $p->user->email ?? 'Tidak diketahui' }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Jadwal Pinjam</p>
                             <p class="font-medium text-gray-700">
-                                {{ \Carbon\Carbon::parse($peminjaman->tanggal_pinjam)->translatedFormat('d F Y') }}<br>
-                                {{ date('H:i', strtotime($peminjaman->jam_mulai)) }} - {{ date('H:i', strtotime($peminjaman->jam_selesai)) }}
+                                {{ \Carbon\Carbon::parse($p->tanggal_pinjam)->translatedFormat('d F Y') }}<br>
+                                {{ date('H:i', strtotime($p->jam_mulai)) }} - {{ date('H:i', strtotime($p->jam_selesai)) }}
                             </p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Sarana dan Perasarana</p>
                             <p class="font-medium text-gray-700">
-                                @if($peminjaman->ruangan)
-                                    {{ $peminjaman->ruangan->nama_ruangan }}
-                                @elseif($peminjaman->proyektor)
-                                    {{ $peminjaman->proyektor->nama_proyektor }}
+                                @if($p->ruangan)
+                                    {{ $p->ruangan->nama_ruangan }}
+                                @elseif($p->proyektor)
+                                    {{ $p->proyektor->nama_proyektor }}
                                 @else
                                     N/A
                                 @endif
@@ -78,7 +78,7 @@
 
             <!-- Buttons -->
             <div class="flex justify-between items-center">
-                <a href="{{ route('admin.peminjaman.lihat_peminjaman', $peminjaman->id_peminjaman) }}"
+                <a href="{{ route('admin.peminjaman.lihat_peminjaman', $p->id_peminjaman) }}"
                    class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
                     Batal
                 </a>

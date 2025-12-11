@@ -33,11 +33,11 @@
                 <div class="flex items-center">
                     <?php if(auth()->guard()->guest()): ?>
                         <div class="flex items-center gap-2">
-                            <a href="<?php echo e(route('login')); ?>" class="text-sm font-normal text-gray-700 hover:text-[#179ACE] px-3 py-2 transition-colors">
+                            <a href="<?php echo e(route('login')); ?>" class="text-xs font-normal text-gray-700 hover:text-[#179ACE] px-3 py-2 transition-colors">
                                 Log in
                             </a>
                             <?php if(Route::has('register')): ?>
-                                <a href="<?php echo e(route('register')); ?>" class="text-sm px-4 py-2 rounded-full font-medium text-white bg-[#179ACE] hover:bg-[#127ba5] shadow-sm transition-all transform hover:-translate-y-0.5">
+                                <a href="<?php echo e(route('register')); ?>" class="text-xs px-4 py-2 rounded-full font-medium text-white bg-[#179ACE] hover:bg-[#127ba5] shadow-sm transition-all transform hover:-translate-y-0.5">
                                     Register
                                 </a>
                             <?php endif; ?>

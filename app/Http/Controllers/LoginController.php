@@ -32,6 +32,10 @@ class LoginController extends Controller
     {
         $u = User::Register($request);
 
+        if ($u instanceof \Illuminate\Http\RedirectResponse) {
+            return $u;
+        }
+
         if (!$u) {
             return back()->withErrors(['register' => 'Pendaftaran gagal.'])->withInput();
         }

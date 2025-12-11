@@ -2,312 +2,407 @@
 
 @section('title', 'Form Peminjaman Sarpras')
 
-@vite(['resources/js/app.js'])
-
 @section('content')
-<div>
-<div class="pt-10">
+
+@php
+    // 1. Ruangan
+    $defRuanganId = old('id_ruangan', ($selectedSarprasType == 'ruangan' ? $selectedSarprasId : ''));
+    $defRuanganLabel = '';
+    if($defRuanganId) {
+        $found = $ruanganTersedia->firstWhere('id_ruangan', $defRuanganId);
+        $defRuanganLabel = $found ? $found->nama_ruangan : '';
+    }
+
+    // 2. Proyektor
+    $defProyektorId = old('id_proyektor', ($selectedSarprasType == 'proyektor' ? $selectedSarprasId : ''));
+    $defProyektorLabel = '';
+    if($defProyektorId) {
+        $found = $proyektorTersedia->firstWhere('id_proyektor', $defProyektorId);
+        $defProyektorLabel = $found ? $found->nama_proyektor : '';
+    }
+
+    // 3. Lokasi
+    $defLokasiId = old('id_lokasi');
+    $defLokasiLabel = $defLokasiId && isset($lokasiList[$defLokasiId]) ? $lokasiList[$defLokasiId] : '';
+
+    // 4. Ruangan untuk Proyektor
+    $defRuanganProyektorId = old('id_ruangan_proyektor');
+    $defRuanganProyektorLabel = '';
+    if($defRuanganProyektorId) {
+        $found = $allRuangan->firstWhere('id_ruangan', $defRuanganProyektorId);
+        $defRuanganProyektorLabel = $found ? $found->nama_ruangan : '';
+    }
+
+    // 5. Jenis Kegiatan
+    $defKegiatan = old('jenis_kegiatan');
+@endphp
+
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-            <div class=" text-gray-700">
-                <div class="text-center pt-5">
-                    <h1 class="text-3xl text-gray-700 font-bold mb-2">Formulir Peminjaman Sarpras</h1>
-                    <p class=" text-gray-500 max-w-2xl mx-auto">
-                        Lengkapi detail berikut untuk mengajukan peminjaman fasilitas sarana dan prasarana.
-                    </p>
+
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-700 tracking-tight sm:text-4xl">
+                Formulir Peminjaman
+            </h1>
+            <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
+                Lengkapi detail di bawah untuk mengajukan peminjaman sarana & prasarana.
+            </p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden"
+             x-data="peminjamanForm({
+                ruanganId: '{{ $defRuanganId }}',
+                ruanganLabel: '{{ $defRuanganLabel }}',
+                proyektorId: '{{ $defProyektorId }}',
+                proyektorLabel: '{{ $defProyektorLabel }}',
+                lokasiId: '{{ $defLokasiId }}',
+                lokasiLabel: '{{ $defLokasiLabel }}',
+                ruanganProyektorId: '{{ $defRuanganProyektorId }}',
+                ruanganProyektorLabel: '{{ $defRuanganProyektorLabel }}',
+                kegiatan: '{{ $defKegiatan }}'
+             })">
+
+            <form action="{{ route('public.peminjaman.store') }}" method="POST" class="divide-y divide-gray-100">
+                @csrf
+
+                <div class="px-8 py-8 bg-blue-50/30">
+                    <div class="flex items-center mb-6">
+                        <h2 class="text-xl font-semibold text-gray-700">Informasi Peminjam</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="relative group">
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Nama Lengkap</label>
+                            <div class="flex items-center text-sm px-4 py-2 bg-white border border-gray-200 rounded text-gray-700 font-normal">
+                                {{ Auth::check() ? (Auth::user()->name ?? Auth::user()->nama) : '-' }}
+                            </div>
+                            <input type="hidden" name="nama_peminjam" value="{{ Auth::check() ? (Auth::user()->name ?? Auth::user()->nama) : '' }}">
+                        </div>
+
+                        <div class="relative group">
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Email</label>
+                            <div class="flex items-center text-sm px-4 py-2 bg-white border border-gray-200 rounded text-gray-700 font-normal">
+                                {{ Auth::check() ? Auth::user()->email : '-' }}
+                            </div>
+                            <input type="hidden" name="email" value="{{ Auth::check() ? Auth::user()->email : '' }}">
+                        </div>
+
+                        <div class="relative group">
+                            <label class="block text-sm font-medium text-gray-500 mb-2">WhatsApp</label>
+                            <div class="flex items-center text-sm px-4 py-2 bg-white border border-gray-200 rounded text-gray-700 font-normal">
+                                {{ Auth::check() ? Auth::user()->nomor_telepon : '-' }}
+                            </div>
+                            <input type="hidden" name="nomor_telepon" value="{{ Auth::check() ? Auth::user()->nomor_telepon : '' }}">
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            {{-- Form --}}
-            <div class="px-6 py-8 sm:px-10">
-                <form action="{{ route('public.peminjaman.store') }}" method="POST" id="peminjamanForm">
-                    @csrf
-                    {{-- Informasi Peminjam --}}
-                    <div class="mb-10">
-                        <div class="flex items-center mb-6">
-                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
-                            </div>
-                            <h2 class="text-xl font-semibold text-gray-800">Informasi Peminjam</h2>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {{-- Nama Lengkap --}}
-                            <div class="md:col-span-2">
-                                <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Nama Lengkap
-                                </label>
-                                <div class="relative">
-                                    <input type="text" id="nama"
-                                        value="{{ Auth::check() ? (Auth::user()->name ?? Auth::user()->nama) : '' }}"
-                                        class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-gray-700 cursor-not-allowed focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
-                                        readonly>
-                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Email --}}
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Alamat Email
-                                </label>
-                                <div class="relative">
-                                    <input type="email" id="email"
-                                        value="{{ Auth::check() ? Auth::user()->email : '' }}"
-                                        class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-gray-700 cursor-not-allowed focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
-                                        readonly>
-                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Nomor WhatsApp --}}
-                            <div>
-                                <label for="nomor_telepon" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Nomor Telepon (WhatsApp)
-                                </label>
-                                <div class="relative">
-                                    <input type="text" name="nomor_telepon" id="nomor_telepon"
-                                        value="{{ Auth::check() ? Auth::user()->nomor_telepon : '' }}"
-                                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" readonly>
-                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                @error('nomor_telepon')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
+                <div class="px-8 py-8">
+                    <div class="flex items-center mb-6">
+                        <h2 class="text-xl font-semibold text-gray-700">Detail Sarpras & Waktu</h2>
                     </div>
 
-                    {{-- Detail Peminjaman --}}
-                    <div class="mb-10">
-                        <div class="flex items-center mb-6">
-                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
-                            <h2 class="text-xl font-semibold text-gray-800">Detail Peminjaman</h2>
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block font-semibold text-gray-700 mb-4">Pilih Item Peminjaman</label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Pilih Sarana/Prasarana
-                                </label>
-                                <p class="text-sm text-gray-500 mb-3">Anda dapat memilih ruangan, proyektor, atau keduanya sekaligus.</p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="id_ruangan" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Ruangan
-                                        </label>
-                                        <div class="relative">
-                                            <select name="id_ruangan" id="id_ruangan"
-                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                                                <option value="">Pilih Ruangan</option>
-                                                @foreach($ruanganTersedia as $ruangan)
-                                                    <option value="{{ $ruangan->id_ruangan }}" {{ (old('id_ruangan') == $ruangan->id_ruangan || ($selectedSarprasType == 'ruangan' && $selectedSarprasId == $ruangan->id_ruangan)) ? 'selected' : '' }}>
-                                                        {{ $ruangan->nama_ruangan }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        @error('id_ruangan')
-                                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                    <div>
-                                        <label for="id_proyektor" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Proyektor
-                                        </label>
-                                        <div class="relative">
-                                            <select name="id_proyektor" id="id_proyektor"
-                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                                                <option value="">Pilih Proyektor</option>
-                                                @foreach($proyektorTersedia as $proyektor)
-                                                    <option value="{{ $proyektor->id_proyektor }}" {{ (old('id_proyektor') == $proyektor->id_proyektor || ($selectedSarprasType == 'proyektor' && $selectedSarprasId == $proyektor->id_proyektor)) ? 'selected' : '' }}>
-                                                        {{ $proyektor->nama_proyektor }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        @error('id_proyektor')
-                                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div id="selected-sarpras-info" class="mt-3 p-3 bg-blue-50 rounded-lg hidden">
-                                    <p class="text-sm text-blue-800">
-                                        <strong>Sarpras yang dipilih:</strong> <span id="sarpras-list"></span>
-                                    </p>
-                                </div>
-                            </div>
+                                <div class="relative" x-data="{ open: false }">
+                                    <label class="block text-sm font-medium text-gray-600 mb-2">Ruangan</label>
+                                    <input type="hidden" name="id_ruangan" x-model="form.ruanganId">
 
+                                    <button type="button" @click="open = !open" @click.outside="open = false"
+                                        class="relative w-full bg-white border border-gray-300 rounded pl-4 pr-10 py-2 text-left cursor-pointer sm:text-sm shadow-sm hover:border-blue-400 transition-colors duration-200">
+                                        <span class="block truncate"
+                                            :class="!form.ruanganId ? 'text-gray-400' : 'text-gray-900'"
+                                            x-text="form.ruanganLabel || 'Pilih Ruangan'">
+                                        </span>
+                                        <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                    </button>
 
-                            <div>
-                                <label for="jumlah_peserta" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Jumlah Peserta
-                                </label>
-                                <div class="relative">
-                                    <input type="number" name="jumlah_peserta" id="jumlah_peserta"
-                                        value="{{ old('jumlah_peserta') }}"
-                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                                        placeholder="Masukkan estimasi jumlah peserta" min="1" required>
-                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                @error('jumlah_peserta')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                                    <ul x-show="open" x-cloak
+                                        x-transition:enter="transition ease-out duration-100"
+                                        x-transition:enter-start="transform opacity-0 scale-95"
+                                        x-transition:enter-end="transform opacity-100 scale-100"
+                                        class="absolute z-20 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 sm:text-sm overflow-auto">
 
-                            {{-- Lokasi Peminjaman Proyektor (hanya ditampilkan jika proyektor dipilih) --}}
-                            <div id="lokasi_proyektor_container" style="display: none;">
-                                <label for="lokasi_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Lokasi Peminjaman Proyektor
-                                </label>
-                                <div>
-                                    <select name="lokasi_id" id="lokasi_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                                        <option value="">Pilih Lokasi</option>
-                                        @foreach($lokasiList as $id => $lokasi)
-                                            <option value="{{ $id }}" {{ old('lokasi_id') == $id ? 'selected' : '' }}>
-                                                {{ $lokasi }}
-                                            </option>
+                                        <li class="text-gray-500 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-50"
+                                            @click="selectRuangan('', ''); open = false">
+                                            <span class="font-normal block truncate italic">Pilih Ruangan</span>
+                                        </li>
+
+                                        @foreach($ruanganTersedia as $ruangan)
+                                            <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
+                                                @click="selectRuangan('{{ $ruangan->id_ruangan }}', '{{ $ruangan->nama_ruangan }}'); open = false">
+                                                <span class="block truncate" :class="form.ruanganId == '{{ $ruangan->id_ruangan }}' ? 'font-semibold text-blue-600' : 'font-normal'">
+                                                    {{ $ruangan->nama_ruangan }}
+                                                </span>
+                                                <span x-show="form.ruanganId == '{{ $ruangan->id_ruangan }}'" class="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-600">
+                                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                                                </span>
+                                            </li>
                                         @endforeach
-                                    </select>
-                                    @error('lokasi_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    </ul>
+                                    @error('id_ruangan') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                 </div>
-                                @error('lokasi_id')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
+
+                                <div class="relative" x-data="{ open: false }">
+                                    <label class="block text-sm font-medium text-gray-600 mb-2">Proyektor</label>
+                                    <input type="hidden" name="id_proyektor" x-model="form.proyektorId">
+
+                                    <button type="button" @click="open = !open" @click.outside="open = false"
+                                        class="relative w-full bg-white border border-gray-300 rounded pl-4 pr-10 py-2 text-left cursor-pointer sm:text-sm shadow-sm hover:border-blue-400 transition-colors duration-200">
+                                        <span class="block truncate"
+                                            :class="!form.proyektorId ? 'text-gray-400' : 'text-gray-900'"
+                                            x-text="form.proyektorLabel || 'Pilih Proyektor'">
+                                        </span>
+                                        <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                    </button>
+
+                                    <ul x-show="open" x-cloak
+                                        x-transition:enter="transition ease-out duration-100"
+                                        x-transition:enter-start="transform opacity-0 scale-95"
+                                        x-transition:enter-end="transform opacity-100 scale-100"
+                                        class="absolute z-20 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 sm:text-sm overflow-auto">
+
+                                        <li class="text-gray-500 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-50"
+                                            @click="selectProyektor('', ''); open = false">
+                                            <span class="font-normal block truncate italic">Pilih Proyektor</span>
+                                        </li>
+
+                                        @foreach($proyektorTersedia as $proyektor)
+                                            <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
+                                                @click="selectProyektor('{{ $proyektor->id_proyektor }}', '{{ $proyektor->nama_proyektor }}'); open = false">
+                                                <span class="block truncate" :class="form.proyektorId == '{{ $proyektor->id_proyektor }}' ? 'font-semibold text-gray-600' : 'font-normal'">
+                                                    {{ $proyektor->nama_proyektor }}
+                                                </span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                    @error('id_proyektor') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                </div>
                             </div>
 
-                            {{-- Tanggal Pinjam --}}
-                            <div>
-                                <label for="tanggal_pinjam" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Tanggal Peminjaman
-                                </label>
-                                <div class="relative">
-                                    <input
-                                        type="date"
-                                        name="tanggal_pinjam"
-                                        id="tanggal_pinjam"
-                                        value="{{ old('tanggal_pinjam') }}"
-                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                                        required
-                                    >
-                                </div>
-                                @error('tanggal_pinjam')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
+                            <div x-show="form.ruanganId || form.proyektorId" x-transition.opacity
+                                class="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg flex items-center space-x-3 text-sm text-gray-600">
+                                <svg class="w-5 h-5 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>
+                                    Anda akan meminjam:
+                                    <span x-show="form.ruanganId" class="font-bold" x-text="form.ruanganLabel"></span>
+                                    <span x-show="form.ruanganId && form.proyektorId"> & </span>
+                                    <span x-show="form.proyektorId" class="font-bold" x-text="form.proyektorLabel"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div x-show="isHanyaProyektor" x-cloak
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 transform -translate-y-2"
+                            x-transition:enter-end="opacity-100 transform translate-y-0"
+                            class="md:col-span-2 border-t border-dashed border-gray-200 pt-6 mt-2">
+
+                            <div class="flex items-center mb-4">
+                                <h3 class="font-semibold text-gray-700">Detail Lokasi Penggunaan Proyektor</h3>
                             </div>
 
-                            <div id="lokasi_proyektor_container" style="display: none;">
-                                <label for="id_ruangan_proyektor" class="block text-sm font-medium text-gray-700 mb-2" >
-                                    Ruangan Proyektor
-                                </label>
-                                <div class="relative">
-                                    <select name="id_ruangan_proyektor" id="id_ruangan_proyektor"
-                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                                        <option value="">Pilih Ruangan Proyektor Digunakan</option>
-                                            @foreach($ruanganTersedia as $r)
-                                                <option value="{{ $r->id_ruangan }}" {{ (old('id_ruangan_proyektor  ') == $r->id_ruangan || ($selectedSarprasType == 'ruangan' && $selectedSarprasId == $r->id_ruangan)) ? 'selected' : '' }}>
-                                                    {{ $r->nama_ruangan }}
-                                                </option>
-                                            @endforeach
-                                    </select>
-                                </div>
-                                @error('id_ruangan')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div x-data="{ open: false }" class="relative">
+                                    <label class="block text-sm font-medium text-gray-600 mb-2">Lokasi</label>
+                                    <input type="hidden" name="id_lokasi" x-model="form.lokasiId">
 
-                            {{-- Jam Mulai & Selesai --}}
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Waktu Penggunaan
-                                </label>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <div class="relative">
-                                            <input type="time" name="jam_mulai" id="jam_mulai"
-                                                value="{{ old('jam_mulai') }}"
-                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                                                required>
-                                        </div>
-                                        @error('jam_mulai')
-                                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                    <div>
-                                        <div class="relative">
-                                            <input type="time" name="jam_selesai" id="jam_selesai"
-                                                value="{{ old('jam_selesai') }}"
-                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                                                required>
-                                        </div>
-                                        @error('jam_selesai')
-                                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
+                                    <button type="button" @click="open = !open" @click.outside="open = false"
+                                        class="relative w-full bg-white border border-gray-300 rounded pl-4 pr-10 py-2 text-left cursor-pointer sm:text-sm shadow-sm transition-colors">
+                                        <span class="block truncate" :class="!form.lokasiId ? 'text-gray-400' : 'text-gray-900'" x-text="form.lokasiLabel || 'Pilih Lokasi'"></span>
+                                        <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                        </span>
+                                    </button>
+
+                                    <ul x-show="open" x-cloak
+                                        x-transition:enter="transition ease-out duration-100"
+                                        x-transition:enter-start="transform opacity-0 scale-95"
+                                        x-transition:enter-end="transform opacity-100 scale-100"
+                                        class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 sm:text-sm">
+                                        @foreach($lokasiList as $id => $lokasi)
+                                            <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                                                @click="form.lokasiId = '{{ $id }}'; form.lokasiLabel = '{{ $lokasi }}'; open = false">
+                                                <span class="block truncate" :class="form.lokasiId == '{{ $id }}' ? 'font-semibold text-gray-600' : 'font-normal'">{{ $lokasi }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                    @error('id_lokasi') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                </div>
+
+                                <div x-data="{ open: false }" class="relative">
+                                    <label class="block text-sm font-medium text-gray-600 mb-2">Detail Ruangan</label>
+                                    <input type="hidden" name="id_ruangan_proyektor" x-model="form.ruanganProyektorId">
+
+                                    <button type="button" @click="open = !open" @click.outside="open = false"
+                                        class="relative w-full bg-white border border-gray-300 rounded pl-4 pr-10 py-2 text-left cursor-pointer sm:text-sm shadow-sm transition-colors">
+                                        <span class="block truncate" :class="!form.ruanganProyektorId ? 'text-gray-400' : 'text-gray-900'" x-text="form.ruanganProyektorLabel || 'Pilih Ruangan'"></span>
+                                        <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                        </span>
+                                    </button>
+
+                                    <ul x-show="open" x-cloak
+                                        x-transition:enter="transition ease-out duration-100"
+                                        x-transition:enter-start="transform opacity-0 scale-95"
+                                        x-transition:enter-end="transform opacity-100 scale-100"
+                                        class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 sm:text-sm">
+                                        <li class="text-gray-500 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-50"
+                                            @click="form.ruanganProyektorId = ''; form.ruanganProyektorLabel = ''; open = false">
+                                        </li>
+                                        @foreach($allRuangan as $ruangan)
+                                            <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                                                @click="form.ruanganProyektorId = '{{ $ruangan->id_ruangan }}'; form.ruanganProyektorLabel = '{{ $ruangan->nama_ruangan }}'; open = false">
+                                                <span class="block truncate" :class="form.ruanganProyektorId == '{{ $ruangan->id_ruangan }}' ? 'font-semibold text-gray-600' : 'font-normal'">{{ $ruangan->nama_ruangan }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {{-- Informasi Peminjam (akan diisi oleh JavaScript) --}}
-                    <div id="peminjamInfo" class="mb-4"></div>
-
-                    <div>
-                        <label for="jenis_kegiatan" class="block text-sm font-medium text-gray-700 mb-2">
-                            Jenis Kegiatan / Keperluan
-                        </label>
-                        <div class="relative">
-                            <select name="jenis_kegiatan" id="jenis_kegiatan" aria-placeholder="Pilih Kegiatan" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
-                                <option value="">Pilih Jenis Kegiatan</option>
-                                <option value="Seminar Tugas Akhir">Seminar Tugas Akhir</option>
-                                <option value="Seminar PKL">Seminar PKL</option>
-                                <option value="Kelas Materi">Kelas Materi</option>
-                                <option value="Kelas Praktikum">Kelas Praktikum</option>
-                            </select>
+                        <div>
+                            <label for="tanggal_pinjam" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Peminjaman</label>
+                            <input type="date" name="tanggal_pinjam" id="tanggal_pinjam" value="{{ old('tanggal_pinjam') }}"
+                                class="w-full border-gray-300 py-2 px-3 text-sm border rounded" required>
+                            @error('tanggal_pinjam') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        @error('jenis_kegiatan')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
 
-                    <div class="flex justify-end space-x-3 pt-6">
-                        <a href="{{ route('public.beranda.index.auth') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                            Batal
-                        </a>
-                        <button type="submit" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-offset-2 transition">
-                            Simpan
-                        </button>
+                        <div>
+                            <label for="jumlah_peserta" class="block text-sm font-medium text-gray-700 mb-2">Jumlah Peserta</label>
+                            <div class="relative rounded-xl shadow-sm">
+                                <input type="number" name="jumlah_peserta" id="jumlah_peserta" value="{{ old('jumlah_peserta') }}"
+                                    class="w-full border-gray-300 py-2 px-3 text-sm border rounded"
+                                    placeholder="0" min="1" required>
+                            </div>
+                            @error('jumlah_peserta') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Durasi Peminjaman</label>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-1 relative">
+                                    <input type="time" name="jam_mulai" value="{{ old('jam_mulai') }}" class="w-full border-gray-300 py-2 px-3 text-sm border rounded text-center">
+                                    <span class="absolute left-3 top-3 text-gray-400 text-xs pointer-events-none">Mulai</span>
+                                </div>
+                                <span class="text-gray-700 font-normal text-sm">s/d</span>
+                                <div class="flex-1 relative">
+                                    <input type="time" name="jam_selesai" value="{{ old('jam_selesai') }}" class="w-full border-gray-300 py-2 px-3 text-sm border rounded text-center">
+                                    <span class="absolute left-3 top-3 text-gray-400 text-xs pointer-events-none">Selesai</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-4 mt-1">
+                                <div class="flex-1">@error('jam_mulai') <p class="text-xs text-red-600">{{ $message }}</p> @enderror</div>
+                                <div class="flex-1">@error('jam_selesai') <p class="text-xs text-red-600">{{ $message }}</p> @enderror</div>
+                            </div>
+                        </div>
+
+                        <div class="relative md:col-span-2" x-data="{ open: false }">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kegiatan</label>
+                            <input type="hidden" name="jenis_kegiatan" x-model="form.kegiatan" class="w-full border-gray-300 py-3 px-3 rounded-xl shadow-sm" required>
+
+                            <button type="button" @click="open = !open" @click.outside="open = false"
+                                class="relative w-full border-gray-300 py-2 px-3 text-sm bg-white border rounded pl-4 pr-10 text-left cursor-pointer sm:text-sm shadow-sm hover:border-blue-400 transition-colors">
+                                <span class="block truncate" :class="!form.kegiatan ? 'text-gray-400' : 'text-gray-900'" x-text="form.kegiatan || 'Pilih Jenis Kegiatan'"></span>
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                </span>
+                            </button>
+
+                            <ul x-show="open" x-cloak
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                class="absolute z-50 bottom-full mb-1 w-full bg-white shadow-xl max-h-60 rounded-xl py-1 text-base ring-1 sm:text-sm origin-bottom border border-gray-100">
+
+                                @foreach(['Seminar Tugas Akhir', 'Seminar PKL', 'Kelas Materi', 'Kelas Praktikum', 'Rapat Organisasi', 'Lainnya'] as $item)
+                                    <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
+                                        @click="form.kegiatan = '{{ $item }}'; open = false">
+                                        <span class="block truncate" :class="form.kegiatan == '{{ $item }}' ? 'font-semibold text-blue-600' : 'font-normal'">{{ $item }}</span>
+
+                                        <span x-show="form.kegiatan == '{{ $item }}'" class="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-600">
+                                            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                                        </span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                            @error('jenis_kegiatan') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="px-8 py-6 bg-gray-50 flex items-center justify-end space-x-4 border-t border-gray-100">
+                    <a href="{{ route('public.peminjaman.daftarpeminjaman') }}"
+                        class="px-5 py-2 bg-white border border-gray-300 rounded-xl text-sm text-gray-700 font-medium hover:bg-gray-50 hover:text-gray-900 transition shadow-sm">
+                        Batal
+                    </a>
+                    <button type="submit"
+                        class="px-8 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium text-sm rounded-xl shadow-lg transform transition-all duration-200 hover:-translate-y-0.2">
+                        Ajukan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-@endsection
 
-@push('scripts')
-    @vite(['resources/js/peminjaman.js'])
-@endpush
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('peminjamanForm', (initialData) => ({
+            form: {
+                ruanganId: initialData.ruanganId,
+                ruanganLabel: initialData.ruanganLabel,
+                proyektorId: initialData.proyektorId,
+                proyektorLabel: initialData.proyektorLabel,
+                lokasiId: initialData.lokasiId,
+                lokasiLabel: initialData.lokasiLabel,
+                ruanganProyektorId: initialData.ruanganProyektorId,
+                ruanganProyektorLabel: initialData.ruanganProyektorLabel,
+                kegiatan: initialData.kegiatan
+            },
+
+            // Computed property untuk Logic "Hanya Proyektor"
+            get isHanyaProyektor() {
+                // Return TRUE jika Proyektor dipilih TAPI Ruangan KOSONG
+                return this.form.proyektorId !== '' && this.form.ruanganId === '';
+            },
+
+            selectRuangan(id, label) {
+                this.form.ruanganId = id;
+                this.form.ruanganLabel = label;
+
+                // Jika user memilih ruangan, otomatis reset logic lokasi manual proyektor
+                // karena diasumsikan proyektor dipakai di ruangan tersebut.
+                if (id !== '') {
+                    // Opsional: reset nilai lokasi tambahan jika ingin bersih
+                    this.form.lokasiId = '';
+                    this.form.lokasiLabel = '';
+                }
+            },
+
+            selectProyektor(id, label) {
+                this.form.proyektorId = id;
+                this.form.proyektorLabel = label;
+            }
+        }));
+    });
+</script>
+
+<style>
+    /* Utility class agar elemen tidak berkedip saat loading AlpineJS */
+    [x-cloak] { display: none !important; }
+</style>
+@endsection

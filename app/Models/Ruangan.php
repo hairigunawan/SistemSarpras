@@ -5,7 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use Exception;
+use Masterminds\HTML5\Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class Ruangan extends Model
 {
@@ -44,6 +49,18 @@ class Ruangan extends Model
         return $this->hasMany(Feedback::class, 'id_ruangan', 'id_ruangan');
     }
 
+    public static function TampilkanRuangan(Request $request)
+    {
+        $r = Ruangan::filter($request->all())
+            ->latest()
+            ->paginate(9);
+
+        $s = Status::all();
+        $p = Proyektor::with('status')->latest()->paginate(9);
+
+        return view('admin.sarpras.index', compact('r', 's', 'p'));
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->with(['status', 'lokasi']);
@@ -61,25 +78,95 @@ class Ruangan extends Model
         return $query;
     }
 
-    /**
-     * Handle logika Create Ruangan beserta upload gambar
-     */
-    public static function Submit(array $data, $imageFile = null)
+    public static function TambahRuangan(Request $request)
     {
-        $path = 'images/default.png';
+        $s = Status::all();
+        $l = Lokasi::all();
+        $defaultLokasi = Lokasi::where('nama_lokasi', 'Gedung Teknik Informatika')->first();
+        $defaultStatus = Status::where('nama_status', 'Tersedia')->first();
 
-        if ($imageFile) {
-            $path = self::uploadImage($imageFile);
+        if(!$defaultLokasi){
+            $defaultStatus = Lokasi::create(['nama_lokasi' => 'Gedung Teknik Informatika']);
         }
+        $defaultLokasiId = $defaultLokasi->id_lokasi;
 
-        $data['gambar'] = $path;
+        if (!$defaultStatus) {
+            $defaultStatus = Status::create(['nama_status' => 'Tersedia']);
+        }
+        $defaultStatusId = $defaultStatus->id_status;
 
-        return self::create($data);
+        return view(
+            'admin.sarpras.ruangan.tambah_ruangan',
+            compact(
+                's',
+                'l',
+                'defaultStatusId',
+                'defaultLokasiId'
+            )
+        );
     }
 
-    /**
-     * Handle logika Update Ruangan beserta replace gambar
-     */
+    public static function Submit(Request $request, $imageFile = null)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'nama_ruangan' => 'required|string|max:255',
+                'kapasitas'    => 'required|integer|min:1',
+                'id_status'    => 'required|exists:statuses,id_status',
+                'kode_ruangan' => [
+                    'nullable',
+                    'string',
+                    'max:50',
+                    Rule::unique('ruangans', 'kode_ruangan'),
+                ],
+                'lokasi_id'    => 'required|exists:lokasis,id_lokasi',
+                'gambar'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            $validated = $validator->validated();
+
+            $path = 'images/default.png';
+
+            if ($imageFile) {
+                $path = self::uploadImage($imageFile);
+            }
+
+            $validated['gambar'] = $path;
+
+            self::create($validated);
+
+            return redirect()
+                ->route('admin.sarpras.index')
+                ->with('success', 'Ruangan berhasil ditambahkan.');
+        } catch (\Exception $e) {
+
+            // Tangkap error dari proses model
+            Log::error('Gagal menambah ruangan: ' . $e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', 'Gagal menambahkan ruangan: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    public static function EditRuangan($id)
+    {
+        $r = Ruangan::findOrFail($id);
+        $s = Status::all();
+        $l = Lokasi::pluck('nama_lokasi', 'id_lokasi');
+
+        // Kirim data ke view
+        return view('admin.sarpras.ruangan.edit_ruangan', compact('r', 's', 'l'));
+    }
+
     public function updateRuangan(array $data, $imageFile = null)
     {
         if ($imageFile) {
@@ -92,39 +179,111 @@ class Ruangan extends Model
         return $this->update($data);
     }
 
+    public static function updateRuanganFromRequest(Request $request, $id)
+    {
+        try {
+            // Cari ruangan, kalau tidak ada akan throw ModelNotFoundException
+            $r = self::findOrFail($id);
+
+            // Validasi input
+            $validated = $request->validate([
+                'nama_ruangan'   => 'required|string|max:255',
+                'kapasitas'      => 'required|integer|min:1',
+                'id_status'      => 'required|exists:statuses,id_status',
+                'kode_ruangan'   => [
+                    'nullable',
+                    'string',
+                    'max:50',
+                    Rule::unique('ruangans', 'kode_ruangan')
+                        ->ignore($r->id_ruangan, 'id_ruangan'),
+                ],
+                'lokasi_id'      => 'required|exists:lokasis,id_lokasi',
+                'gambar'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            ]);
+
+            // Jalankan fungsi update dari model
+            $r->updateRuangan($validated, $request->file('gambar'));
+
+            return redirect()
+                ->route('sarpras.ruangan.lihat_ruangan', $r->id_ruangan)
+                ->with('success', 'Ruangan berhasil diperbarui.');
+        } catch (ModelNotFoundException $e) {
+
+            // Jika ID ruangan tidak ditemukan
+            return redirect()
+                ->back()
+                ->with('error', 'Data ruangan tidak ditemukan.');
+        } catch (\Exception $e) {
+
+            // Error umum atau error custom dari Model
+            Log::error('Gagal memperbarui Ruangan: ' . $e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', 'Gagal memperbarui Ruangan: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
     /**
      * Handle logika Delete Ruangan dengan pengecekan status dan relasi
      * Melempar Exception jika tidak memenuhi syarat
      */
-    public function hapusRuangan()
+    // public function hapus_Ruangan()
+    // {
+    //     // Cek 1: Apakah sedang dipinjam?
+    //     // Mengakses relasi status untuk cek nama status
+    //     if ($this->status && $this->status->nama_status === 'Dipinjam') {
+    //         throw new Exception('Ruangan sedang dipinjam dan tidak dapat dihapus.');
+    //     }
+
+    //     // Cek 2: Apakah ada riwayat peminjaman?
+    //     if ($this->peminjamans()->exists()) {
+    //         throw new Exception('Ruangan memiliki riwayat peminjaman dan tidak dapat dihapus.');
+    //     }
+
+    //     // Jika lolos, hapus gambar dan record
+    //     $this->removeImage();
+    //     return $this->delete();
+    // }
+
+    public static function HapusRuangan($id)
     {
-        // Cek 1: Apakah sedang dipinjam?
-        // Mengakses relasi status untuk cek nama status
-        if ($this->status && $this->status->nama_status === 'Dipinjam') {
-            throw new Exception('Ruangan sedang dipinjam dan tidak dapat dihapus.');
-        }
+        try {
+            $ruangan = self::findOrFail($id);
 
-        // Cek 2: Apakah ada riwayat peminjaman?
-        if ($this->peminjamans()->exists()) {
-            throw new Exception('Ruangan memiliki riwayat peminjaman dan tidak dapat dihapus.');
-        }
+            // Cek 1: Apakah sedang dipinjam?
+            if ($ruangan->status && $ruangan->status->nama_status === 'Dipinjam') {
+                throw new Exception('Ruangan sedang dipinjam dan tidak dapat dihapus.');
+            }
 
-        // Jika lolos, hapus gambar dan record
-        $this->removeImage();
-        return $this->delete();
+            // Cek 2: Apakah ada riwayat peminjaman?
+            if ($ruangan->peminjamans()->exists()) {
+                throw new Exception('Ruangan memiliki riwayat peminjaman dan tidak dapat dihapus.');
+            }
+
+            // Jika lolos, hapus gambar dan record
+            $ruangan->removeImage();
+            $ruangan->delete();
+
+            return redirect()
+                ->route('admin.sarpras.index')
+                ->with('success', 'Ruangan berhasil dihapus.');
+        } catch (ModelNotFoundException $e) {
+            return back()->with('error', 'Ruangan tidak ditemukan.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
-
-    // --- HELPER PRIVATE ---
 
     private static function uploadImage($file)
     {
-        $path = $file->store('images', 'public');
-        return str_replace('public/', '', $path);
+        return $file->store('ruangan', 'public');
     }
 
     private function removeImage()
     {
-        if ($this->gambar && $this->gambar !== 'images/default.png' && Storage::disk('public')->exists($this->gambar)) {
+        if ($this->gambar && Storage::disk('public')->exists($this->gambar)) {
             Storage::disk('public')->delete($this->gambar);
         }
     }

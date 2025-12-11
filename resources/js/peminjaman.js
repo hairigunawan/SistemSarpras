@@ -2,6 +2,7 @@
         const proyektorSelect = document.getElementById('id_proyektor');
         const ruanganSelect = document.getElementById('id_ruangan');
         const lokasiProyektorContainer = document.getElementById('lokasi_proyektor_container');
+        const ruanganProyektorContainer = document.getElementById('ruangan_proyektor_container');
         const form = document.getElementById('peminjamanForm');
         const selectedSarprasInfo = document.getElementById('selected-sarpras-info');
         const sarprasList = document.getElementById('sarpras-list');
@@ -9,11 +10,13 @@
         // Menyimpan state peminjaman yang sudah diajukan
         let submittedPins = [];
 
-        function toggleLokasiProyektor() {
+        function toggleProyektorFields() {
             if (proyektorSelect.value) {
                 lokasiProyektorContainer.style.display = 'block';
+                ruanganProyektorContainer.style.display = 'block';
             } else {
                 lokasiProyektorContainer.style.display = 'none';
+                ruanganProyektorContainer.style.display = 'none';
             }
         }
 
@@ -81,7 +84,7 @@
         }
 
         proyektorSelect.addEventListener('change', function() {
-            toggleLokasiProyektor();
+            toggleProyektorFields();
             updateSelectedSarprasInfo();
         });
 
@@ -106,6 +109,6 @@
         });
 
         // Initial check on page load
-        toggleLokasiProyektor();
+        toggleProyektorFields();
         updateSelectedSarprasInfo();
     });

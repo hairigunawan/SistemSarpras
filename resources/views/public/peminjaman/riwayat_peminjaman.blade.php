@@ -67,10 +67,10 @@
         </div>
 
         <!-- Info Count (Diluar Loop) -->
-        @if($peminjaman->count() > 0)
+        @if($p->count() > 0)
         <div class="mb-4">
             <p class="text-xs text-slate-400">
-                Menampilkan {{ count($peminjaman) }} data riwayat peminjaman Anda.
+                Menampilkan {{ count($p) }} data riwayat peminjaman Anda.
             </p>
         </div>
         @endif
@@ -92,7 +92,7 @@
                     <tbody class="divide-y divide-slate-100 bg-white">
 
                         <!-- Loop Hanya Pada Baris (TR) -->
-                        @forelse($peminjaman as $item)
+                        @forelse($p as $item)
                         <tr class="hover:bg-slate-50 transition-colors duration-200 group">
 
                             <!-- No -->

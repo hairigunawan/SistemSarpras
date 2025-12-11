@@ -30,6 +30,7 @@ class Peminjaman extends Model
         'status_peminjaman',
         'jenis_kegiatan',
         'alasan_penolakan',
+        'catatan_admin',
     ];
 
     // --- RELATIONSHIPS ---
@@ -86,6 +87,18 @@ class Peminjaman extends Model
         return $query;
     }
 
+    public static function HalamanUtama(Request $request){
+        // Menggunakan Scope 'filter' yang sudah dibuat di Model
+        $peminjaman = Peminjaman::with(['user', 'ruangan', 'proyektor'])
+            ->filter($request->only(['status', 'search']))
+            ->latest()
+            ->get();
+
+        $role = optional(Auth::user()->userRole)->nama_role ?? '';
+        $status = $request->get('status', 'all');
+
+        return view('admin.peminjaman.index', compact('peminjaman', 'role', 'status'));
+    }
     /**
      * Scope untuk mengecek bentrok jadwal
      */
@@ -119,6 +132,7 @@ class Peminjaman extends Model
         $validated = $request->validate([
             'id_ruangan'       => 'nullable|exists:ruangans,id_ruangan',
             'id_proyektor'     => 'nullable|exists:proyektors,id_proyektor',
+            'id_ruangan_proyektor' => 'nullable|exists:ruangans,id_ruangan',
             'id_lokasi'        => 'nullable|exists:lokasis,id_lokasi',
             'tanggal_pinjam'   => 'required|date|after_or_equal:today',
             'jam_mulai'        => 'required|date_format:H:i',
@@ -130,8 +144,15 @@ class Peminjaman extends Model
         if (empty($validated['id_ruangan']) && empty($validated['id_proyektor'])) {
             throw new \Exception('Pilih ruangan atau proyektor.');
         }
-        if (!empty($validated['id_proyektor']) && empty($validated['id_lokasi'])) {
-            throw new \Exception('Lokasi harus dipilih untuk peminjaman proyektor.');
+        if (!empty($validated['id_proyektor'])) {
+            if (empty($validated['id_lokasi'])) {
+                throw new \Exception('Lokasi harus dipilih untuk peminjaman proyektor.');
+            }
+            if (empty($validated['id_ruangan_proyektor'])) {
+                throw new \Exception('Ruangan tempat proyektor digunakan harus dipilih.');
+            }
+            // Jika meminjam proyektor, gunakan ruangan proyektor sebagai id_ruangan
+            $validated['id_ruangan'] = $validated['id_ruangan_proyektor'];
         }
 
         $user = Auth::user();
@@ -243,7 +264,63 @@ class Peminjaman extends Model
             FonnteService::sendMessage($number, $message);
         } catch (\Exception $e) {
             Log::error("Gagal kirim WA ke $number: " . $e->getMessage());
-            // Jangan throw exception agar proses utama tidak gagal hanya karena WA error
         }
+    }
+
+    public static function Approv($type, $idSarpras)
+    {
+        $p = Peminjaman::with(['user', 'ruangan', 'proyektor'])
+            ->where('status_peminjaman', 'Disetujui')
+            ->when($type === 'ruangan', function ($query) use ($idSarpras) {
+                return $query->where('id_ruangan', $idSarpras);
+            })
+            ->when($type === 'proyektor', function ($query) use ($idSarpras) {
+                return $query->where('id_proyektor', $idSarpras);
+            })
+            ->get();
+
+        $approvedDetails = [];
+        foreach ($p as $peminjaman) {
+            $date = $peminjaman->tanggal_pinjam;
+            if (!isset($approvedDetails[$date])) {
+                $approvedDetails[$date] = [];
+            }
+
+            $sarprasType = null;
+            $sarprasId = null;
+            if ($peminjaman->id_ruangan) {
+                $sarprasType = 'ruangan';
+                $sarprasId = $peminjaman->id_ruangan;
+            } elseif ($peminjaman->id_proyektor) {
+                $sarprasType = 'proyektor';
+                $sarprasId = $peminjaman->id_proyektor;
+            }
+
+            $approvedDetails[$date][] = [
+                'id_peminjaman' => $peminjaman->id_peminjaman,
+                'nama_peminjam' => $peminjaman->user->nama ?? 'N/A',
+                'jenis_kegiatan' => $peminjaman->jenis_kegiatan,
+                'tanggal_pinjam' => $peminjaman->tanggal_pinjam,
+                'tanggal_kembali' => $peminjaman->tanggal_pinjam, 
+                'jam_mulai' => $peminjaman->jam_mulai,
+                'jam_selesai' => $peminjaman->jam_selesai,
+                'jumlah_peserta' => $peminjaman->jumlah_peserta,
+                'sarpras_type' => $sarprasType,
+                'id_sarpras' => $sarprasId,
+            ];
+        }
+        return response()->json(['approvedDetails' => $approvedDetails]);
+    }
+
+    public static function Riwayat(){
+        $userId = Auth::id();
+
+        $p = Peminjaman::with(['ruangan', 'proyektor'])
+            ->where('id_akun', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+
+        return view('public.peminjaman.riwayat_peminjaman', compact('p'));
     }
 }

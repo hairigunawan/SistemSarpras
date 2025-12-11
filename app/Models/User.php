@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use App\Models\Role;
 
 class User extends Authenticatable
 {
@@ -47,6 +49,40 @@ class User extends Authenticatable
         return $this->hasMany(Peminjaman::class, 'id_akun', 'id_akun');
     }
 
+    public static function HalamanUtama(Request $request)
+    {
+        $u = User::query()
+            ->filter($request->all())
+            ->latest()
+            ->paginate(9);
+
+        return view('admin.akun.index', compact('u'));
+    }
+
+    public function scopeFilter($query, $filters)
+    {
+        // Filter berdasarkan nama
+        if (!empty($filters['nama'])) {
+            $query->where('nama', 'like', '%' . $filters['nama'] . '%');
+        }
+
+        // Filter berdasarkan email
+        if (!empty($filters['email'])) {
+            $query->where('email', 'like', '%' . $filters['email'] . '%');
+        }
+
+        // Filter search (nama atau email)
+        if (!empty($filters['search'])) {
+            $query->where(function ($q) use ($filters) {
+                $q->where('nama', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('email', 'like', '%' . $filters['search'] . '%');
+            });
+        }
+
+        return $query;
+    }
+
+
     public static function Login(Request $request)
     {
 
@@ -82,8 +118,8 @@ class User extends Authenticatable
         }
     }
 
-    Public static function Register(Request $request){
-
+    public static function Register(Request $request)
+    {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -92,10 +128,12 @@ class User extends Authenticatable
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $role = Role::where('nama_role', $validated['role'])->first();
+        // Perbaikan: ambil role yang benar
+        $r = Role::CekRole($request->role);
 
-        if (! $role) {
-            return back()->withErrors(['role' => 'Role tidak ditemukan.'])->withInput();
+        // jika cekRole mengembalikan redirect, hentikan proses
+        if (!($r instanceof Role)) {
+            return $r;
         }
 
         $u = User::create([
@@ -103,51 +141,78 @@ class User extends Authenticatable
             'email' => $validated['email'],
             'nomor_telepon' => $validated['nomor_telepon'],
             'password' => Hash::make($validated['password']),
-            'role_id' => $role->id_role,
+            'role_id' => $r->id_role,
         ]);
 
         Auth::login($u);
 
         return $u;
     }
+    public static function EditAkun(Request $request, User $akun)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($akun->id_akun, 'id_akun')],
+            'role_id' => 'required|exists:roles,id_role',
+            'nomor_telepon' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
 
-    Public static function Logout(Request $request){
+        $akun->nama = $request->nama;
+        $akun->email = $request->email;
+        $akun->role_id = $request->role_id;
+        $akun->nomor_telepon = $request->nomor_telepon;
+
+        if ($request->filled('password')) {
+            $akun->password = Hash::make($request->password);
+        }
+
+        $akun->save();
+
+        return redirect()->route('admin.akun.index')->with('success', 'Akun berhasil diperbarui.');
+    }
+
+    public static function Logout(Request $request)
+    {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
     }
 
 
-    public static function storeAkun(array $data)
+    public static function storeAkun(Request $request)
     {
-        return self::create([
-            'nama'          => $data['nama'],
-            'email'         => $data['email'],
-            'nomor_telepon' => $data['nomor_telepon'] ?? null,
-            'role_id'       => $data['role_id'],
-            'password'      => $data['password'],
+        // 1. Validasi Input
+        $validatedData = $request->validate([
+            'nama'          => 'required|string|max:255',
+            'email'         => 'required|string|email|max:255|unique:users',
+            'nomor_telepon' => 'nullable|string|max:20',
+            'password'      => 'required|string|min:8|confirmed',
+            'role_id'       => 'required|exists:roles,id_role',
         ]);
+
+        // Buat user baru
+        $u = User::create([
+            'nama' => $validatedData['nama'],
+            'email' => $validatedData['email'],
+            'nomor_telepon' => $validatedData['nomor_telepon'],
+            'password' => Hash::make($validatedData['password']),
+            'role_id' => $validatedData['role_id'],
+        ]);
+
+        return $u;
     }
 
-    public function updateAkun(array $data)
-    {
-        $updateData = [
-            'nama'          => $data['nama'],
-            'email'         => $data['email'],
-            'nomor_telepon' => $data['nomor_telepon'] ?? null,
-            'role_id'       => $data['role_id'],
-        ];
 
-        // Cek apakah ada password baru yang diinput
-        if (!empty($data['password'])) {
-            $updateData['password'] = $data['password'];
+    public static function HapusAkun(User $akun)
+    {
+        if (Auth::check() && Auth::id() === $akun->getKey()) {
+            return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
-        return $this->update($updateData);
-    }
+        $akun->delete();
 
-    public function deleteAkun()
-    {
-        return $this->delete();
+        return redirect()->route('admin.akun.index')
+            ->with('success', 'Akun berhasil dihapus.');
     }
 }

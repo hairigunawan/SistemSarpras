@@ -24,7 +24,7 @@
                 <!-- Nama Ruangan -->
                 <div>
                     <label for="nama_ruangan" class="block text-sm font-medium text-gray-700">Nama Ruangan</label>
-                    <input type="text" name="nama_ruangan" id="nama_ruangan" placeholder="Lab C" value="{{ old('nama_ruangan') }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                    <input type="text" text="lowercase first-letter:uppercase" name="nama_ruangan" id="nama_ruangan" placeholder="Lab C" value="{{ old('nama_ruangan') }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" onblur="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)">
                     @error('nama_ruangan') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 
@@ -47,11 +47,12 @@
                     <label for="lokasi_id" class="block text-sm font-medium text-gray-700">Lokasi</label>
                     <select name="lokasi_id" id="lokasi_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                         <option value="">Pilih Lokasi</option>
-                        @foreach($l as $lokasiId => $lokasiNama)
-                            <option value="{{ $lokasiId }}" {{ old('lokasi_id') == $lokasiId ? 'selected' : '' }}>
-                                {{ $lokasiNama }}
+                            @foreach($l as $lokasi)
+                            <option value="{{ $lokasi->id_lokasi }}"
+                                {{ old('id_lokasi', $defaultLokasiId) == $lokasi->id_lokasi ? 'selected' : '' }}>
+                                {{ $lokasi->nama_lokasi }}
                             </option>
-                        @endforeach
+                            @endforeach
                     </select>
                     @error('lokasi_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
@@ -71,11 +72,51 @@
                     @error('id_status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 
-                <!-- Gambar -->
-                <div>
+                <div x-data="{
+                        previewUrl: null,
+                        previewFile(event) {
+                            const file = event.target.files[0];
+                            if (file) {
+                                this.previewUrl = URL.createObjectURL(file);
+                            }
+                        }
+                    }">
+
                     <label for="gambar" class="block text-sm font-medium text-gray-700">Gambar</label>
-                    <input type="file" name="gambar" accept=".jpeg,.png,.jpg,.webp" id="gambar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                    @error('gambar') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div class="space-y-1 text-center">
+
+                            <!-- Preview Image -->
+                            <template x-if="previewUrl">
+                                <img :src="previewUrl" class="mx-auto h-40 object-cover rounded-md" />
+                            </template>
+
+                            <!-- Default Icon (hilang ketika ada gambar) -->
+                            <svg x-show="!previewUrl" class="mx-auto h-12 w-12 text-gray-400"
+                                stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+
+                            <!-- Upload Button -->
+                            <div class="flex text-sm text-gray-600">
+                                <label for="gambar" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500">
+                                    <span>Upload file</span>
+                                    <input id="gambar" name="gambar" type="file" class="sr-only"
+                                        accept=".jpeg,.png,.jpg,.webp"
+                                        @change="previewFile">
+                                </label>
+                                <p class="pl-1">atau drag and drop</p>
+                            </div>
+
+                            <p class="text-xs text-gray-500">PNG, JPG, WEBP up to 2MB</p>
+                        </div>
+                    </div>
+
+                    @error('gambar')
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="text-right">

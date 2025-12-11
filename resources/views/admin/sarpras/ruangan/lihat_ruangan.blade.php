@@ -8,20 +8,33 @@
     <header class="pt-6 bg-white">
                 <!-- Global Alert -->
     @if(session('error'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="p-4 rounded-lg bg-red-100 border border-red-300 text-red-700 shadow-sm">
-                {{ session('error') }}
-            </div>
+    <div 
+        x-data="{ show: true }" 
+        x-init="setTimeout(() => show = false, 3000)" 
+        x-show="show"
+        x-transition
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4"
+    >
+        <div class="p-4 rounded-lg bg-red-100 border border-red-300 text-red-700 shadow-sm">
+            {{ session('error') }}
         </div>
+    </div>
     @endif
 
     @if(session('success'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <div 
+            x-data="{ show: true }" 
+            x-init="setTimeout(() => show = false, 3000)" 
+            x-show="show"
+            x-transition
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4"
+        >
             <div class="p-4 rounded-lg bg-green-100 border border-green-300 text-green-700 shadow-sm">
                 {{ session('success') }}
             </div>
         </div>
     @endif
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
 

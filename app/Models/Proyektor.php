@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use Exception;
+use Masterminds\HTML5\Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -24,8 +25,6 @@ class Proyektor extends Model
         'id_status'
     ];
 
-    // --- RELASI ---
-
     public function status()
     {
         return $this->belongsTo(Status::class, 'id_status', 'id_status');
@@ -41,6 +40,34 @@ class Proyektor extends Model
         return $this->hasMany(Feedback::class, 'id_proyektor', 'id_proyektor');
     }
 
+    public static function TampilkanProyektor(Request $request)
+    {
+        $s = Status::all();
+        $defaultStatus = Status::where('nama_status', 'Tersedia')->value('id_status');
+
+        return view('admin.sarpras.proyektor.tambah_proyektor', compact('s', 'defaultStatus'));
+    }
+
+    public static function Submit(Request $request)
+    {
+        $validated = $request->validate([
+            'nama_proyektor' => 'required|string|max:255',
+            'merk' => 'required|string|max:255',
+            'kode_proyektor' => 'nullable|string|max:255|unique:proyektors,kode_proyektor',
+            'id_status' => 'required|exists:statuses,id_status',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        try {
+            Proyektor::SubmitFile($validated, $request->file('gambar'));
+
+            return redirect()->route('admin.sarpras.index')
+                ->with('success', 'Proyektor berhasil ditambahkan!');
+        } catch (Exception $e) {
+            Log::error('Gagal menambah Proyektor: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menambah data: ' . $e->getMessage())->withInput();
+        }
+    }
 
     public function scopeFilter($query, array $filters)
     {
@@ -57,6 +84,20 @@ class Proyektor extends Model
         }
 
         return $query;
+    }
+
+    public static function LihatProyektor($id)
+    {
+        $p = Proyektor::findOrFail($id);
+        $s = Status::all();
+
+        return view('sarpras.proyektor.lihat_proyektor', compact('p', 's'));
+    }
+
+    public static function EditProyektor($id)
+    {
+        $data = Proyektor::edit(request(), $id);
+        return view('admin.sarpras.proyektor.edit_proyektor', $data);
     }
 
     public static function proyektorUpdate(Request $request, $id)
@@ -83,10 +124,8 @@ class Proyektor extends Model
             return back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage())->withInput();
         }
     }
-    /**
-     * Handle logika Create Proyektor beserta upload gambar
-     */
-    public static function Submit(array $data, $imageFile = null)
+
+    public static function SubmitFile(array $data, $imageFile = null)
     {
         // Path default jika tidak ada gambar (opsional, sesuaikan dengan kebutuhan)
         $path = null;
@@ -100,9 +139,6 @@ class Proyektor extends Model
         return self::create($data);
     }
 
-    /**
-     * Handle logika Update Proyektor beserta replace gambar
-     */
     public function updateProyektor(array $data, $imageFile = null)
     {
         if ($imageFile) {
@@ -115,24 +151,33 @@ class Proyektor extends Model
         return $this->update($data);
     }
 
-    /**
-     * Handle logika Delete Proyektor dengan pengecekan status dan relasi
-     */
-    public function hapusProyektor()
+    public static function hapusProyektor($id)
     {
-        // Cek 1: Apakah sedang dipinjam?
-        if ($this->status && $this->status->nama_status === 'Dipinjam') {
-            throw new Exception('Proyektor sedang dipinjam dan tidak dapat dihapus.');
-        }
+        try {
+            $proyektor = self::findOrFail($id);
 
-        // Cek 2: Apakah ada riwayat peminjaman?
-        if ($this->peminjamans()->exists()) {
-            throw new Exception('Proyektor memiliki riwayat peminjaman dan tidak dapat dihapus.');
-        }
+            // Cek 1: Apakah sedang dipinjam?
+            if ($proyektor->status && $proyektor->status->nama_status === 'Dipinjam') {
+                throw new Exception('Ruangan sedang dipinjam dan tidak dapat dihapus.');
+            }
 
-        // Jika lolos, hapus gambar dan record
-        $this->removeImage();
-        return $this->delete();
+            // Cek 2: Apakah ada riwayat peminjaman?
+            if ($proyektor->peminjamans()->exists()) {
+                throw new Exception('Ruangan memiliki riwayat peminjaman dan tidak dapat dihapus.');
+            }
+
+            // Jika lolos, hapus gambar dan record
+            $proyektor->removeImage();
+            $proyektor->delete();
+
+            return redirect()
+                ->route('admin.sarpras.index')
+                ->with('success', 'Proyektor berhasil dihapus.');
+        } catch (ModelNotFoundException $e) {
+            return back()->with('error', 'Proyektor tidak ditemukan.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public static function edit(Request $request, $id){
@@ -142,7 +187,6 @@ class Proyektor extends Model
         return compact('p', 's');
     }
 
-    // --- HELPER PRIVATE ---
 
     private static function uploadImage($file)
     {

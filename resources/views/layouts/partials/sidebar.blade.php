@@ -6,11 +6,11 @@
                 <img src="{{ asset('storage/images/TI.png') }}" alt="Logo TI" class="object-contain w-8 h-8">
                 <img src="{{ asset('storage/images/politala.png') }}" alt="Logo Politala" class="object-contain w-8 h-8">
             </div>
-            <h1 class="text-xl font-semibold text-gray-800">SIMPERSITE.</h1>
+            <h1 class="text-xl font-bold text-gray-800">SIMPERSITE.</h1>
         </div>
         <nav>
             <ul>
-                <li class="mb-1.5">
+                <li class="mb-0.5">
                     <a href="{{ Route('admin.dashboard.index') }}"
                         class="flex items-center p-2 text-sm rounded gap-2 font-medium {{ request()->routeIs('admin.dashboard*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -22,7 +22,7 @@
                     </a>
                 </li>
 
-                <li class="mb-2">
+                <li class="mb-0.5">
                     <a href="{{ Route('admin.peminjaman.index') }}"
                         class="flex items-center p-2 text-sm rounded gap-2 font-medium {{ request()->routeIs('admin.peminjaman*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -34,7 +34,7 @@
                     </a>
                 </li>
 
-                <li class="mb-2">
+                <li class="mb-0.5">
                     <a href="{{ Route('admin.sarpras.index') }}"
                         class="flex items-center p-2 text-sm rounded gap-2 font-medium {{ request()->routeIs('admin.sarpras.*') || request()->routeIs('sarpras.*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 26 26" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -44,7 +44,7 @@
                     </a>
                 </li>
 
-                <li class="mb-2">
+                <li class="mb-0.5">
                     <a href="{{ Route('laporan.index') }}"
                         class="flex items-center gap-2 p-2 rounded font-medium text-sm {{ request()->routeIs('laporan*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -56,7 +56,7 @@
                     </a>
                 </li>
 
-                <li class="mb-2">
+                <li class="mb-0.5">
                     <a href="{{ route('admin.jadwal.index') }}"
                     class="flex items-center p-2 gap-2 rounded font-medium text-sm {{ request()->routeIs('admin.jadwal.*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -68,7 +68,7 @@
                     </a>
                 </li>
 
-                <li class="mb-2">
+                <li class="mb-0.5">
                     <a href="{{ route('admin.akun.index') }}"
                     class="flex items-center p-2 gap-2 rounded font-medium text-sm {{ request()->routeIs('admin.akun.*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -78,7 +78,7 @@
                     </a>
                 </li>
 
-                <li class="mb-2">
+                <li class="mb-0.5">
                     <details class="group" {{ request()->is('prioritas*') ? 'open' : '' }}>
                         <summary
                             class="flex items-center justify-between p-2 rounded cursor-pointer text-sm font-medium {{ request()->routeIs('admin.prioritas*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">

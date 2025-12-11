@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Lokasi;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Lokasi;
 
 class LokasiSeeder extends Seeder
 {
@@ -13,8 +12,12 @@ class LokasiSeeder extends Seeder
      */
     public function run(): void
     {
-        Lokasi::create(['nama_lokasi' => 'Gedung Teknik Informatika']);
-        Lokasi::create(['nama_lokasi' => 'Gedung Adriansyah 1']);
-        Lokasi::create(['nama_lokasi' => 'Gedung Adriansyah 2']);
+        $lokasis = ['Gedung Teknik Informatika', 'Gedung Adriansyah 1', 'Gedung Adriansyah 2'];
+
+        foreach ($lokasis as $lokasiName) {
+            if (!Lokasi::where('nama_lokasi', $lokasiName)->exists()) {
+                Lokasi::create(['nama_lokasi' => $lokasiName]);
+            }
+        }
     }
 }

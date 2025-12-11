@@ -93,6 +93,9 @@ class PublicController extends Controller
         $ruanganTersedia = $resources['ruangan']->sortBy('nama_ruangan');
         $proyektorTersedia = $resources['proyektor']->sortBy('nama_proyektor');
 
+        // Ambil semua ruangan (termasuk yang sedang dipinjam) untuk proyektor
+        $allRuangan = Ruangan::with('lokasi')->orderBy('nama_ruangan')->get();
+
         $prioritasOptions = Prioritas::orderBy('nama_prioritas', 'asc')->get();
         $lokasiList = Lokasi::pluck('nama_lokasi', 'id_lokasi');
 
@@ -102,7 +105,8 @@ class PublicController extends Controller
             'selectedSarprasType',
             'selectedSarprasId',
             'prioritasOptions',
-            'lokasiList'
+            'lokasiList',
+            'allRuangan'
         ));
     }
 
@@ -329,5 +333,10 @@ class PublicController extends Controller
         $tanggalCetak = Carbon::now()->translatedFormat('d F Y H:i:s');
 
         return view('admin.laporan.pdf', compact('peminjaman', 'user', 'tanggalCetak'));
+    }
+
+    public function tentang_kami()
+    {
+        return view('profile.tentang_kami');
     }
 }

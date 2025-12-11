@@ -8,13 +8,11 @@ use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+
 use Carbon\Carbon;
 
 class SarprasController extends Controller
 {
-    /**
-     * Menampilkan halaman index sarpras dengan data ruangan dan proyektor.
-     */
     public function index(Request $request, $type = null, $id = null)
     {
         // Query untuk ruangan dengan filter yang sama di RuanganController
@@ -36,7 +34,6 @@ class SarprasController extends Controller
 
         $p = $p->latest()->paginate(9);
 
-        // Perbarui status proyektor berdasarkan peminjaman aktif
         $this->updateProyektorStatus();
 
         $s = Status::all();

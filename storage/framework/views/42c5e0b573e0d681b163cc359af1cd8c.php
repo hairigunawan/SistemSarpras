@@ -1,7 +1,7 @@
 <?php $__env->startSection('title', 'Sarpras - Sistem Informasi Sarana dan Prasarana'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="bg-gray-50 min-h-screen font-sans">
+<div class="bg-gray-50 min-h-screen">
 
     <!-- Hero Section -->
     <div class="relative w-full h-[500px] md:h-[600px] overflow-hidden">
@@ -24,11 +24,11 @@
             </p>
 
             <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                <a href="#jadwal" class="px-8 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
+                <a href="#jadwal" class="px-8 py-2.5 text-sm rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     Lihat Jadwal
                 </a>
-                <a href="#informasi" class="px-8 py-2.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/30 font-semibold transition-all flex items-center justify-center gap-2">
+                <a href="#informasi" class="px-8 py-2.5 text-sm rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/30 font-medium transition-all flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     Panduan
                 </a>

@@ -45,7 +45,7 @@ Route::get('/api/peminjaman/approved-dates/{type}/{idSarpras}', [PeminjamanContr
     ->name('api.peminjaman.approvedDates');
 
 // Tentang kami
-Route::get('tentang_kami', [PublicController::class, 'index'])->name('public.tentang_kami.index');
+Route::get('tentang_kami', [PublicController::class, 'tentang_kami'])->name('public.tentang_kami.index');
 
 // Autentikasi
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
@@ -79,7 +79,7 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
 
         // Akun
         Route::get('/akun', [AkunController::class, 'index'])->name('admin.akun.index');
-        Route::get('/akun/tambah_akun/{id}', [AkunController::class, 'tambah_akun'])->name('admin.akun.tambah_akun');
+        Route::get('/akun/tambah_akun', [AkunController::class, 'tambah_akun'])->name('admin.akun.tambah_akun');
         Route::get('/akun/edit_akun/{akun}', [AkunController::class, 'edit_akun'])->name('admin.akun.edit_akun');
         Route::post('/akun/store/new', [AkunController::class, 'store'])->name('admin.akun.store.new');
         Route::patch('/akun/store/{akun}', [AkunController::class, 'update'])->name('admin.akun.update');
@@ -101,6 +101,8 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
             ->name('peminjaman.reject');
         Route::patch('/peminjaman/{id}/complete', [PeminjamanController::class, 'complete'])
             ->name('peminjaman.complete');
+        Route::patch('/peminjaman/{id}/add-catatan-admin', [PeminjamanController::class, 'addCatatanAdmin'])
+            ->name('peminjaman.add_catatan_admin');
 
         /* API TANGGAL APPROVED */
         Route::get('/peminjaman/approved/{type}/{idSarpras}', [PeminjamanController::class, 'approvedDates'])
@@ -147,7 +149,7 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
 
     //Proyektor
     Route::get('/sarpras/proyektor', [ProyektorController::class, 'tambah_proyektor'])->name('sarpras.proyektor.tambah_proyektor');
-    Route::post('/sarpras/proyektor', [ProyektorController::class, 'store'])->name('sarpras.proyektor.store');
+    Route::post('/sarpras/proyektor', [ProyektorController::class, 'store_proyektor'])->name('sarpras.proyektor.store_proyektor');
     Route::get('/sarpras/proyektor/{proyektor}', [ProyektorController::class, 'lihat_proyektor'])->name('sarpras.proyektor.lihat_proyektor');
     Route::get('/sarpras/proyektor/{proyektor}/edit', [ProyektorController::class, 'edit_proyektor'])->name('sarpras.proyektor.edit_proyektor');
     Route::put('/sarpras/proyektor/{proyektor}', [ProyektorController::class, 'update'])->name('sarpras.proyektor.update');
@@ -159,7 +161,7 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
     Route::get('/beranda/index', [PublicController::class, 'index'])->name('public.beranda.index.auth');
 
     //Profile
-    Route::get('/profile/profile', [PublicController::class, 'index'])->name('public.profile.index');
+    Route::get('/profile/profile', [PublicController::class, 'profile'])->name('public.profile.index');
 
     //Peminjaman
     Route::get('/peminjaman/create', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create.auth');

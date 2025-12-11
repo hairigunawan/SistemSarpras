@@ -3,65 +3,137 @@
 @section('title', 'Akun - Index')
 
 @section('content')
-<div class="bg-white rounded-lg p-6">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6 md:p-8">
+    <div class="max-w-6xl mx-auto">
 
-    @if(session('success'))
-        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
-            {{ session('success') }}
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-700 mb-2">Manajemen Akun</h1>
+            <p class="text-slate-600">Kelola semua akun pengguna sistem dengan mudah</p>
         </div>
-    @endif
-    @if(session('error'))
-        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-            {{ session('error') }}
-        </div>
-    @endif
 
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Daftar Akun</h1>
+        <!-- Alert Messages -->
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg flex items-center gap-3">
+                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
 
-        <div class="flex justify-between gap-4">
-            <form method="GET" action="{{ route('admin.akun.index') }}" class="flex items-center space-x-2">
-                @if(request('jenis'))
+        @if(session('error'))
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg flex items-center gap-3">
+                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/>
+                </svg>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+
+        <!-- Filter & Action Bar -->
+        <div class="mb-6 flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+            <form method="GET" action="{{ route('admin.akun.index') }}" class="flex-1 max-w-md">
+                @if(request('nama'))
                     <input type="hidden" name="nama" value="{{ request('nama') }}">
                 @endif
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Akun" class="w-full md:w-64 px-4 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300">
+                @if(request('email'))
+                    <input type="hidden" name="email" value="{{ request('email') }}">
+                @endif
+
+                <div class="relative">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Cari berdasarkan nama atau email..."
+                        class="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-300 rounded-lg
+                            focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent
+                            transition-all duration-200">
+                </div>
             </form>
 
             <a href="{{ route('admin.akun.tambah_akun', ['id' => 'new']) }}"
-            class="flex gap-2 px-4 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+               class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700
+                   text-white font-medium text-sm rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 whitespace-nowrap">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
                 </svg>
                 Tambah Akun
             </a>
         </div>
-    </div>
 
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-        <table class="w-full text-left border-collapse">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="p-3 border text-gray-700 font-medium">Nama</th>
-                    <th class="p-3 border text-gray-700 font-medium">Email</th>
-                    <th class="p-3 border text-gray-700 font-medium">Role</th>
-                    <th class="p-3 border text-gray-700 font-medium text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($akuns ?? [] as $a)
-                <tr class="hover:bg-gray-50">
-                    <td class="p-3 border text-sm">{{ $a->nama }}</td>
-                    <td class="p-3 border text-sm">{{ $a->email }}</td>
-                    <td class="p-3 border text-sm">{{ $a->userRole->nama_role }}</td>
-                    <td class="p-3 border text-sm text-center">
-                        <a href="{{ route('admin.akun.lihat_akun', $a->id_akun) }}"
-                           class="text-blue-600 px-6 py-1.5 hover:rounded-lg hover:bg-blue-100">detail</a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+        <!-- Table Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            @if(count($u ?? []) > 0)
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-700">No</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Nama</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Email</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Role</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            @foreach($u as $akuns)
+                            <tr class="hover:bg-slate-50 transition-colors duration-150">
+                                <td class="px-6 py-4 text-sm font-medium text-gray-700">
+                                    <div class="text-center">
+                                        {{ $loop->iteration }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-sm font-medium text-gray-700">
+                                    <div class="flex items-center gap-3">
+                                        {{ $akuns->nama }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-slate-600">{{ $akuns->email }}</td>
+                                <td class="px-6 py-4 text-sm">
+                                    <span class="inline-flex items-start text-xs font-medium">
+                                        {{ $akuns->userRole->nama_role }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <a href="{{ route('admin.akun.lihat_akun', $akuns->id_akun) }}"
+                                       class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600
+                                           bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-150">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        Detail
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="text-center py-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-slate-400 mx-auto mb-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0ZM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766Z"/>
+                    </svg>
+                    <p class="text-slate-600 font-medium">Tidak ada akun ditemukan</p>
+                    <p class="text-slate-500 text-sm mt-1">Mulai dengan membuat akun baru</p>
+                </div>
+            @endif
+        </div>
 
+    </div>
 </div>
+
+<style>
+    @media (max-width: 768px) {
+        .responsive-stack {
+            flex-direction: column;
+        }
+    }
+</style>
 @endsection

@@ -36,7 +36,7 @@
         <!-- Form Card -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-8">
-                <form method="POST" action="{{ route('admin.akun.store.new', ['id' => 'new']) }}">
+                <form method="POST" action="{{ route('admin.akun.store.new') }}">
                     @csrf
 
                     <div class="space-y-6">

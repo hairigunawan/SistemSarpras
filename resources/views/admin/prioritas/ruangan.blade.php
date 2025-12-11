@@ -9,7 +9,7 @@
         <!-- Header Section -->
         <div class="mb-8 text-center">
             <h2 class="text-3xl font-light text-gray-800 mb-2">
-                Prioritas Peminjaman Proyektor
+                Prioritas Peminjaman Ruangan
             </h2>
             <div class="w-24 h-0.5 bg-gray-300 mx-auto"></div>
         </div>
@@ -17,12 +17,9 @@
         <!-- TABEL PEMINJAMAN -->
         <div class="bg-white rounded-lg border border-gray-200 mb-8">
             <div class="border-b border-gray-200 px-6 py-4">
-                <h3 class="text-lg font-medium text-gray-700 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                    </svg>
-                    Data Peminjaman Proyektor
-                </h3>
+                <h4 class="uppercase text-sm">
+                    Table Peminjam
+                </h4>
             </div>
 
             <div class="overflow-x-auto">
@@ -31,7 +28,7 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">No</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nama Peminjam</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Proyektor</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Ruangan</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Keperluan</th>
                             <th class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Tanggal</th>
                             <th class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">Jam</th>
@@ -44,7 +41,7 @@
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $no++ }}</td>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $p->nama_peminjam ?? '-' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-700">
-                                {{ optional($p->proyektor)->nama_proyektor ?? '-' }}
+                                {{ optional($p->ruangan)->nama_ruangan ?? '-' }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $p->keperluan ?? $p->jenis_kegiatan ?? '-' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-600 text-center">{{ \Carbon\Carbon::parse($p->tanggal_pinjam)->format('d M Y') }}</td>
@@ -200,7 +197,6 @@
                                         <th class="border-r border-gray-200 px-4 py-3 text-left text-xs font-medium text-gray-600">Kriteria</th>
                                         <th class="border-r border-gray-200 px-4 py-3 text-left text-xs font-medium text-gray-600">Tipe</th>
                                         <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600">Bobot Akhir</th>
-                                        <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-100">
@@ -214,19 +210,6 @@
                                             </span>
                                         </td>
                                         <td class="border-r border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-700">{{ number_format($value['bobot'], 3) }}</td>
-                                        <td class="border-r border-gray-200 px-4 py-3 text-center">
-                                            <form action="{{ route('admin.kriteria.destroy', $value['id']) }}" method="POST"
-                                                  onsubmit="return confirm('Yakin ingin menghapus kriteria ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="text-red-600 hover:text-red-800 font-medium transition-colors duration-200 flex items-center mx-auto">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                    </svg>
-                                                    Hapus
-                                                </button>
-                                            </form>
-                                        </td>
                                     </tr>
                                     @endforeach
                                 </tbody>

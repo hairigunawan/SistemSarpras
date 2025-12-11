@@ -82,7 +82,7 @@
                         </div>
 
                         <div class="p-3">
-                            <h2 class="text-lg font-bold text-gray-800">{{ $item->nama_ruangan }}</h2>
+                            <h2 class="text-gray-800 font-semibold">{{ $item->nama_ruangan }}</h2>
                             <p class="text-xs font-medium text-gray-500 mb-3">{{ $item->lokasi->nama_lokasi ?? '-' }}</p>
 
                             <div class="flex justify-between items-center mb-4">
@@ -123,7 +123,7 @@
                         </div>
 
                         <div class="p-3">
-                            <h2 class="text-lg font-bold text-gray-800">{{ $item->nama_proyektor }}</h2>
+                            <h2 class="text-gray-800 font-semibold">{{ $item->nama_proyektor }}</h2>
                             <p class="text-xs font-medium text-gray-500 mb-3">{{ $item->merk ?? '-' }}</p>
 
                             <div class="flex justify-between items-center mb-4">

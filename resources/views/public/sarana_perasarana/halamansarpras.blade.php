@@ -13,32 +13,111 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
 
         <div class="mb-6 flex flex-col sm:flex-row justify-start items-start sm:items-center gap-3">
+            <form action="{{ route('public.sarana_perasarana.halamansarpras') }}" method="GET" class="relative w-full sm:w-auto" x-data="{ open: false }">
+                
+                <input type="hidden" name="jenis_sarpras" x-ref="inputJenis" value="{{ $jenisSarprasFilter }}">
 
-            <form action="{{ route('public.sarana_perasarana.halamansarpras') }}" method="GET" class="flex items-center space-x-2 w-full sm:w-auto">
                 @if($lokasiRuanganFilter !== 'all')
                     <input type="hidden" name="lokasi_ruangan" value="{{ $lokasiRuanganFilter }}">
                 @endif
 
-                <select name="jenis_sarpras" onchange="this.form.submit()"
-                        class="block w-full sm:w-40 pl-3 pr-8 py-1.5 text-sm border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-lg shadow-sm cursor-pointer hover:border-blue-400 transition-colors">
-                    <option value="all" {{ $jenisSarprasFilter == 'all' ? 'selected' : '' }}>Semua Jenis</option>
-                    <option value="ruangan" {{ $jenisSarprasFilter == 'ruangan' ? 'selected' : '' }}>Ruangan</option>
-                    <option value="proyektor" {{ $jenisSarprasFilter == 'proyektor' ? 'selected' : '' }}>Proyektor</option>
-                </select>
+                @php
+                    $labelJenis = 'Semua Jenis';
+                    if($jenisSarprasFilter == 'ruangan') $labelJenis = 'Ruangan';
+                    if($jenisSarprasFilter == 'proyektor') $labelJenis = 'Proyektor';
+                @endphp
+
+                <button type="button" @click="open = !open" @click.outside="open = false"
+                    class="flex items-center justify-between w-full sm:w-40 pl-3 pr-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg shadow-sm hover:border-blue-400 ">
+                    <span class="block truncate">{{ $labelJenis }}</span>
+                    <svg class="w-4 h-4 text-gray-400 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+                <ul x-show="open" 
+                    x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="transform opacity-0 scale-95"
+                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="transform opacity-100 scale-100"
+                    x-transition:leave-end="transform opacity-0 scale-95"
+                    class="absolute z-10 mt-1 w-full sm:w-40 bg-white shadow-lg max-h-60 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm"
+                    style="display: none;">
+
+                    <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
+                        @click="$refs.inputJenis.value = 'all'; $el.closest('form').submit()">
+                        <span class="block truncate {{ $jenisSarprasFilter == 'all' ? 'font-semibold text-gray-600' : 'font-normal' }}">Semua Jenis</span>
+                    </li>
+
+                    <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
+                        @click="$refs.inputJenis.value = 'ruangan'; $el.closest('form').submit()">
+                        <span class="block truncate {{ $jenisSarprasFilter == 'ruangan' ? 'font-semibold text-gray-600' : 'font-normal' }}">Ruangan</span>
+                    </li>
+
+                    <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
+                        @click="$refs.inputJenis.value = 'proyektor'; $el.closest('form').submit()">
+                        <span class="block truncate {{ $jenisSarprasFilter == 'proyektor' ? 'font-semibold text-gray-600' : 'font-normal' }}">Proyektor</span>
+                    </li>
+                </ul>
             </form>
 
+
             @if($jenisSarprasFilter === 'ruangan')
-            <form action="{{ route('public.sarana_perasarana.halamansarpras') }}" method="GET" class="flex items-center space-x-2 w-full sm:w-auto">
+            <form action="{{ route('public.sarana_perasarana.halamansarpras') }}" method="GET" class="relative w-full sm:w-auto" x-data="{ open: false }">
+                
                 <input type="hidden" name="jenis_sarpras" value="ruangan">
-                <select name="lokasi_ruangan" onchange="this.form.submit()"
-                        class="block w-full sm:w-48 pl-3 pr-8 py-1.5 text-sm border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-lg shadow-sm cursor-pointer hover:border-blue-400 transition-colors">
-                    <option value="all" {{ $lokasiRuanganFilter == 'all' ? 'selected' : '' }}>Semua Lokasi</option>
+                <input type="hidden" name="lokasi_ruangan" x-ref="inputLokasi" value="{{ $lokasiRuanganFilter }}">
+
+                @php
+                    $labelLokasi = 'Semua Lokasi';
+                    if($lokasiRuanganFilter != 'all') {
+                        $foundLokasi = $lokasis->firstWhere('id_lokasi', $lokasiRuanganFilter);
+                        if($foundLokasi) $labelLokasi = $foundLokasi->nama_lokasi;
+                    }
+                @endphp
+
+                <button type="button" @click="open = !open" @click.outside="open = false"
+                    class="flex items-center justify-between w-full sm:w-48 pl-3 pr-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg shadow-sm hover:border-blue-400 ">
+                    <span class="block truncate">{{ $labelLokasi }}</span>
+                    <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+                <ul x-show="open" 
+                    x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="transform opacity-0 scale-95"
+                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="transform opacity-100 scale-100"
+                    x-transition:leave-end="transform opacity-0 scale-95"
+                    class="absolute z-50 mt-1 min-w-full w-auto bg-white shadow-lg max-h-60 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm whitespace-nowrap"
+                    style="display: none;">
+
+                    <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
+                        @click="$refs.inputLokasi.value = 'all'; $el.closest('form').submit()">
+                        <span class="block {{ $lokasiRuanganFilter == 'all' ? 'font-semibold text-gray-600' : 'font-normal' }}">Semua Lokasi</span>
+                    </li>
+
                     @foreach($lokasis as $lokasi)
-                        <option value="{{ $lokasi->id_lokasi }}" {{ $lokasiRuanganFilter == $lokasi->id_lokasi ? 'selected' : '' }}>
-                            {{ $lokasi->nama_lokasi }}
-                        </option>
+                        <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
+                            @click="$refs.inputLokasi.value = '{{ $lokasi->id_lokasi }}'; $el.closest('form').submit()">
+                            
+                            <span class="block {{ $lokasiRuanganFilter == $lokasi->id_lokasi ? 'font-semibold text-gray-600' : 'font-normal' }}">
+                                {{ $lokasi->nama_lokasi }}
+                            </span>
+                            
+                            @if($lokasiRuanganFilter == $lokasi->id_lokasi)
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-600">
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            @endif
+                        </li>
                     @endforeach
-                </select>
+                </ul>
             </form>
             @endif
         </div>
