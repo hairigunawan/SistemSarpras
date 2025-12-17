@@ -3,151 +3,204 @@
 @section('title', 'Laporan')
 
 @section('content')
-<div class="p-6 space-y-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
+<!-- Container Utama dengan x-data untuk logic filter -->
+<div x-data="laporanPage()" class="min-h-screen p-6 bg-gray-50/50 space-y-8">
+\
+    <form id="filterForm" method="GET" action="{{ route('laporan.index') }}" class="hidden">
+        <input type="hidden" id="periodeInput" name="periode" :value="periode">\
+    </form>
+
+    <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div>
-            <h1 class="text-2xl font-semibold text-gray-800">Laporan</h1>
-            <p class="text-sm text-gray-500">Analisis dan statistik sistem</p>
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900">Laporan & Analisis</h1>
+            <p class="mt-1 text-sm text-gray-500">Ringkasan statistik peminjaman dan performa sistem.</p>
         </div>
-            <!-- Filter Periode -->
+
+        <div class="flex flex-wrap items-center gap-3">
+            <!-- Custom Dropdown dengan Alpine.js -->
+            <div class="relative z-20" @click.outside="openDropdown = false">
+                <button
+                    @click="openDropdown = !openDropdown"
+                    class="flex items-center justify-between w-40 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                >
+                    <span x-text="formatLabel(periode)"></span>
+                    <svg class="w-4 h-4 ml-2 text-gray-400 transition-transform duration-200" :class="openDropdown ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+\
+                <div
+                    x-show="openDropdown"
+                    x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="transform opacity-0 scale-95"
+                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="transform opacity-100 scale-100"
+                    x-transition:leave-end="transform opacity-0 scale-95"
+                    class="absolute right-0 w-40 mt-2 origin-top-right bg-white border border-gray-100 rounded shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    style="display: none;"
+                >
+                    <div class="p-1">
+                        <button @click="setPeriode('perbulan')" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 rounded hover:bg-blue-50 hover:text-blue-600 transition-colors" :class="periode === 'perbulan' ? 'bg-blue-50 text-blue-700' : ''">
+                            Perbulan
+                        </button>
+                        <button @click="setPeriode('persemester')" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 rounded hover:bg-blue-50 hover:text-blue-600 transition-colors" :class="periode === 'persemester' ? 'bg-blue-50 text-blue-700' : ''">
+                            Persemester
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-px h-8 bg-gray-200 hidden md:block"></div>
+
+            <!-- Export Buttons -->
+            <a href="{{ route('laporan.pdf', ['periode' => $periode]) }}" class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white transition-all bg-gray-900 rounded hover:bg-gray-800 shadow-lg shadow-gray-200 hover:shadow-xl">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                PDF
+            </a>
+
+            <a href="{{ route('laporan.excel', ['periode' => $periode]) }}" class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-green-700 transition-all bg-green-50 border border-green-200 rounded hover:bg-green-100 hover:border-green-300">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                Excel
+            </a>
+        </div>
+    </div>
+\
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">\
+        <div class="relative p-6 overflow-hidden bg-white border border-gray-100 shadow-xs rounded group hover:shadow-sm transition-shadow">
             <div class="flex items-center gap-4">
-                <label for="periode" class="text-sm font-medium text-gray-700">Filter Periode:</label>
-                <select id="periode" name="periode" onchange="updateFilters()" class="p-2 text-sm text-gray-700 border border-gray-300 rounded-lg">
-                    <option value="perbulan" {{ $periode == 'perbulan' ? 'selected' : '' }}>Perbulan</option>
-                    <option value="persemester" {{ $periode == 'persemester' ? 'selected' : '' }}>Persemester</option>
-                </select>
-            </div>
-            <form id="filterForm" method="GET" action="{{ route('laporan.index') }}" class="hidden">
-                <input type="hidden" id="statusInput" name="status" value="">
-                <input type="hidden" id="periodeInput" name="periode" value="">
-            </form>
-        <div class="flex gap-3">
-            <a href="{{ route('laporan.pdf', ['periode' => $periode]) }}"
-               class="flex gap-3 px-3 py-2 text-white transition bg-blue-500 rounded-lg items-center text-sm shadow hover:bg-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 10.5L12 15m0 0l4.5-4.5M12 15V3" />
-                </svg>
-                Unduh PDF
-            </a>
-
-            <a href="{{ route('laporan.excel', ['periode' => $periode]) }}"
-               class="flex gap-3 px-3 py-2 text-sm items-center text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5h7.5M8.25 9h7.5M8.25 13.5h7.5M4.5 19.5h15M4.5 3h15a1.5 1.5 0 011.5 1.5v18a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 22.5v-18A1.5 1.5 0 014.5 3z" />
-                </svg>
-                Export Excel
-            </a>
-        </div>
-    </div>
-
-    <!-- Statistik Cards -->
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div class="flex items-center justify-between p-5 text-white bg-gradient-to-l from-blue-500 to-blue-600 rounded-xl">
-            <div>
-                <p class="text-sm text-gray-300">Total Peminjaman</p>
-                <h2 class="text-3xl font-bold">{{ $totalPeminjaman }}</h2>
-            </div>
-            <div class="p-3 bg-green-600 rounded-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 2.25h6a2.25 2.25 0 012.25 2.25v15a2.25 2.25 0 01-2.25 2.25H9A2.25 2.25 0 016.75 19.5v-15A2.25 2.25 0 019 2.25z" />
-                </svg>
-            </div>
-
-        </div>
-
-        <div class="flex items-center justify-between p-5 text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl">
-            <div>
-                <p class="text-sm text-gray-300">Peminjaman Hari Ini</p>
-                <h2 class="text-3xl font-bold">{{ $PeminjamanHariIni }}</h2>
-            </div>
-            <div class="p-3 bg-blue-600 rounded-lg">
-                <!-- Calendar Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 8.25h18M4.5 7.5v12.75A2.25 2.25 0 006.75 22.5h10.5A2.25 2.25 0 0019.5 20.25V7.5" />
-                </svg>
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Total Peminjaman</p>
+                    <h3 class="text-2xl font-bold text-gray-900">{{ $totalPeminjaman }}</h3>
+                </div>
             </div>
         </div>
 
-        <div class="flex items-center justify-between p-5 text-white bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl">
-            <div>
-                <p class="text-sm text-gray-300">Waktu Rata-Rata Peminjaman</p>
-                <h2 class="text-3xl font-bold">{{ number_format($waktuRataRata, 1) }} jam</h2>
+        <div class="relative p-6 overflow-hidden bg-white border border-gray-100 shadow-xs rounded group hover:shadow-sm transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Peminjaman Hari Ini</p>
+                    <h3 class="text-2xl font-bold text-gray-900">{{ $PeminjamanHariIni }}</h3>
+                </div>
             </div>
-            <div class="flex p-3 bg-yellow-500 rounded-lg items-center">
-                <!-- Clock Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
+        </div>
+
+        <div class="relative p-6 overflow-hidden bg-white border border-gray-100 shadow-xs rounded group hover:shadow-sm transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Rata-rata Durasi</p>
+                    <h3 class="text-2xl font-bold text-gray-900">{{ number_format($waktuRataRata, 1) }} <span class="text-sm font-normal text-gray-500">Jam</span></h3>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Peminjam Teratas & Sarpras Terpopuler -->
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <!-- Peminjam Teratas -->
-        <div class="p-5 bg-white shadow rounded-xl">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="font-semibold text-gray-800">Peminjam Teratas</h2>
-                <span class="text-xs text-gray-500">({{ $periodeLabel }})</span>
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div class="flex flex-col bg-white border border-gray-100 shadow-sm rounded">
+            <div class="grid items-center justify-between px-6 py-5 border-b border-gray-100">
+                <h2 class="text-lg font-bold text-gray-900">Peminjam Teratas</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Ranking berdasarkan frekuensi ({{ $periodeLabel }})</p>
             </div>
-            <ul class="space-y-3">
-                @forelse($peminjamTeratas as $index => $peminjam)
-                <li class="flex items-center justify-between pb-2 border-b border-gray-200 last:border-b-0">
-                    <div class="flex items-center gap-3">
-                        <div class="flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full text-sm font-bold shadow-md">
-                            {{ $index + 1 }}
+            <div class="p-6">
+                <div class="space-y-5">
+                    @forelse($peminjamTeratas as $index => $peminjam)
+                    <div class="flex items-center justify-between group">
+                        <div class="flex items-center gap-4">
+                            <span class="flex items-center justify-center w-8 h-8 text-xs font-bold {{ $index < 3 ? 'text-blue-600 bg-blue-100' : 'text-gray-500 bg-gray-100' }} rounded-full">
+                                {{ $index + 1 }}
+                            </span>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{{ $peminjam['nama'] }}</p>
+                                <p class="text-xs text-gray-500">{{ $peminjam['email'] }}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-800">{{ $peminjam['nama'] }}</p>
-                            <p class="text-xs text-gray-500">{{ $peminjam['email'] }}</p>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold text-gray-900">{{ $peminjam['jumlah'] }}</span>
+                            <span class="text-xs text-gray-500">x</span>
                         </div>
                     </div>
-                    <span class="text-xs text-gray-700">{{ $peminjam['jumlah'] }} Peminjaman</span>
-                </li>
-                @empty
-                <li class="text-sm text-gray-500">Tidak ada data peminjam teratas.</li>
-                @endforelse
-            </ul>
+                    @empty
+                    <div class="flex flex-col items-center justify-center py-8 text-center text-gray-500">
+                        <svg class="w-12 h-12 mb-2 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
+                        <p class="text-sm">Belum ada data peminjam</p>
+                    </div>
+                    @endforelse
+                </div>
+            </div>
         </div>
 
-        <!-- Sarpras Terpopuler -->
-        <div class="p-5 bg-white shadow rounded-xl">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="font-semibold text-gray-800">Sarpras Terpopuler</h2>
-                <span class="text-xs text-gray-500">({{ $periodeLabel }})</span>
+        <div class="flex flex-col bg-white border border-gray-100 shadow-sm rounded">
+            <div class="grid items-center justify-between px-6 py-5 border-b border-gray-100">
+                <h2 class="text-lg font-bold text-gray-900">Sarpras Terpopuler</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Barang paling sering dipinjam ({{ $periodeLabel }})</p>
             </div>
-            <ul class="space-y-3">
-                @forelse($sarprasTerpopuler as $index => $sarpras)
-                <li class="flex items-center justify-between pb-2 border-b border-gray-200 last:border-b-0">
-                    <div class="flex items-center gap-3">
-                        <div class="flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full text-sm font-bold shadow-md">
-                            {{ $index + 1 }}
+            <div class="p-6">
+                <div class="space-y-5">
+                    @forelse($sarprasTerpopuler as $index => $sarpras)
+                    <div class="flex items-center justify-between group">
+                        <div class="flex items-center gap-4">
+                            <span class="flex items-center justify-center w-8 h-8 text-xs font-bold {{ $index < 3 ? 'text-green-600 bg-green-100' : 'text-gray-500 bg-gray-100' }} rounded-full">
+                                {{ $index + 1 }}
+                            </span>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900 group-hover:text-green-600 transition-colors">{{ $sarpras['nama'] }}</p>
+                                <p class="text-xs text-gray-500">
+                                    @if($sarpras['type'] === 'ruangan')
+                                        {{ $sarpras['lokasi'] ?? 'N/A' }}
+                                    @elseif($sarpras['type'] === 'proyektor')
+                                        {{ $sarpras['merk'] ?? 'N/A' }}
+                                    @else
+                                        N/A
+                                    @endif
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-800">{{ $sarpras['nama'] }}</p>
-                            <p class="text-xs text-gray-500">{{ $sarpras['lokasi' ?? 'merk_'] }}</p>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-medium text-gray-700">{{ $sarpras['jumlah'] }}</span>
+                            <span class="text-xs text-gray-500">x</span>
                         </div>
                     </div>
-                    <span class="text-xs text-gray-700">{{ $sarpras['jumlah'] }} Peminjaman</span>
-                </li>
-                @empty
-                <li class="text-sm text-gray-500">Tidak ada data sarpras terpopuler.</li>
-                @endforelse
-            </ul>
+                    @empty
+                    <div class="flex flex-col items-center justify-center py-8 text-center text-gray-500">
+                         <svg class="w-12 h-12 mb-2 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                        <p class="text-sm">Belum ada data barang</p>
+                    </div>
+                    @endforelse
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    function updateFilters() {
-        const status = document.getElementById('status').value;
-        const periode = document.getElementById('periode').value;
+    function laporanPage() {
+        return {
+            openDropdown: false,
+            periode: '{{ $periode }}',
 
-        document.getElementById('statusInput').value = status;
-        document.getElementById('periodeInput').value = periode;
+            formatLabel(val) {
+                if (val === 'persemester') return 'Persemester';
+                return 'Perbulan';
+            },
 
-        document.getElementById('filterForm').submit();
+            setPeriode(val) {
+                this.periode = val;
+                this.openDropdown = false;
+
+                this.$nextTick(() => {
+                    document.getElementById('filterForm').submit();
+                });
+            }
+        }
     }
 </script>
 @endsection

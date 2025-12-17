@@ -85,7 +85,7 @@ class Ruangan extends Model
         $defaultLokasi = Lokasi::where('nama_lokasi', 'Gedung Teknik Informatika')->first();
         $defaultStatus = Status::where('nama_status', 'Tersedia')->first();
 
-        if(!$defaultLokasi){
+        if (!$defaultLokasi) {
             $defaultStatus = Lokasi::create(['nama_lokasi' => 'Gedung Teknik Informatika']);
         }
         $defaultLokasiId = $defaultLokasi->id_lokasi;
@@ -104,6 +104,12 @@ class Ruangan extends Model
                 'defaultLokasiId'
             )
         );
+    }
+
+    public static function LihatRuangan($id){
+        $r = Ruangan::findOrFail($id);
+
+        return view('admin.sarpras.ruangan.lihat_ruangan', compact('r'));
     }
 
     public static function Submit(Request $request, $imageFile = null)
@@ -132,15 +138,7 @@ class Ruangan extends Model
 
             $validated = $validator->validated();
 
-            $path = 'images/default.png';
-
-            if ($imageFile) {
-                $path = self::uploadImage($imageFile);
-            }
-
-            $validated['gambar'] = $path;
-
-            self::create($validated);
+            Ruangan::SubmitFile($validated, $request->file('gambar'));
 
             return redirect()
                 ->route('admin.sarpras.index')
@@ -155,6 +153,19 @@ class Ruangan extends Model
                 ->with('error', 'Gagal menambahkan ruangan: ' . $e->getMessage())
                 ->withInput();
         }
+    }
+
+    public static function SubmitFile(array $data, $imageFile = null)
+    {
+        $path = null;
+
+        if ($imageFile) {
+            $path = self::uploadImage($imageFile);
+        }
+
+        $data['gambar'] = $path;
+
+        return self::create($data);
     }
 
     public static function EditRuangan($id)
@@ -224,28 +235,6 @@ class Ruangan extends Model
                 ->withInput();
         }
     }
-
-    /**
-     * Handle logika Delete Ruangan dengan pengecekan status dan relasi
-     * Melempar Exception jika tidak memenuhi syarat
-     */
-    // public function hapus_Ruangan()
-    // {
-    //     // Cek 1: Apakah sedang dipinjam?
-    //     // Mengakses relasi status untuk cek nama status
-    //     if ($this->status && $this->status->nama_status === 'Dipinjam') {
-    //         throw new Exception('Ruangan sedang dipinjam dan tidak dapat dihapus.');
-    //     }
-
-    //     // Cek 2: Apakah ada riwayat peminjaman?
-    //     if ($this->peminjamans()->exists()) {
-    //         throw new Exception('Ruangan memiliki riwayat peminjaman dan tidak dapat dihapus.');
-    //     }
-
-    //     // Jika lolos, hapus gambar dan record
-    //     $this->removeImage();
-    //     return $this->delete();
-    // }
 
     public static function HapusRuangan($id)
     {

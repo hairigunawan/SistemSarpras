@@ -314,32 +314,25 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-    // 1. Siapkan data di luar function agar bisa diakses global
     const rawData = @json($chartData ?? []);
 
-    // Mapping Data
     const labels = rawData.map(item => item.label);
     const dataRuangan = rawData.map(item => item.ruangan);
     const dataProyektor = rawData.map(item => item.proyektor);
 
-    // Hitung total untuk Pie Chart
     const totalRuangan = dataRuangan.reduce((a, b) => a + b, 0);
     const totalProyektor = dataProyektor.reduce((a, b) => a + b, 0);
 
     let chartInstance = null;
 
-    // 2. Definisikan renderChart ke window agar bisa dipanggil Alpine.js dari HTML
     window.renderChart = function(type) {
         const ctx = document.getElementById('peminjamantChart').getContext('2d');
 
-        // Hancurkan chart lama jika ada
         if (chartInstance) {
             chartInstance.destroy();
         }
 
-        // Konfigurasi Dataset
         let datasetsConfig = [];
         let chartLabels = labels;
 
@@ -377,7 +370,6 @@
             ];
         }
 
-        // Buat Chart Baru
         chartInstance = new Chart(ctx, {
             type: type,
             data: {
@@ -423,7 +415,6 @@
         });
     };
 
-    // 3. Render chart default saat halaman dimuat
     document.addEventListener('DOMContentLoaded', function() {
         renderChart('line');
     });

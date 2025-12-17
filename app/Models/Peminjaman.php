@@ -60,20 +60,13 @@ class Peminjaman extends Model
     {
         return $this->ruangan->nama_ruangan ?? $this->proyektor->nama_proyektor ?? 'Tidak Diketahui';
     }
-
-    // --- SCOPES (Untuk Read/Filter) ---
-
-    /**
-     * Scope untuk filter pencarian dan status (Memindahkan logika query dari Controller)
-     */
+    
     public function scopeFilter($query, $filters)
     {
-        // Filter Status
         if (isset($filters['status']) && $filters['status'] !== 'all') {
             $query->where('status_peminjaman', $filters['status']);
         }
 
-        // Filter Pencarian
         if (isset($filters['search']) && $filters['search']) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
@@ -88,7 +81,6 @@ class Peminjaman extends Model
     }
 
     public static function HalamanUtama(Request $request){
-        // Menggunakan Scope 'filter' yang sudah dibuat di Model
         $peminjaman = Peminjaman::with(['user', 'ruangan', 'proyektor'])
             ->filter($request->only(['status', 'search']))
             ->latest()
@@ -99,9 +91,7 @@ class Peminjaman extends Model
 
         return view('admin.peminjaman.index', compact('peminjaman', 'role', 'status'));
     }
-    /**
-     * Scope untuk mengecek bentrok jadwal
-     */
+
     public function scopeIsConflicting($query, $data)
     {
         $isRuangan = !empty($data['id_ruangan']);
@@ -118,15 +108,11 @@ class Peminjaman extends Model
                 $start = "{$data['tanggal_pinjam']} {$data['jam_mulai']}";
                 $end   = "{$data['tanggal_pinjam']} {$data['jam_selesai']}";
 
-                // Logika overlap waktu SQL untuk 1 hari peminjaman
                 $q->whereRaw("CONCAT(tanggal_pinjam,' ',jam_selesai) > ?", [$start])
                     ->whereRaw("CONCAT(tanggal_pinjam,' ',jam_mulai) < ?", [$end]);
             });
     }
 
-    /**
-     * Create Logic: Validasi bisnis dan pembuatan data
-     */
     public static function submit(Request $request)
     {
         $validated = $request->validate([
@@ -169,7 +155,6 @@ class Peminjaman extends Model
             }
         }
 
-        // Siapkan data untuk pembuatan record
         $createData = array_merge($validated, [
             'id_akun' => $user->id_akun ?? Auth::id(),
             'nama_peminjam' => $user->nama,
@@ -178,7 +163,6 @@ class Peminjaman extends Model
             'id_lokasi' => $validated['id_lokasi'] ?? null,
         ]);
 
-        // Siapkan data untuk pengecekan konflik
         $conflictCheckData = array_merge($validated, [
             'id_ruangan' => $validated['id_ruangan'] ?? null,
             'id_proyektor' => $validated['id_proyektor'] ?? null,
@@ -194,9 +178,6 @@ class Peminjaman extends Model
         return self::create($createData);
     }
 
-    /**
-     * Approve Logic
-     */
     public function approve()
     {
         if ($this->status_peminjaman !== 'Menunggu') {
@@ -204,17 +185,11 @@ class Peminjaman extends Model
         }
 
         DB::transaction(function () {
-            // 1. Update Status Diri Sendiri
             $this->update(['status_peminjaman' => 'Disetujui']);
-
-            // 2. Update Status Fisik Sarpras (Via Helper)
             PeminjamanHelper::updateResourceStatus($this, 'Disetujui');
-
-            // 3. Auto Reject yang lain (Side Effect)
             PeminjamanHelper::autoRejectConflictingPeminjaman($this);
         });
 
-        // 4. Kirim Notifikasi
         $msg = "Pengajuan Disetujui\n" .
             "Sarpras: {$this->nama_sarpras}\n" .
             "Tanggal: {$this->tanggal_pinjam}\n" .
@@ -238,9 +213,6 @@ class Peminjaman extends Model
         self::sendNotification($this->user->nomor_telepon, $msg);
     }
 
-    /**
-     * Complete Logic
-     */
     public function complete()
     {
         if ($this->status_peminjaman !== 'Disetujui') {
@@ -255,8 +227,6 @@ class Peminjaman extends Model
         $msg = "Peminjaman Selesai\nTerima kasih telah menggunakan fasilitas.";
         self::sendNotification($this->user->nomor_telepon, $msg);
     }
-
-    // --- HELPER INTERNAL ---
 
     protected static function sendNotification($number, $message)
     {
@@ -301,7 +271,7 @@ class Peminjaman extends Model
                 'nama_peminjam' => $peminjaman->user->nama ?? 'N/A',
                 'jenis_kegiatan' => $peminjaman->jenis_kegiatan,
                 'tanggal_pinjam' => $peminjaman->tanggal_pinjam,
-                'tanggal_kembali' => $peminjaman->tanggal_pinjam, 
+                'tanggal_kembali' => $peminjaman->tanggal_pinjam,
                 'jam_mulai' => $peminjaman->jam_mulai,
                 'jam_selesai' => $peminjaman->jam_selesai,
                 'jumlah_peserta' => $peminjaman->jumlah_peserta,

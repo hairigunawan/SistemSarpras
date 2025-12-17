@@ -91,7 +91,7 @@ class Proyektor extends Model
         $p = Proyektor::findOrFail($id);
         $s = Status::all();
 
-        return view('sarpras.proyektor.lihat_proyektor', compact('p', 's'));
+        return view('admin.sarpras.proyektor.lihat_proyektor', compact('p', 's'));
     }
 
     public static function EditProyektor($id)

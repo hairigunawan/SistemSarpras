@@ -31,12 +31,10 @@ class SocialAuthController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            // Ambil data user dari Google
             /** @var \Laravel\Socialite\Contracts\Provider $socialiteDriver */
             /** @var GoogleProvider $socialiteDriver */
             $socialiteDriver = Socialite::driver('google');
 
-            // Debug: Simpan informasi driver untuk debugging
             Log::info('Google Socialite Driver Info', [
                 'driver_class' => get_class($socialiteDriver),
                 'stateless' => true,
@@ -44,7 +42,6 @@ class SocialAuthController extends Controller
 
             $googleUser = $socialiteDriver->stateless()->user();
 
-            // Cek apakah user sudah ada berdasarkan email
             $existingUser = User::where('email', $googleUser->getEmail())->first();
 
             if ($existingUser) {

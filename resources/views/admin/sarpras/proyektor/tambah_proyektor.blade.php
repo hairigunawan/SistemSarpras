@@ -35,7 +35,7 @@
 
                 <div>
                     <label for="kode_proyektor" class="block text-sm font-medium text-gray-700">Kode Proyektor</label>
-                    <input type="text" name="kode_proyektor" id="kode_proyektor" placeholder="EB-2255" value="{{ old('kode_proyektor') }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" name="kode_proyektor" id="kode_proyektor" placeholder="EB-2255" value="{{ old('kode_proyektor') }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" oninput="this.value = this.value.toUpperCase().trimStart()">
                     @error('kode_proyektor') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 

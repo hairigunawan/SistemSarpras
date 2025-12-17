@@ -108,4 +108,23 @@ class Kriteria extends Model
         return redirect()->route('admin.kriteria.index')
             ->with('success', 'Kriteria berhasil ditambahkan.');
     }
+    public static function UpdateKriteria(Request $request, Kriteria $kriteria){
+        $validated = $request->validate([
+            'nama_kriteria' => 'required|string|max:100|unique:kriteria,nama_kriteria,' . $kriteria->id,
+            'tipe' => 'required|in:benefit,cost',
+            'bobot' => 'required|numeric|min:0|max:1',
+        ]);
+
+        $kriteria->update($validated);
+
+        return redirect()->route('admin.kriteria.index')
+            ->with('success', 'Kriteria berhasil diperbarui.');
+    }
+
+    public static function DeleteKriteria(Kriteria $kriteria){
+        $kriteria->delete();
+
+        return redirect()->route('admin.kriteria.index')
+            ->with('success', 'Kriteria berhasil dihapus.');
+    }
 }

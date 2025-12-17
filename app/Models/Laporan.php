@@ -121,7 +121,7 @@ class Laporan extends Model
                 $proyektor = Proyektor::find($item->id_proyektor);
                 return [
                     'nama' => $proyektor->nama_proyektor ?? 'N/A',
-                    'lokasi' => $proyektor->merk ?? 'N/A',
+                    'merk' => $proyektor->merk ?? 'N/A',
                     'jumlah' => $item->total,
                     'type' => 'proyektor',
                 ];
@@ -132,7 +132,6 @@ class Laporan extends Model
             ->take(3)
             ->values();
 
-        // Ambil data untuk laporan
         $topSarprasNama = 'N/A';
         $topSarprasKode = 'N/A';
 
@@ -162,6 +161,7 @@ class Laporan extends Model
             $query->where('status', $status);
         }
 
+        $Lokasi = Lokasi::all();
         $peminjaman = $query->latest()->get();
 
         return view('admin.laporan.index', [
@@ -175,6 +175,7 @@ class Laporan extends Model
             'laporan' => $laporan,
             'status' => $status,
             'periode' => $periode,
+            'Lokasi' => $Lokasi,
             'periodeLabel' => $this->getPeriodeLabel($periode),
         ]);
     }

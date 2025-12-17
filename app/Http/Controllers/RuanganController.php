@@ -29,9 +29,7 @@ class RuanganController extends Controller
 
     public function lihat_ruangan($id)
     {
-        $r = Ruangan::findOrFail($id);
-
-        return view('admin.sarpras.ruangan.lihat_ruangan', compact('r'));
+        return Ruangan::LihatRuangan($id);
     }
 
     public function edit_ruangan($id)
@@ -47,6 +45,6 @@ class RuanganController extends Controller
 
     public function destroy($id)
     {
-        return Ruangan::HapusRuangan($id);   
+        return Ruangan::HapusRuangan($id);
     }
 }

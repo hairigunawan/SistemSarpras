@@ -1,8 +1,6 @@
-@extends('layouts.guest')
+<?php $__env->startSection('title', 'Tentang Kami'); ?>
 
-@section('title', 'Tentang Kami')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <style>
         .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
         .delay-200 { animation-delay: 0.2s; }
@@ -19,7 +17,7 @@
                         <!-- Abstract Image Composition -->
                         <div class="relative lg:pl-20 fade-in-up delay-200">
                             <div class="aspect-[4/3] bg-gray-50 rounded-2xl overflow-hidden shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500 border border-gray-100">
-                                <img src="{{ asset('storage/images/tentang_kami.jpeg') }}" alt="Kolaborasi Tim" class="w-full h-full object-cover opacity-90 grayscale hover:grayscale-0 transition-all duration-500">
+                                <img src="<?php echo e(asset('storage/images/tentang_kami.jpeg')); ?>" alt="Kolaborasi Tim" class="w-full h-full object-cover opacity-90 grayscale hover:grayscale-0 transition-all duration-500">
                             </div>
                         </div>
                         <div>
@@ -218,7 +216,7 @@
                 <!-- Image/Visual -->
                 <div class="order-1 lg:order-2">
                     <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-100 aspect-[5/4]">
-                        <img src="{{ asset('storage/images/teknologi informasi.jpeg') }}"
+                        <img src="<?php echo e(asset('storage/images/teknologi informasi.jpeg')); ?>"
                              alt="Mahasiswa Teknologi Informasi"
                              class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent"></div>
@@ -231,4 +229,6 @@
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.guest', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\SIMPERSITE\SistemSarpras\resources\views/profile/tentang_kami.blade.php ENDPATH**/ ?>

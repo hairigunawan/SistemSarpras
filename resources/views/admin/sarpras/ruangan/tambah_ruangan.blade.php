@@ -31,7 +31,7 @@
                 <!-- Kode Ruangan -->
                 <div>
                     <label for="kode_ruangan" class="block text-sm font-medium text-gray-700">Kode Ruangan</label>
-                    <input type="text" name="kode_ruangan" id="kode_ruangan" placeholder="C-01" value="{{ old('kode_ruangan') }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                    <input type="text" name="kode_ruangan" id="kode_ruangan" placeholder="C-01" value="{{ old('kode_ruangan') }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" oninput="this.value = this.value.toUpperCase().trimStart()">
                     @error('kode_ruangan') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 

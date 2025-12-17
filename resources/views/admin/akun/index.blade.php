@@ -103,10 +103,6 @@
                                     <a href="{{ route('admin.akun.lihat_akun', $akuns->id_akun) }}"
                                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600
                                            bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-150">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
                                         Detail
                                     </a>
                                 </td>
@@ -117,11 +113,7 @@
                 </div>
             @else
                 <div class="text-center py-12">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-slate-400 mx-auto mb-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0ZM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766Z"/>
-                    </svg>
                     <p class="text-slate-600 font-medium">Tidak ada akun ditemukan</p>
-                    <p class="text-slate-500 text-sm mt-1">Mulai dengan membuat akun baru</p>
                 </div>
             @endif
         </div>
