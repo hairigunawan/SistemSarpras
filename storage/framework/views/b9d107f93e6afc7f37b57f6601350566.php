@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - SIMPERSITE</title>
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
 
@@ -12,7 +12,7 @@
 
     <div class="relative flex flex-col justify-center items-center text-white p-10 md:p-12 bg-gradient-to-br from-blue-600 to-indigo-600">
 
-    <img src="{{ asset('storage/images/GKT.jpg') }}"
+    <img src="<?php echo e(asset('storage/images/GKT.jpg')); ?>"
         alt="Gedung Kampus"
         class="absolute inset-0 w-full h-full object-cover opacity-90">
 
@@ -31,21 +31,21 @@
       <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Masuk ke Akun Anda</h2>
       <p class="text-gray-500 text-sm text-center mb-6">Gunakan email kampus untuk masuk ke sistem</p>
 
-      @if (session('error'))
+      <?php if(session('error')): ?>
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
           <strong class="font-semibold">Error!</strong>
-          <span class="block text-sm">{{ session('error') }}</span>
+          <span class="block text-sm"><?php echo e(session('error')); ?></span>
         </div>
-      @endif
+      <?php endif; ?>
 
-      @if (session('success'))
+      <?php if(session('success')): ?>
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
           <strong class="font-semibold">Sukses!</strong>
-          <span class="block text-sm">{{ session('success') }}</span>
+          <span class="block text-sm"><?php echo e(session('success')); ?></span>
         </div>
-      @endif
+      <?php endif; ?>
 
-      <a href="{{ route('auth.google') }}"
+      <a href="<?php echo e(route('auth.google')); ?>"
          class="w-full flex justify-center items-center gap-2 py-2.5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-600 hover:bg-gray-50 mb-5 transition">
         <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5">
         Masuk dengan Google
@@ -57,12 +57,12 @@
         <div class="flex-grow border-t border-gray-300"></div>
       </div>
 
-      <form method="POST" action="{{ route('login') }}" class="space-y-5">
-        @csrf
+      <form method="POST" action="<?php echo e(route('login')); ?>" class="space-y-5">
+        <?php echo csrf_field(); ?>
 
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input id="email" name="email" type="email" placeholder="Email" value="{{ old('email') }}" required
+          <input id="email" name="email" type="email" placeholder="Email" value="<?php echo e(old('email')); ?>" required
             class="w-full border rounded-lg py-2.5 text-sm px-3 shadow-sm focus:bg-blue-50  transition">
         </div>
 
@@ -89,7 +89,7 @@
             <input type="checkbox" class="mr-2 rounded border-gray-300">
             Ingat saya
           </label>
-          <a href="{{ route('password.forgot') }}" class="text-blue-600 hover:underline">Lupa password?</a>
+          <a href="<?php echo e(route('password.forgot')); ?>" class="text-blue-600 hover:underline">Lupa password?</a>
         </div>
 
         <button type="submit"
@@ -99,7 +99,7 @@
 
         <p class="text-center text-sm text-gray-600 mt-5">
           Belum punya akun?
-          <a href="{{ route('register') }}" class="text-blue-600 font-semibold hover:text-blue-800 transition">Daftar Sekarang</a>
+          <a href="<?php echo e(route('register')); ?>" class="text-blue-600 font-semibold hover:text-blue-800 transition">Daftar Sekarang</a>
         </p>
       </form>
     </div>
@@ -139,3 +139,4 @@ toggleLoginPassword.addEventListener('click', function() {
 });
 </script>
 </html>
+<?php /**PATH D:\SIMPERSITE\SistemSarpras\resources\views/auth/login.blade.php ENDPATH**/ ?>

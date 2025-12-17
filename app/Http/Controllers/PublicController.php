@@ -93,7 +93,6 @@ class PublicController extends Controller
         $ruanganTersedia = $resources['ruangan']->sortBy('nama_ruangan');
         $proyektorTersedia = $resources['proyektor']->sortBy('nama_proyektor');
 
-        // Ambil semua ruangan (termasuk yang sedang dipinjam) untuk proyektor
         $allRuangan = Ruangan::with('lokasi')->orderBy('nama_ruangan')->get();
 
         $prioritasOptions = Prioritas::orderBy('nama_prioritas', 'asc')->get();
@@ -120,8 +119,6 @@ class PublicController extends Controller
                 $request->merge(['id_lokasi' => $lokasiId]);
             }
 
-            // MENGGUNAKAN Peminjaman::submit()
-            // Ini akan otomatis mengecek Role User & Status 'Disetujui'
             Peminjaman::submit($request);
 
             $successMessage = 'Peminjaman berhasil diajukan. Menunggu persetujuan admin.';
@@ -161,19 +158,14 @@ class PublicController extends Controller
         $jenisSarprasFilter = $request->query('jenis_sarpras', 'all');
         $lokasiRuanganFilter = $request->query('lokasi_ruangan', 'all');
 
-        // 2. Siapkan wadah kosong (Collection) agar tidak error di View jika tidak ada data
         $r = collect();
         $p = collect();
 
-        // 3. Logika Filter RUANGAN
-        // Jalankan jika user memilih 'all' atau 'ruangan'
         if ($jenisSarprasFilter === 'all' || $jenisSarprasFilter === 'ruangan') {
             $queryRuangan = Ruangan::with('status', 'lokasi');
 
-            // Gunakan whereHas untuk memfilter berdasarkan relasi 'lokasi'
             if ($jenisSarprasFilter === 'ruangan' && $lokasiRuanganFilter !== 'all') {
                 $queryRuangan->whereHas('lokasi', function ($q) use ($lokasiRuanganFilter) {
-                    // 'id_lokasi' ini merujuk ke primary key di tabel lokasis (bukan ruangans)
                     $q->where('id_lokasi', $lokasiRuanganFilter);
                 });
             }
@@ -181,12 +173,9 @@ class PublicController extends Controller
             $r = $queryRuangan->latest()->paginate(9);
         }
 
-        // 4. Logika Filter PROYEKTOR
-        // Jalankan jika user memilih 'all' atau 'proyektor'
         if ($jenisSarprasFilter === 'all' || $jenisSarprasFilter === 'proyektor') {
             $queryProyektor = Proyektor::with('status');
 
-            // Filter berdasarkan status jika ada
             $namaStatus = $request->input('nama_status');
             if ($namaStatus) {
                 $statusId = Status::where('nama_status', $namaStatus)->value('id_status');
@@ -195,7 +184,6 @@ class PublicController extends Controller
                 }
             }
 
-            // Filter berdasarkan pencarian jika ada
             $search = $request->input('search');
             if ($search) {
                 $queryProyektor->where('nama_proyektor', 'like', "%{$search}%");
@@ -204,11 +192,9 @@ class PublicController extends Controller
             $p = $queryProyektor->latest()->paginate(9);
         }
 
-        // 5. Data Pendukung untuk Dropdown
         $lokasis = Lokasi::orderBy('nama_lokasi', 'asc')->get()->unique('nama_lokasi');
         $statuses = Status::all();
 
-        // Reset filter lokasi ke 'all' jika user pindah ke tab 'proyektor' (untuk UI saja)
         if ($jenisSarprasFilter === 'proyektor') {
             $lokasiRuanganFilter = 'all';
         }
@@ -235,7 +221,7 @@ class PublicController extends Controller
                 $feedbacks = Feedback::with('user')
                     ->where('id_ruangan', $id)
                     ->orderBy('created_at', 'desc')
-                    ->get();
+                    ->paginate(10);
             } elseif ($type === 'proyektor') {
                 $sarpras = Proyektor::with('status')->findOrFail($id);
                 $this->checkProyektorStatus($id);
@@ -277,10 +263,47 @@ class PublicController extends Controller
         }
     }
 
-    public function showProfile()
+    public function showProfile(Request $request)
     {
         $user = Auth::user();
-        return view('public.profile.index', compact('user'));
+        $statusFilter = $request->query('status', 'all');
+
+        $query = Peminjaman::with(['ruangan', 'proyektor'])
+            ->where('id_akun', $user->id_akun)
+            ->latest();
+
+        if ($statusFilter !== 'all') {
+            $query->where('status_peminjaman', $statusFilter);
+        }
+
+        $peminjaman = $query->get();
+
+        return view('public.profile.index', compact('user', 'peminjaman'));
+    }
+
+    public function editProfile()
+    {
+        $user = Auth::user();
+        return view('public.profile.edit', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'nomor_telepon' => 'required|string|regex:/^08[0-9]{8,12}$/|unique:users,nomor_telepon,' . $user->id_akun . ',id_akun',
+        ], [
+            'nomor_telepon.required' => 'Nomor telepon wajib diisi.',
+            'nomor_telepon.string' => 'Nomor telepon harus berupa teks.',
+            'nomor_telepon.regex' => 'Format nomor telepon tidak valid. Harus dimulai dengan 08 dan diikuti 10-12 digit angka.',
+            'nomor_telepon.unique' => 'Nomor telepon ini sudah digunakan oleh akun lain.',
+        ]);
+
+        $user->nomor_telepon = $request->nomor_telepon;
+        $user->save();
+
+        return redirect()->route('public.profile.index')->with('success', 'Nomor telepon berhasil diperbarui!');
     }
 
     public function riwayat_peminjaman()
@@ -337,6 +360,6 @@ class PublicController extends Controller
 
     public function tentang_kami()
     {
-        return view('profile.tentang_kami');
+        return view('public.tentang_kami.index');
     }
 }

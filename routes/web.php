@@ -161,7 +161,9 @@ Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
     Route::get('/beranda/index', [PublicController::class, 'index'])->name('public.beranda.index.auth');
 
     //Profile
-    Route::get('/profile/profile', [PublicController::class, 'profile'])->name('public.profile.index');
+    Route::get('/profile', [PublicController::class, 'showProfile'])->name('public.profile.index');
+    Route::get('/profile/edit', [PublicController::class, 'editProfile'])->name('public.profile.edit');
+    Route::post('/profile/update', [PublicController::class, 'updateProfile'])->name('public.profile.update');
 
     //Peminjaman
     Route::get('/peminjaman/create', [PublicController::class, 'createPeminjaman'])->name('public.peminjaman.create.auth');

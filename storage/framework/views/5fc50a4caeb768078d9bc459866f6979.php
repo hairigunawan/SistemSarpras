@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - SIMPERSITE</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 </head>
 
 <body class="min-h-screen flex flex-col justify-between bg-gradient-to-br from-blue-50 to-white">
@@ -16,7 +16,7 @@
             <!-- ================= LEFT SIDE ================= -->
             <div class="relative h-72 md:h-auto flex items-center justify-center text-white">
 
-                <img src="{{ asset('storage/images/GKT.jpg') }}"
+                <img src="<?php echo e(asset('storage/images/GKT.jpg')); ?>"
                      class="absolute inset-0 w-full h-full object-cover opacity-90">
 
                 <div class="absolute inset-0 bg-black/40"></div>
@@ -37,7 +37,7 @@
                 <p class="text-gray-600 mb-6">Gunakan email kampus untuk mendaftar sistem</p>
 
                 <!-- Google -->
-                <a href="{{ route('auth.google') }}"
+                <a href="<?php echo e(route('auth.google')); ?>"
                    class="w-full flex items-center justify-center border rounded-xl py-3 text-gray-700 font-medium shadow-sm hover:bg-gray-50 transition">
                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5">
                     <span class="ml-3">Daftar dengan Google</span>
@@ -51,26 +51,26 @@
                 </div>
 
                 <!-- FORM -->
-                <form method="POST" action="{{ route('register') }}">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('register')); ?>">
+                    <?php echo csrf_field(); ?>
 
                     <div class="mb-4">
                         <label class="font-medium text-gray-700 text-sm">Nama Lengkap</label>
-                        <input type="text" name="nama" value="{{ old('nama') }}"
+                        <input type="text" name="nama" value="<?php echo e(old('nama')); ?>"
                             class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-1 focus:ring-blue-400 outline-none"
                             placeholder="Masukkan nama lengkap" required>
                     </div>
 
                     <div class="mb-4">
                         <label class="font-medium text-gray-700 text-sm">Email</label>
-                        <input type="email" name="email" value="{{ old('email') }}"
+                        <input type="email" name="email" value="<?php echo e(old('email')); ?>"
                             class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-1 focus:ring-blue-400 outline-none"
                             placeholder="example@email.com" required>
                     </div>
 
                     <div class="mb-4">
                         <label class="font-medium text-gray-700 text-sm">Nomor WhatsApp</label>
-                        <input type="tel" name="nomor_telepon" value="{{ old('nomor_telepon') }}"
+                        <input type="tel" name="nomor_telepon" value="<?php echo e(old('nomor_telepon')); ?>"
                             class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-1 focus:ring-blue-400 outline-none"
                             placeholder="081234567890" required>
                     </div>
@@ -132,7 +132,7 @@
 
                 <p class="text-gray-600 mt-6 text-center text-sm">
                     Sudah punya akun?
-                    <a href="{{ route('login') }}" class="text-blue-600 font-semibold hover:underline">
+                    <a href="<?php echo e(route('login')); ?>" class="text-blue-600 font-semibold hover:underline">
                         Masuk Sekarang
                     </a>
                 </p>
@@ -145,6 +145,7 @@
         © 2025 SIMPERSITE. All rights reserved.
     </p>
 
-    @vite('resources/js/hidenPassword.js')
+    <?php echo app('Illuminate\Foundation\Vite')('resources/js/hidenPassword.js'); ?>
 </body>
 </html>
+<?php /**PATH D:\SIMPERSITE\SistemSarpras\resources\views/auth/register.blade.php ENDPATH**/ ?>

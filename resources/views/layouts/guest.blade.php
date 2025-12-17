@@ -21,10 +21,7 @@
         </footer>
     </div>
 
-    <!-- Notification Container -->
     <div id="notification-container" class="fixed top-4 right-4 z-50 space-y-2 max-w-sm w-full sm:max-w-md">
-
-        {{-- Alert untuk errors (validasi) --}}
         @if($errors->any())
             <div class="notification notification-enter bg-red-500 text-white p-4 rounded-lg shadow-lg flex items-start space-x-3">
                 <div class="flex-shrink-0">
@@ -48,7 +45,6 @@
             </div>
         @endif
 
-        {{-- Alert untuk session error --}}
         @if(session('error'))
             <div class="notification notification-enter bg-red-500 text-white p-4 rounded-lg shadow-lg flex items-start space-x-3">
                 <div class="flex-shrink-0">
@@ -68,7 +64,6 @@
             </div>
         @endif
 
-        {{-- Alert untuk session success --}}
         @if(session('success'))
             <div class="notification notification-enter bg-green-500 text-white p-4 rounded-lg shadow-lg flex items-start space-x-3">
                 <div class="flex-shrink-0">
@@ -88,7 +83,6 @@
             </div>
         @endif
 
-        {{-- Alert untuk session warning (opsional) --}}
         @if(session('warning'))
             <div class="notification notification-enter bg-yellow-500 text-white p-4 rounded-lg shadow-lg flex items-start space-x-3">
                 <div class="flex-shrink-0">
@@ -108,7 +102,6 @@
             </div>
         @endif
 
-        {{-- Alert untuk session info (opsional) --}}
         @if(session('info'))
             <div class="notification notification-enter bg-blue-500 text-white p-4 rounded-lg shadow-lg flex items-start space-x-3">
                 <div class="flex-shrink-0">
@@ -132,8 +125,6 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    {{-- Auto-hide notification setelah 5 detik --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const notifications = document.querySelectorAll('.notification');

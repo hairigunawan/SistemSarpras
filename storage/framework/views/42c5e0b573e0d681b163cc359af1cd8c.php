@@ -7,7 +7,7 @@
     <div class="relative w-full h-[500px] md:h-[600px] overflow-hidden">
         <!-- Background Image with Parallax Effect -->
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105"
-             style="background-image: url('<?php echo e(asset('storage/images/GKT.jpg')); ?>');">
+             style="background-image: url('<?php echo e(asset('storage/images/gedung TI1.jpeg')); ?>');">
         </div>
 
         <!-- Gradient Overlay -->

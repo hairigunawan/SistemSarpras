@@ -81,16 +81,16 @@
 
                                 <div class="py-1">
                                     @if (Auth::user()->userRole && Auth::user()->userRole->nama_role == 'Admin')
-                                        <a href="{{ route('admin.dashboard') }}" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#179ACE]">
+                                        <a href="{{ route('admin.dashboard') }}" class="group flex rounded-lg items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#179ACE]">
                                             <i class="fa-solid fa-gauge-high w-5 mr-2 text-gray-400 group-hover:text-[#179ACE]"></i>
                                             Dashboard Admin
                                         </a>
                                     @else
-                                        <a href="{{ route('public.peminjaman.riwayat_peminjaman') }}" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#179ACE]">
+                                        <a href="{{ route('public.peminjaman.riwayat_peminjaman') }}" class="group flex rounded-lg items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#179ACE]">
                                             <i class="fa-solid fa-clock-rotate-left w-5 mr-2 text-gray-400 group-hover:text-[#179ACE]"></i>
                                             Riwayat Peminjaman
                                         </a>
-                                        <a href="{{ route('public.profile.index') }}" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#179ACE]">
+                                        <a href="{{ route('public.profile.index') }}" class="group flex items-center rounded-lg px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#179ACE]">
                                             <i class="fa-solid fa-user w-5 mr-2 text-gray-400 group-hover:text-[#179ACE]"></i>
                                             Profil Saya
                                         </a>
@@ -100,7 +100,7 @@
                                 <div class="py-1">
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                        <button type="submit" class="flex w-full items-center px-4 py-2 text-sm text-red-600 rounded-lg hover:bg-red-50">
                                             <i class="fa-solid fa-arrow-right-from-bracket w-5 mr-2"></i>
                                             Logout
                                         </button>
