@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Role;
 use App\Models\User;
@@ -23,6 +22,7 @@ class AdminSeeder extends Seeder
             [
                 'nama' => 'Admin',
                 'password' => Hash::make('password'),
+                'nomor_telepon' => '0878-6440-6702',
                 'role_id' => $adminRole->id_role,
                 'avatar' => asset('favicon.ico')
             ]

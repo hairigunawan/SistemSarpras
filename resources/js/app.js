@@ -1,4 +1,5 @@
 import './bootstrap';
+import './tolak.js'; // Import script untuk menangani form tolak
 import flatpickr from 'flatpickr';
 import { Indonesian } from 'flatpickr/dist/l10n/id.js';
 import 'flatpickr/dist/flatpickr.min.css';

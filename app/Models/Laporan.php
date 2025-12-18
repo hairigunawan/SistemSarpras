@@ -32,11 +32,10 @@ class Laporan extends Model
         return $this->hasMany(Peminjaman::class, 'id_laporan');
     }
 
-    public function HalamanUtama(Request $request){
-        // Default periode set ke 'persemester' agar sesuai keinginan Anda
+    public function HalamanUtama(Request $request)
+    {
         $periode = $request->get('periode', 'persemester');
 
-        // Inisialisasi variabel tanggal
         $startDate = null;
         $endDate = null;
 
@@ -61,18 +60,17 @@ class Laporan extends Model
 
         $waktuRataRata = Peminjaman::selectRaw("
             AVG(
-                TIMESTAMPDIFF(
-                    HOUR,
-                    CONCAT(tanggal_pinjam, ' ', jam_mulai),
-                    CONCAT(tanggal_pinjam, ' ', jam_selesai)
+                CAST(
+                    (CAST(SUBSTR(jam_selesai, 1, 2) AS INTEGER) - CAST(SUBSTR(jam_mulai, 1, 2) AS INTEGER))
+                    +
+                    (CAST(SUBSTR(jam_selesai, 4, 2) AS INTEGER) - CAST(SUBSTR(jam_mulai, 4, 2) AS INTEGER)) / 60.0
+                    AS REAL
                 )
             ) as avg_jam
         ")
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->value('avg_jam') ?? 0;
 
-
-        // Hitung peminjam teratas (top 3) dengan filter periode
         $peminjamTeratas = Peminjaman::select('id_akun', DB::raw('count(*) as total'))
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->groupBy('id_akun')
@@ -88,10 +86,8 @@ class Laporan extends Model
                 ];
             });
 
-        // Hitung sarpras terpopuler (top 3) dengan filter periode
         $sarprasTerpopuler = collect();
 
-        // Hitung untuk ruangan
         $ruanganPopuler = Peminjaman::whereNotNull('id_ruangan')
             ->select('id_ruangan', DB::raw('count(*) as total'))
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
@@ -109,7 +105,6 @@ class Laporan extends Model
                 ];
             });
 
-        // Hitung untuk proyektor
         $proyektorPopuler = Peminjaman::whereNotNull('id_proyektor')
             ->select('id_proyektor', DB::raw('count(*) as total'))
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
@@ -141,7 +136,6 @@ class Laporan extends Model
             $topSarprasKode = $firstSarpras['lokasi'];
         }
 
-        // Update atau create laporan dengan periode
         $periodeLabel = $this->getPeriodeLabel($periode);
         $laporan = Laporan::updateOrCreate(
             ['periode' => $periodeLabel],

@@ -30,6 +30,27 @@ class LoginController extends Controller
     }
     public function register(Request $request)
     {
+        // Cek apakah email sudah terdaftar
+        $existingUser = User::where('email', $request->email)->first();
+
+        if ($existingUser) {
+            if (!$existingUser->is_verified) {
+                // Email sudah terdaftar tapi belum diverifikasi
+                return back()
+                    ->withErrors(['email' => 'Email ini sudah terdaftar tapi belum diverifikasi.'])
+                    ->withInput()
+                    ->with('email_exists', $request->email)
+                    ->with('email_verified', false);
+            } else {
+                // Email sudah terdaftar dan sudah diverifikasi
+                return back()
+                    ->withErrors(['email' => 'Email ini sudah terdaftar di sistem. Silakan login atau gunakan email lain.'])
+                    ->withInput()
+                    ->with('email_exists', $request->email)
+                    ->with('email_verified', true);
+            }
+        }
+
         $u = User::Register($request);
 
         if ($u instanceof \Illuminate\Http\RedirectResponse) {
@@ -40,12 +61,10 @@ class LoginController extends Controller
             return back()->withErrors(['register' => 'Pendaftaran gagal.'])->withInput();
         }
 
-        if ($u->relationLoaded('userRole') && $u->userRole) {
-            if (in_array($u->userRole->nama_role, ['Dosen', 'Mahasiswa'])) {
-                return redirect()->route('public.beranda.index.auth');
-            }
-        }
+        // Simpan role ke session untuk digunakan di halaman verifikasi
+        session(['role' => $request->role]);
 
-        return redirect()->route('public.beranda.index');
+        // Arahkan ke halaman tunggu verifikasi
+        return redirect()->route('verification.waiting')->with('success', 'Pendaftaran berhasil! Silakan verifikasi email Anda.');
     }
 }

@@ -15,54 +15,71 @@ class SarprasController extends Controller
 {
     public function index(Request $request, $type = null, $id = null)
     {
-        // Query untuk ruangan dengan filter yang sama di RuanganController
-        $r = Ruangan::filter($request->all())
-            ->latest()
-            ->paginate(9);
-
-        // Query untuk proyektor
-        $p = Proyektor::with('status');
-
-        if (isset($request->nama_status) && $request->nama_status) {
-            $statusId = Status::where('nama_status', $request->nama_status)->value('id_status');
-            $p->where('id_status', $statusId);
-        }
-
-        if (isset($request->search) && $request->search) {
-            $p->where('nama_proyektor', 'like', '%' . $request->search . '%');
-        }
-
-        $p = $p->latest()->paginate(9);
-
         $this->updateProyektorStatus();
-
         $s = Status::all();
 
-        return view('admin.sarpras.index', compact('r', 's', 'p'));
+        $defaultStatusId = Status::where('nama_status', 'Tersedia')->value('id_status');
+
+        $rQuery = Ruangan::filter($request->all())
+            ->select(
+                DB::raw("'ruangan' as type"),
+                'id_ruangan as id',
+                'nama_ruangan as nama',
+                'created_at',
+                DB::raw($defaultStatusId . ' as id_status'),
+                DB::raw("'Tersedia' as nama_status")
+            );
+
+        // Query Proyektor - memiliki id_status
+        $pQuery = Proyektor::select(
+            DB::raw("'proyektor' as type"),
+            'id_proyektor as id',
+            'nama_proyektor as nama',
+            'created_at',
+            'id_status',
+            DB::raw("(SELECT nama_status FROM statuses WHERE id_status = proyektors.id_status LIMIT 1) as nama_status")
+        );
+
+        // Terapkan filter status hanya untuk Proyektor
+        if (isset($request->nama_status) && $request->nama_status) {
+            $statusId = Status::where('nama_status', $request->nama_status)->value('id_status');
+            $pQuery->where('id_status', $statusId);
+        }
+
+        // Terapkan filter search
+        if (isset($request->search) && $request->search) {
+            $search = '%' . $request->search . '%';
+            $rQuery->where('nama_ruangan', 'like', $search);
+            $pQuery->where('nama_proyektor', 'like', $search);
+        } elseif ($type && $id) {
+            if ($type === 'status') {
+                $pQuery->where('id_status', $id);
+            }
+        }
+
+        // Gabungkan dengan UNION dan paginate
+        $items = $rQuery->union($pQuery)
+            ->orderByDesc('created_at')
+            ->paginate(12);
+
+        return view('admin.sarpras.index', compact('s', 'items'));
     }
 
-    /**
-     * Perbarui status proyektor berdasarkan peminjaman aktif
-     */
     private function updateProyektorStatus()
     {
-        // Gunakan transaction untuk menghindari race condition
         DB::transaction(function () {
             $idStatusTersedia = Status::where('nama_status', 'Tersedia')->first()->id_status ?? null;
             $idStatusDipakai = Status::where('nama_status', 'Dipakai')->first()->id_status ?? null;
             $idStatusDipinjam = Status::where('nama_status', 'Dipinjam')->first()->id_status ?? null;
 
             if (is_null($idStatusTersedia) || is_null($idStatusDipakai) || is_null($idStatusDipinjam)) {
-                // Log error atau throw exception jika status penting tidak ditemukan
                 Log::error('Status penting tidak ditemukan: Tersedia=' . $idStatusTersedia . ', Dipakai=' . $idStatusDipakai . ', Dipinjam=' . $idStatusDipinjam);
                 return;
             }
 
-            // Dapatkan semua proyektor dengan lock untuk update
             $proyektors = Proyektor::lockForUpdate()->get();
 
             foreach ($proyektors as $proyektor) {
-                // Cek apakah ada peminjaman aktif untuk proyektor ini
                 $activePeminjaman = \App\Models\Peminjaman::where('id_proyektor', $proyektor->id_proyektor)
                     ->whereIn('status_peminjaman', ['Disetujui', 'Dipinjam'])
                     ->where(function ($query) {
@@ -74,14 +91,12 @@ class SarprasController extends Controller
 
                 // Update status proyektor
                 if ($activePeminjaman) {
-                    // Jika ada peminjaman aktif, status harus 'Dipakai' atau 'Dipinjam'
                     $targetStatus = $activePeminjaman->status_peminjaman === 'Disetujui' ? $idStatusDipakai : $idStatusDipinjam;
                     if ($proyektor->id_status != $targetStatus) {
                         $proyektor->update(['id_status' => $targetStatus]);
                         Log::info("Status proyektor {$proyektor->nama_proyektor} diubah ke " . $activePeminjaman->status_peminjaman);
                     }
                 } else {
-                    // Jika tidak ada peminjaman aktif, status harus 'Tersedia'
                     if ($proyektor->id_status != $idStatusTersedia) {
                         $proyektor->update(['id_status' => $idStatusTersedia]);
                         Log::info("Status proyektor {$proyektor->nama_proyektor} diubah ke Tersedia");

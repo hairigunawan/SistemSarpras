@@ -415,6 +415,30 @@ unset($__errorArgs, $__bag); ?>
         rejectForm.reset();
     }
 
+    // Handle form submission
+    rejectForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const alasan = document.querySelector('textarea[name="alasan_penolakan"]').value.trim();
+
+        if (!alasan) {
+            alert('Silakan masukkan alasan penolakan.');
+            return;
+        }
+
+        if (confirm('Apakah Anda yakin ingin menolak peminjaman ini?')) {
+            this.submit();
+        }
+    });
+
+    // Close modal ketika klik di area overlay
+    document.addEventListener('DOMContentLoaded', function() {
+        const overlay = document.querySelector('.fixed.inset-0.bg-gray-500');
+        if (overlay) {
+            overlay.addEventListener('click', closeModal);
+        }
+    });
+</script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\SIMPERSITE\SistemSarpras\resources\views/admin/peminjaman/lihat_peminjaman.blade.php ENDPATH**/ ?>

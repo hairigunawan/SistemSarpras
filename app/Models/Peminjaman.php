@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\PeminjamanHelper;
-use App\Services\FonnteService;
+use App\Services\WhatsappService;
 use Illuminate\Http\Request;
 
 class Peminjaman extends Model
@@ -60,7 +60,7 @@ class Peminjaman extends Model
     {
         return $this->ruangan->nama_ruangan ?? $this->proyektor->nama_proyektor ?? 'Tidak Diketahui';
     }
-    
+
     public function scopeFilter($query, $filters)
     {
         if (isset($filters['status']) && $filters['status'] !== 'all') {
@@ -80,11 +80,12 @@ class Peminjaman extends Model
         return $query;
     }
 
-    public static function HalamanUtama(Request $request){
+    public static function HalamanUtama(Request $request)
+    {
         $peminjaman = Peminjaman::with(['user', 'ruangan', 'proyektor'])
             ->filter($request->only(['status', 'search']))
             ->latest()
-            ->get();
+            ->paginate(10);
 
         $role = optional(Auth::user()->userRole)->nama_role ?? '';
         $status = $request->get('status', 'all');
@@ -170,10 +171,10 @@ class Peminjaman extends Model
 
         $isBentrok = self::isConflicting($conflictCheckData)->exists();
 
-        if ($isBentrok) {
-            self::sendNotification($user->nomor_telepon, "Peminjaman Gagal\nJadwal bentrok dengan peminjaman lain.");
-            throw new \Exception('Jadwal bentrok dengan peminjaman lain.');
-        }
+        // if ($isBentrok) {
+        //     self::sendNotification($user->nomor_telepon, "Peminjaman Gagal\nJadwal bentrok dengan peminjaman lain.");
+        //     throw new \Exception('Jadwal bentrok dengan peminjaman lain.');
+        // }
 
         return self::create($createData);
     }
@@ -231,9 +232,27 @@ class Peminjaman extends Model
     protected static function sendNotification($number, $message)
     {
         try {
-            FonnteService::sendMessage($number, $message);
+            // Validasi nomor telepon
+            if (!$number) {
+                Log::warning("Nomor telepon kosong, skipping WhatsApp notification.");
+                return;
+            }
+
+            Log::info("Mengirim notifikasi WhatsApp ke: $number");
+
+            // Inisialisasi service
+            $whatsappService = new WhatsappService();
+            $response = $whatsappService->sendMessage($number, $message);
+
+            // Log respons dari API untuk debugging
+            Log::info("Pesan WhatsApp berhasil dikirim ke $number.", ['response' => $response]);
         } catch (\Exception $e) {
-            Log::error("Gagal kirim WA ke $number: " . $e->getMessage());
+            Log::error("Gagal mengirim notifikasi WhatsApp ke $number: " . $e->getMessage(), [
+                'exception' => get_class($e),
+                'trace' => $e->getTraceAsString()
+            ]);
+            // Tidak melempar exception untuk tidak mengganggu flow transaksi
+            // Notifikasi adalah secondary action
         }
     }
 
@@ -282,7 +301,8 @@ class Peminjaman extends Model
         return response()->json(['approvedDetails' => $approvedDetails]);
     }
 
-    public static function Riwayat(){
+    public static function Riwayat()
+    {
         $userId = Auth::id();
 
         $p = Peminjaman::with(['ruangan', 'proyektor'])

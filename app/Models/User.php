@@ -21,9 +21,12 @@ class User extends Authenticatable
     protected $fillable = [
         'nama',
         'email',
+        'email_domain',
         'password',
         'role_id',
         'nomor_telepon',
+        'verification_code',
+        'is_verified',
         'provider',
         'provider_id',
         'token',
@@ -36,6 +39,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_verified' => 'boolean',
         ];
     }
 
@@ -122,11 +126,37 @@ class User extends Authenticatable
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email',
+                function ($attribute, $value, $fail) {
+                    // Cek apakah email sudah terdaftar
+                    $existingUser = User::where('email', $value)->first();
+                    if ($existingUser) {
+                        // Jika sudah terdaftar tapi belum diverifikasi, beri info bisa verifikasi ulang
+                        if (!$existingUser->is_verified) {
+                            $fail('Email ini sudah terdaftar tapi belum diverifikasi. Silakan cek email Anda atau kirim ulang kode verifikasi.');
+                        } else {
+                            $fail('Email ini sudah terdaftar di sistem. Silakan login atau gunakan email lain.');
+                        }
+                    }
+                }
+            ],
             'nomor_telepon' => 'required|string|regex:/^08[0-9]{8,12}$/|unique:users,nomor_telepon',
             'role' => 'required|in:Dosen,Mahasiswa',
             'password' => 'required|string|min:8|confirmed',
         ]);
+
+        // Validasi domain email untuk mahasiswa
+        if ($validated['role'] === 'Mahasiswa') {
+            $emailDomain = explode('@', $validated['email'])[1] ?? '';
+            if ($emailDomain !== 'mhs.politala.ac.id') {
+                return back()->withErrors([
+                    'email' => 'Mahasiswa harus menggunakan email domain @mhs.politala.ac.id'
+                ])->withInput();
+            }
+        }
 
         // Perbaikan: ambil role yang benar
         $r = Role::CekRole($request->role);
@@ -136,17 +166,57 @@ class User extends Authenticatable
             return $r;
         }
 
+        // Generate kode verifikasi
+        $verificationCode = mt_rand(100000, 999999);
+
         $u = User::create([
             'nama' => $validated['nama'],
             'email' => $validated['email'],
+            'email_domain' => $emailDomain,
             'nomor_telepon' => $validated['nomor_telepon'],
             'password' => Hash::make($validated['password']),
             'role_id' => $r->id_role,
+            'verification_code' => $verificationCode,
+            'is_verified' => false,
         ]);
 
-        Auth::login($u);
+        // Kirim email verifikasi
+        try {
+            \Illuminate\Support\Facades\Mail::to($u->email)->send(new \App\Mail\VerificationEmail($u, $verificationCode));
+        } catch (\Exception $e) {
+            // Log error jika gagal mengirim email
+            \Illuminate\Support\Facades\Log::error('Failed to send verification email: ' . $e->getMessage());
+        }
 
+        // Tidak login otomatis, user harus verifikasi email dulu
         return $u;
+    }
+
+    public function sendVerificationEmail()
+    {
+        $verificationCode = mt_rand(100000, 999999);
+        $this->verification_code = $verificationCode;
+        $this->save();
+
+        try {
+            \Illuminate\Support\Facades\Mail::to($this->email)->send(new \App\Mail\VerificationEmail($this, $verificationCode));
+            return true;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send verification email: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function verifyEmail($code)
+    {
+        if ($this->verification_code === $code && !$this->is_verified) {
+            $this->is_verified = true;
+            $this->email_verified_at = now();
+            $this->verification_code = null;
+            $this->save();
+            return true;
+        }
+        return false;
     }
     public static function EditAkun(Request $request, User $akun)
     {

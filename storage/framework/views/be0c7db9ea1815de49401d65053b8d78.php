@@ -1,1 +1,0 @@
-<?php /**PATH D:\SIMPERSITE\SistemSarpras\resources\views/profile/tentang_kami.blade.php ENDPATH**/ ?>

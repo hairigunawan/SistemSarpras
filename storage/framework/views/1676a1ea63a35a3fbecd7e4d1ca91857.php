@@ -75,7 +75,7 @@
                         <?php $__empty_1 = true; $__currentLoopData = $peminjaman; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <?php echo e($loop->iteration); ?>
+                                    <?php echo e(($peminjaman->currentPage() - 1) * $peminjaman->perPage() + $loop->iteration); ?>
 
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -159,9 +159,17 @@
 
             <!-- Pagination (Jika ada) -->
             <?php if(method_exists($peminjaman, 'links')): ?>
-                <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-                    <?php echo e($peminjaman->withQueryString()->links()); ?>
+                <div class="bg-white px-4 py-4 border-t border-gray-200 sm:px-6 flex items-center justify-between">
+                    <div class="text-sm text-gray-500">
+                        Menampilkan <span class="font-medium"><?php echo e(($peminjaman->currentPage() - 1) * $peminjaman->perPage() + 1); ?></span>
+                        hingga <span class="font-medium"><?php echo e(min($peminjaman->currentPage() * $peminjaman->perPage(), $peminjaman->total())); ?></span>
+                        dari <span class="font-medium"><?php echo e($peminjaman->total()); ?></span> data
+                    </div>
 
+                    <div class="mt-8 flex justify-center items-center px-4 pb-4">
+                        <?php echo e($peminjaman->appends(request()->query())->links('pagination.tailwind-custom')); ?>
+
+                    </div>
                 </div>
             <?php endif; ?>
         </div>

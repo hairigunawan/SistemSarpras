@@ -21,6 +21,8 @@ use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\SpkController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Middleware\EmailVerified;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,7 +59,15 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::get('/register', [LoginController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [LoginController::class, 'register']);
 
-Route::middleware(['auth'])->post('/logout', [LoginController::class, 'logout'])->name('logout');
+// Routes untuk verifikasi email
+Route::get('/verification/form', [VerificationController::class, 'showVerificationForm'])->name('verification.form');
+Route::post('/verification/verify', [VerificationController::class, 'verify'])->name('verification.verify');
+Route::post('/verification/resend', [VerificationController::class, 'resend'])->name('verification.resend');
+Route::get('/verification/waiting', [VerificationController::class, 'showWaitingPage'])->name('verification.waiting');
+
+Route::middleware(['auth', EmailVerified::class])->group(function () {
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+});
 
 
 
@@ -137,8 +147,11 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
         Route::get('/jadwal/export', [JadwalController::class, 'export'])->name('admin.jadwal.export');
     });
 
-    //Sarpras
-    Route::get('/sarpras', [SarprasController::class, 'index'])->name('admin.sarpras.index');
+    Route::prefix('admin')->group(function () {
+        Route::get('/sarpras/{type?}/{id?}', [SarprasController::class, 'index'])
+            ->name('admin.sarpras.index');
+    });
+
     //Ruangan
     Route::get('/sarpras/ruangan/create', [RuanganController::class, 'tambah_ruangan'])->name('sarpras.ruangan.tambah_ruangan');
     Route::post('/sarpras/ruangan/store', [RuanganController::class, 'store'])->name('sarpras.ruangan.store');
@@ -156,7 +169,7 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
     Route::delete('/sarpras/proyektor/{proyektor}', [ProyektorController::class, 'hapus_proyektor'])->name('sarpras.proyektor.destroy');
 });
 
-Route::middleware(['auth', 'role:Dosen,Mahasiswa'])->group(function () {
+Route::middleware(['auth', 'role:Dosen,Mahasiswa', EmailVerified::class])->group(function () {
     //Beranda
     Route::get('/beranda/index', [PublicController::class, 'index'])->name('public.beranda.index.auth');
 

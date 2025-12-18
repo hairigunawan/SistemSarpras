@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>Laporan Peminjaman</title>
     <style>
-        /* --- RESET & BASE --- */
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             font-size: 12px;
@@ -13,12 +12,10 @@
             padding: 0;
         }
 
-        /* Margin Kertas agar tidak terpotong printer */
         @page {
             margin: 2.5cm 2cm;
         }
 
-        /* --- UTILITIES --- */
         .w-full { width: 100%; }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
@@ -26,21 +23,19 @@
         .font-bold { font-weight: bold; }
         .mb-4 { margin-bottom: 1rem; }
         .mt-4 { margin-top: 1rem; }
-        
-        /* Page Break Prevention */
+
         .no-break { page-break-inside: avoid; }
 
-        /* --- HEADER --- */
         .header-table {
             width: 100%;
             margin-bottom: 30px;
-            border-bottom: 2px solid #1e293b; /* Blue 600 */
+            border-bottom: 2px solid #1e293b;
             padding-bottom: 15px;
         }
         .company-name {
             font-size: 24px;
             font-weight: 800;
-            color: #1e293b; /* Slate 800 */
+            color: #1e293b;
             letter-spacing: -0.5px;
             text-transform: uppercase;
         }
@@ -52,7 +47,6 @@
             letter-spacing: 1px;
         }
 
-        /* --- INFO SECTION --- */
         .info-table {
             width: 100%;
             margin-bottom: 25px;
@@ -75,7 +69,7 @@
             border-collapse: separate;
             border-spacing: 15px 0; /* Gap antar card */
             /* REVISI: Hapus margin negatif agar tidak error di PDF */
-            margin-bottom: 30px; 
+            margin-bottom: 30px;
         }
         .card {
             background-color: #f8fafc; /* Slate 50 */
@@ -124,7 +118,7 @@
         .modern-table tr:nth-child(even) {
             background-color: #fcfcfc;
         }
-        
+
         /* --- BADGES --- */
         .status-badge {
             padding: 4px 8px;
@@ -132,17 +126,17 @@
             font-size: 9px;
             font-weight: bold;
             text-transform: uppercase;
-            display: inline-block; 
+            display: inline-block;
         }
-        .status-success { background-color: #dcfce7; color: #166534; } 
-        .status-pending { background-color: #fef9c3; color: #854d0e; } 
-        .status-danger { background-color: #fee2e2; color: #991b1b; } 
-        .status-neutral { background-color: #f1f5f9; color: #475569; } 
+        .status-success { background-color: #dcfce7; color: #166534; }
+        .status-pending { background-color: #fef9c3; color: #854d0e; }
+        .status-danger { background-color: #fee2e2; color: #991b1b; }
+        .status-neutral { background-color: #f1f5f9; color: #475569; }
 
         /* --- FOOTER --- */
         .footer {
             position: fixed;
-            bottom: -40px; 
+            bottom: -40px;
             left: 0;
             right: 0;
             height: 30px;

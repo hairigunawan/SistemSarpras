@@ -34,10 +34,6 @@ class LaporanExport implements WithMultipleSheets
     }
 }
 
-/* ===========================
-   SHEET 1: RINGKASAN
-   =========================== */
-
 class RingkasanSheet implements FromArray, WithStyles, ShouldAutoSize
 {
     private $periode;

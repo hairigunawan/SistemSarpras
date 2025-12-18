@@ -398,4 +398,28 @@
         rejectForm.reset();
     }
 
+    // Handle form submission
+    rejectForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const alasan = document.querySelector('textarea[name="alasan_penolakan"]').value.trim();
+
+        if (!alasan) {
+            alert('Silakan masukkan alasan penolakan.');
+            return;
+        }
+
+        if (confirm('Apakah Anda yakin ingin menolak peminjaman ini?')) {
+            this.submit();
+        }
+    });
+
+    // Close modal ketika klik di area overlay
+    document.addEventListener('DOMContentLoaded', function() {
+        const overlay = document.querySelector('.fixed.inset-0.bg-gray-500');
+        if (overlay) {
+            overlay.addEventListener('click', closeModal);
+        }
+    });
+</script>
 @endsection

@@ -75,7 +75,7 @@
                         @forelse($peminjaman as $item)
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $loop->iteration }}
+                                    {{ ($peminjaman->currentPage() - 1) * $peminjaman->perPage() + $loop->iteration }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">
@@ -149,8 +149,16 @@
 
             <!-- Pagination (Jika ada) -->
             @if(method_exists($peminjaman, 'links'))
-                <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-                    {{ $peminjaman->withQueryString()->links() }}
+                <div class="bg-white px-4 py-4 border-t border-gray-200 sm:px-6 flex items-center justify-between">
+                    <div class="text-sm text-gray-500">
+                        Menampilkan <span class="font-medium">{{ ($peminjaman->currentPage() - 1) * $peminjaman->perPage() + 1 }}</span>
+                        hingga <span class="font-medium">{{ min($peminjaman->currentPage() * $peminjaman->perPage(), $peminjaman->total()) }}</span>
+                        dari <span class="font-medium">{{ $peminjaman->total() }}</span> data
+                    </div>
+
+                    <div class="mt-8 flex justify-center items-center px-4 pb-4">
+                        {{ $peminjaman->appends(request()->query())->links('pagination.tailwind-custom') }}
+                    </div>
                 </div>
             @endif
         </div>

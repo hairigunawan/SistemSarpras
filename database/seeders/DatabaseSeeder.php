@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class,
             LokasiSeeder::class,
             DosenMahasiswaRoleSeeder::class,
+            RuanganProyektorSeeder::class,
         ]);
     }
 }

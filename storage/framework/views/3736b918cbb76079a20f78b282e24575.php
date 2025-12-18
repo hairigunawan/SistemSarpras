@@ -12,7 +12,6 @@
                     <p class="text-sm text-gray-500 mt-1">Kelola ruangan dan proyektor</p>
                 </div>
 
-                <!-- Aksi (Cari + Filter + Tambah) -->
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <!-- Search -->
                     <div class="relative">
@@ -27,7 +26,6 @@
                         </svg>
                     </div>
 
-                    <!-- Filter Status -->
                     <div class="relative">
                         <select id="status-filter" class="w-full sm:w-40 pl-3 pr-10 py-2.5 border border-gray-200 rounded-lg text-sm
                                    focus:ring-1 focus:ring-[#8bc9e2] focus:border-transparent focus:outline-none
@@ -44,7 +42,6 @@
                         </svg>
                     </div>
 
-                    <!-- Tombol Tambah Sarpras -->
                     <button id="btn-tambah-sarpras"
                         class="bg-[#179ACE] hover:bg-[#0F6A8F] text-white px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-normal transition flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -57,96 +54,74 @@
             </div>
         </div>
 
-        <!-- GRID SARPRAS -->
-        <!-- GRID SARPRAS -->
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 p-4">
+            <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
+                    <div class="w-full aspect-[4/3] overflow-hidden">
+                        <?php
+                            $itemData = $item->type === 'ruangan'
+                                ? \App\Models\Ruangan::find($item->id)
+                                : \App\Models\Proyektor::find($item->id);
+                        ?>
+                        <?php if($itemData && $itemData->gambar): ?>
+                            <img src="<?php echo e(asset('storage/' . str_replace('public/', '', $itemData->gambar))); ?>"
+                                alt="<?php echo e($item->nama); ?>"
+                                class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <img src="https://via.placeholder.com/400x250?text=Tidak+Ada+Gambar"
+                                alt="Tidak Ada Gambar"
+                                class="w-full h-full object-cover">
+                        <?php endif; ?>
+                    </div>
 
-            <!-- Menampilkan data ruangan -->
-            <?php if(isset($r)): ?>
-                <?php $__currentLoopData = $r; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
+                    <div class="p-3">
+                        <h2 class="text-gray-800 font-semibold"><?php echo e($item->nama); ?></h2>
+                        <p class="text-xs font-medium text-gray-500 mb-3">
+                            <?php if($item->type === 'ruangan'): ?>
+                                <?php echo e($itemData->lokasi->nama_lokasi ?? '-'); ?>
 
-                        <!-- Gambar stabil -->
-                        <div class="w-full aspect-[4/3] overflow-hidden">
-                            <?php if($item->gambar): ?>
-                                <img src="<?php echo e(asset('storage/' . str_replace('public/', '', $item->gambar))); ?>"
-                                    alt="<?php echo e($item->nama_ruangan); ?>"
-                                    class="w-full h-full object-cover">
                             <?php else: ?>
-                                <img src="https://via.placeholder.com/400x250?text=Tidak+Ada+Gambar"
-                                    alt="Tidak Ada Gambar"
-                                    class="w-full h-full object-cover">
+                                <?php echo e($itemData->merk ?? '-'); ?>
+
                             <?php endif; ?>
+                        </p>
+
+                        <div class="mb-4">
+                            <span class="inline-block text-xs font-semibold px-3 py-1 rounded-full
+                                <?php echo e($item->nama_status == 'Tersedia' ? 'bg-green-100 text-green-700' :
+                                ($item->nama_status == 'Dipakai' ? 'bg-yellow-100 text-yellow-700' :
+                                ($item->nama_status == 'Diperbaiki' ? 'bg-orange-100 text-orange-700' :
+                                'bg-red-100 text-red-700'))); ?>">
+                                <?php echo e($item->nama_status ?? 'Status Tidak Ditemukan'); ?>
+
+                            </span>
                         </div>
 
-                        <div class="p-3">
-                            <h2 class="text-gray-800 font-semibold"><?php echo e($item->nama_ruangan); ?></h2>
-                            <p class="text-xs font-medium text-gray-500 mb-3"><?php echo e($item->lokasi->nama_lokasi ?? '-'); ?></p>
-
-                            <div class="flex justify-between items-center mb-4">
-                                <span class="text-sm font-medium
-                                    <?php echo e($item->status->nama_status == 'Tersedia' ? 'text-green-600' :
-                                    ($item->status->nama_status == 'Dipakai' ? 'text-yellow-600' :
-                                    ($item->status->nama_status == 'Diperbaiki' ? 'text-orange-600' : 'text-red-600'))); ?>">
-                                    <?php echo e($item->status->nama_status); ?>
-
-                                </span>
-                                <span class="text-sm text-gray-500">Ruangan</span>
-                            </div>
-
-                            <a href="<?php echo e(route('sarpras.ruangan.lihat_ruangan', $item->id_ruangan)); ?>"
+                        <?php if($item->type === 'ruangan'): ?>
+                            <a href="<?php echo e(route('sarpras.ruangan.lihat_ruangan', $item->id)); ?>"
                             class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-1.5 border border-gray-200 rounded-lg text-xs font-normal transition">
                                 Lihat Detail
                             </a>
-                        </div>
-                    </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            <?php endif; ?>
-
-            <!-- Menampilkan data proyektor -->
-            <?php if(isset($p)): ?>
-                <?php $__currentLoopData = $p; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
-
-                        <!-- Gambar stabil -->
-                        <div class="w-full aspect-[4/3] overflow-hidden">
-                            <?php if($item->gambar): ?>
-                                <img src="<?php echo e(asset('storage/' . str_replace('public/', '', $item->gambar))); ?>"
-                                    alt="<?php echo e($item->nama_proyektor); ?>"
-                                    class="w-full h-full object-cover border-b-2 border-gray-200">
-                            <?php else: ?>
-                                <img src="https://via.placeholder.com/400x250?text=Tidak+Ada+Gambar"
-                                    alt="Tidak Ada Gambar"
-                                    class="w-full h-full object-cover">
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="p-3">
-                            <h2 class="text-gray-800 font-semibold"><?php echo e($item->nama_proyektor); ?></h2>
-                            <p class="text-xs font-medium text-gray-500 mb-3"><?php echo e($item->merk ?? '-'); ?></p>
-
-                            <div class="flex justify-between items-center mb-4">
-                                <span class="text-sm font-medium
-                                    <?php echo e($item->status->nama_status == 'Tersedia' ? 'text-green-600' :
-                                    ($item->status->nama_status == 'Dipakai' ? 'text-yellow-600' :
-                                    ($item->status->nama_status == 'Diperbaiki' ? 'text-orange-600' : 'text-red-600'))); ?>">
-                                    <?php echo e($item->status->nama_status); ?>
-
-                                </span>
-                                <span class="text-sm text-gray-500">Proyektor</span>
-                            </div>
-
-                            <a href="<?php echo e(route('sarpras.proyektor.lihat_proyektor', $item->id_proyektor)); ?>"
+                        <?php else: ?>
+                            <a href="<?php echo e(route('sarpras.proyektor.lihat_proyektor', $item->id)); ?>"
                             class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-1.5 border border-gray-200 rounded-lg text-xs font-normal transition">
                                 Lihat Detail
                             </a>
-                        </div>
-
+                        <?php endif; ?>
                     </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </div>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-500">Tidak ada data sarpras</p>
+                </div>
             <?php endif; ?>
+        </div>
+        <!-- Pagination Links -->
+        <div class="mt-8 flex justify-center items-center px-4 pb-4">
+            <?php echo e($items->appends(request()->query())->links('pagination.tailwind-custom')); ?>
 
         </div>
+
     </div>
 </div>
 

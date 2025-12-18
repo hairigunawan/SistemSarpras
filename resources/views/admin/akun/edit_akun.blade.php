@@ -19,9 +19,8 @@
 
         <!-- Main Card -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            
+
             <div class="px-8 pb-8">
-                <!-- Header Icon & Title -->
                 <div class="flex items-end mt-5 mb-8 gap-5">
                     <div class="pb-1">
                         <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Edit Akun</h1>
@@ -36,7 +35,7 @@
 
                     <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            
+
                             <!-- Nama -->
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label>
@@ -46,8 +45,8 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
                                     </div>
-                                    <input type="text" name="nama" value="{{ old('nama', $akun->nama) }}" 
-                                           class="pl-10 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors" 
+                                    <input type="text" name="nama" value="{{ old('nama', $akun->nama) }}"
+                                           class="pl-10 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors"
                                            placeholder="Masukkan nama lengkap">
                                 </div>
                                 @error('nama') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
@@ -62,8 +61,8 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
                                     </div>
-                                    <input type="email" name="email" value="{{ old('email', $akun->email) }}" 
-                                           class="pl-10 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors" 
+                                    <input type="email" name="email" value="{{ old('email', $akun->email) }}"
+                                           class="pl-10 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors"
                                            placeholder="nama@email.com">
                                 </div>
                                 @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
@@ -78,8 +77,8 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                         </svg>
                                     </div>
-                                    <input type="text" name="nomor_telepon" value="{{ old('nomor_telepon', $akun->nomor_telepon) }}" 
-                                           class="pl-10 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors" 
+                                    <input type="text" name="nomor_telepon" value="{{ old('nomor_telepon', $akun->nomor_telepon) }}"
+                                           class="pl-10 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors"
                                            placeholder="0812...">
                                 </div>
                                 @error('nomor_telepon') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
@@ -90,7 +89,7 @@
 
                     <div class="space-y-6 mt-8">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            
+
                             <!-- Role -->
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Role / Peran</label>
@@ -147,12 +146,12 @@
 
                     <!-- Action Buttons -->
                     <div class="mt-10 pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
-                        <a href="{{ route('admin.akun.index') }}" 
-                           class="inline-flex justify-center items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-all">
+                        <a href="{{ route('admin.akun.index') }}"
+                           class="inline-flex justify-center items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-500 transition-all">
                             Batal
                         </a>
-                        <button type="submit" 
-                                class="inline-flex justify-center items-center px-6 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
+                        <button type="submit"
+                                class="inline-flex justify-center items-center px-6 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
                             <svg class="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
