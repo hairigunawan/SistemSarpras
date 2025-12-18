@@ -6,7 +6,6 @@
 <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
 
-        <!-- Header Section: Judul & Tombol Kembali -->
         <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-center space-x-4">
                 <a href="{{ route('admin.peminjaman.index') }}" class="p-2 rounded-lg hover:bg-gray-200 transition-colors">
@@ -29,7 +28,6 @@
             </a>
         </div>
 
-        <!-- Alert Pesan -->
         @if (session('success'))
             <div class="mb-6 rounded-md bg-green-50 p-4 border-l-4 border-green-400 shadow-sm">
                 <div class="flex">
@@ -70,7 +68,6 @@
             </div>
         @endif
 
-        <!-- Main Card -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
 
             <!-- Card Header: Status & Actions -->
@@ -96,15 +93,23 @@
                 <!-- Action Buttons -->
                 <div class="flex flex-wrap items-center gap-2">
                     @if ($mainPeminjaman->status_peminjaman == 'Menunggu')
-                        <form action="{{ route('peminjaman.approve', $mainPeminjaman->id_peminjaman) }}" method="POST" class="inline">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyetujui peminjaman ini?')"
-                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900">
+                        @if($mainPeminjaman->tanggal_pinjam == now()->toDateString())
+                            <form action="{{ route('peminjaman.approve', $mainPeminjaman->id_peminjaman) }}" method="POST" class="inline">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyetujui peminjaman ini?')"
+                                    class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Setujui
+                                </button>
+                            </form>
+                        @else
+                            <button type="button" onclick="showErrorMessage('Peminjaman hanya dapat disetujui pada hari peminjaman yang dijadwalkan.')"
+                                class="inline-flex items-center px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 Setujui
                             </button>
-                        </form>
+                        @endif
 
                         <button type="button" onclick="openRejectModal('{{ $mainPeminjaman->id_peminjaman }}')"
                             class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-900 ">
@@ -183,23 +188,17 @@
 
                     <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">Lokasi</dt>
-                        @if ($mainPeminjaman->proyektor && $mainPeminjaman->ruangan)
-                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                <span>{{ $mainPeminjaman->ruangan->nama_ruangan }}</span>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            @if ($mainPeminjaman->id_ruangan_proyektor && $mainPeminjaman->ruanganProyektor)
+                                <span>{{ $mainPeminjaman->ruanganProyektor->nama_ruangan ?? '-' }}</span>
                                 -
-                                <span>{{ $mainPeminjaman->ruangan->lokasi->nama_lokasi }}</span>
-                            </dd>
-                        @elseif ($mainPeminjaman->proyektor)
-                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                <span>{{ $mainPeminjaman->ruangan->nama_ruangan }}</span>
-                                -
-                                <span>{{ $mainPeminjaman->ruangan->lokasi->nama_lokasi }}</span>
-                            </dd>
-                        @else
-                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                <span>{{ $mainPeminjaman->ruangan->lokasi->nama_lokasi }}</span>
-                            </dd>
-                        @endif
+                                <span>{{ $mainPeminjaman->ruanganProyektor->lokasi->nama_lokasi ?? '-' }}</span>
+                            @elseif ($mainPeminjaman->id_lokasi && $mainPeminjaman->lokasi)
+                                <span>{{ $mainPeminjaman->lokasi->nama_lokasi }}</span>
+                            @else
+                                <span class="text-gray-500 italic">Tidak ada lokasi</span>
+                            @endif
+                        </dd>
                     </div>
 
                     <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-50">
@@ -386,6 +385,15 @@
     // Simple vanilla JS for Modal
     const rejectModal = document.getElementById('rejectModal');
     const rejectForm = document.getElementById('rejectForm');
+
+    function showErrorMessage(message) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: message,
+            confirmButtonColor: '#d33',
+        });
+    }
 
     function openRejectModal(id) {
         const template = rejectForm.getAttribute('data-action-template');

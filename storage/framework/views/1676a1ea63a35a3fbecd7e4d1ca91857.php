@@ -29,6 +29,36 @@
             </form>
         </div>
 
+        <!-- Alert Section -->
+        <?php if(session('success')): ?>
+            <div class="mb-6 rounded-md bg-green-50 p-4 border-l-4 border-green-400 shadow-sm">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-green-700"><?php echo e(session('success')); ?></p>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+        <?php if(session('error')): ?>
+            <div class="mb-6 rounded-md bg-red-50 p-4 border-l-4 border-red-400 shadow-sm">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700"><?php echo e(session('error')); ?></p>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <!-- Filter Tabs -->
         <div class="mb-6 border-b border-gray-200">
             <nav class="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
@@ -133,11 +163,29 @@
 
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium flex items-center justify-center gap-2">
                                     <a href="<?php echo e(route('admin.peminjaman.lihat_peminjaman', $item->id_peminjaman)); ?>"
                                        class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors">
                                         Detail
                                     </a>
+                                    <?php if($item->status_peminjaman == 'Menunggu'): ?>
+                                        <?php if($item->tanggal_pinjam == now()->toDateString()): ?>
+                                            <form action="<?php echo e(route('peminjaman.approve', $item->id_peminjaman)); ?>" method="POST" class="inline">
+                                                <?php echo csrf_field(); ?>
+                                                <?php echo method_field('PATCH'); ?>
+                                                <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyetujui peminjaman ini?')"
+                                                    class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-md transition-colors">
+                                                    Setujui
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <button type="button" 
+                                                onclick="showErrorMessage('Peminjaman hanya dapat disetujui pada hari peminjaman yang dijadwalkan (<?php echo e(\Carbon\Carbon::parse($item->tanggal_pinjam)->format('d/m/Y')); ?>).')"
+                                                class="text-gray-400 bg-gray-100 px-3 py-1.5 rounded-md transition-colors">
+                                                Setujui
+                                            </button>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -147,7 +195,7 @@
                                         <svg class="h-10 w-10 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                         </svg>
-                                        <p class="text-base font-medium">Tidak ada data peminjaman.</p>
+                                        <p class="text-base font-medium">Tidak ada data pemi    njaman.</p>
                                         <p class="text-sm mt-1">Coba ubah filter status atau kata kunci pencarian.</p>
                                     </div>
                                 </td>
@@ -175,6 +223,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    function showErrorMessage(message) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: message,
+            confirmButtonColor: '#d33',
+        });
+    }
+</script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\SIMPERSITE\SistemSarpras\resources\views/admin/peminjaman/index.blade.php ENDPATH**/ ?>

@@ -135,10 +135,6 @@ class Peminjaman extends Model
             if (empty($validated['id_lokasi'])) {
                 throw new \Exception('Lokasi harus dipilih untuk peminjaman proyektor.');
             }
-            if (empty($validated['id_ruangan_proyektor'])) {
-                throw new \Exception('Ruangan tempat proyektor digunakan harus dipilih.');
-            }
-            // Jika meminjam proyektor, gunakan ruangan proyektor sebagai id_ruangan
             $validated['id_ruangan'] = $validated['id_ruangan_proyektor'];
         }
 
@@ -163,18 +159,6 @@ class Peminjaman extends Model
             'status_peminjaman' => 'Menunggu',
             'id_lokasi' => $validated['id_lokasi'] ?? null,
         ]);
-
-        $conflictCheckData = array_merge($validated, [
-            'id_ruangan' => $validated['id_ruangan'] ?? null,
-            'id_proyektor' => $validated['id_proyektor'] ?? null,
-        ]);
-
-        $isBentrok = self::isConflicting($conflictCheckData)->exists();
-
-        // if ($isBentrok) {
-        //     self::sendNotification($user->nomor_telepon, "Peminjaman Gagal\nJadwal bentrok dengan peminjaman lain.");
-        //     throw new \Exception('Jadwal bentrok dengan peminjaman lain.');
-        // }
 
         return self::create($createData);
     }
@@ -251,8 +235,6 @@ class Peminjaman extends Model
                 'exception' => get_class($e),
                 'trace' => $e->getTraceAsString()
             ]);
-            // Tidak melempar exception untuk tidak mengganggu flow transaksi
-            // Notifikasi adalah secondary action
         }
     }
 

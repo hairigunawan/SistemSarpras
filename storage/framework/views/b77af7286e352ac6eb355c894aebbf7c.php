@@ -57,19 +57,31 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     Hari <span class="text-red-500">*</span>
                 </label>
-                <input type="text" name="hari"
-                       placeholder="Contoh: Senin"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition"
-                       required>
+                <select name="hari"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition"
+                        required>
+                    <option value="" disabled selected>Pilih Hari</option>
+                    <option value="Senin">Senin</option>
+                    <option value="Selasa">Selasa</option>
+                    <option value="Rabu">Rabu</option>
+                    <option value="Kamis">Kamis</option>
+                    <option value="Jumat">Jumat</option>
+                    <option value="Sabtu">Sabtu</option>
+                    <option value="Minggu">Minggu</option>
+                </select>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     Ruangan <span class="text-red-500">*</span>
                 </label>
-                <input type="text" name="ruangan"
-                       placeholder="Contoh: Lab 1"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition"
-                       required>
+                <select name="ruangan"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition"
+                        required>
+                    <option value="" disabled selected>Pilih Ruangan</option>
+                    <?php $__currentLoopData = $ruangans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ruangan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($ruangan->nama_ruangan); ?>"><?php echo e($ruangan->nama_ruangan); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
             </div>
         </div>
 

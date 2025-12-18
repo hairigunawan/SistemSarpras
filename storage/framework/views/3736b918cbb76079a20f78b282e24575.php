@@ -16,6 +16,7 @@
                     <!-- Search -->
                     <div class="relative">
                         <input type="text" placeholder="Cari sarpras..."
+                            value="<?php echo e(request('search')); ?>"
                             class="w-full sm:w-64 pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm
                                    focus:ring-1 focus:ring-[#8bc9e2] focus:border-transparent focus:outline-none
                                    transition-all duration-200" />
@@ -32,7 +33,10 @@
                                    transition-all duration-200 appearance-none bg-white">
                             <option value="">Semua Status</option>
                             <?php $__currentLoopData = $s; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $status): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($status->nama_status); ?>"><?php echo e($status->nama_status); ?></option>
+                                <option value="<?php echo e($status->nama_status); ?>" <?php echo e(request('nama_status') == $status->nama_status ? 'selected' : ''); ?>>
+                                    <?php echo e($status->nama_status); ?>
+
+                                </option>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                         <svg class="absolute right-3 top-2.5 w-5 h-5 text-gray-400 pointer-events-none" fill="none"
@@ -58,13 +62,8 @@
             <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
                     <div class="w-full aspect-[4/3] overflow-hidden">
-                        <?php
-                            $itemData = $item->type === 'ruangan'
-                                ? \App\Models\Ruangan::find($item->id)
-                                : \App\Models\Proyektor::find($item->id);
-                        ?>
-                        <?php if($itemData && $itemData->gambar): ?>
-                            <img src="<?php echo e(asset('storage/' . str_replace('public/', '', $itemData->gambar))); ?>"
+                        <?php if($item->gambar): ?>
+                            <img src="<?php echo e(asset('storage/' . str_replace('public/', '', $item->gambar))); ?>"
                                 alt="<?php echo e($item->nama); ?>"
                                 class="w-full h-full object-cover">
                         <?php else: ?>
@@ -77,13 +76,8 @@
                     <div class="p-3">
                         <h2 class="text-gray-800 font-semibold"><?php echo e($item->nama); ?></h2>
                         <p class="text-xs font-medium text-gray-500 mb-3">
-                            <?php if($item->type === 'ruangan'): ?>
-                                <?php echo e($itemData->lokasi->nama_lokasi ?? '-'); ?>
+                            <?php echo e($item->detail ?? '-'); ?>
 
-                            <?php else: ?>
-                                <?php echo e($itemData->merk ?? '-'); ?>
-
-                            <?php endif; ?>
                         </p>
 
                         <div class="mb-4">

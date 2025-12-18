@@ -18,48 +18,61 @@ class SarprasController extends Controller
         $this->updateProyektorStatus();
         $s = Status::all();
 
-        $defaultStatusId = Status::where('nama_status', 'Tersedia')->value('id_status');
+        $search = $request->search;
+        $statusFilter = $request->nama_status;
 
-        $rQuery = Ruangan::filter($request->all())
+        // Query Ruangan
+        $rQuery = DB::table('ruangans')
+            ->join('statuses', 'ruangans.id_status', '=', 'statuses.id_status')
+            ->join('lokasis', 'ruangans.lokasi_id', '=', 'lokasis.id_lokasi')
             ->select(
                 DB::raw("'ruangan' as type"),
-                'id_ruangan as id',
-                'nama_ruangan as nama',
-                'created_at',
-                DB::raw($defaultStatusId . ' as id_status'),
-                DB::raw("'Tersedia' as nama_status")
+                'ruangans.id_ruangan as id',
+                'ruangans.nama_ruangan as nama',
+                'lokasis.nama_lokasi as detail',
+                'statuses.nama_status as nama_status',
+                'ruangans.gambar',
+                'ruangans.created_at'
             );
 
-        // Query Proyektor - memiliki id_status
-        $pQuery = Proyektor::select(
-            DB::raw("'proyektor' as type"),
-            'id_proyektor as id',
-            'nama_proyektor as nama',
-            'created_at',
-            'id_status',
-            DB::raw("(SELECT nama_status FROM statuses WHERE id_status = proyektors.id_status LIMIT 1) as nama_status")
-        );
-
-        // Terapkan filter status hanya untuk Proyektor
-        if (isset($request->nama_status) && $request->nama_status) {
-            $statusId = Status::where('nama_status', $request->nama_status)->value('id_status');
-            $pQuery->where('id_status', $statusId);
+        if ($search) {
+            $rQuery->where('ruangans.nama_ruangan', 'like', "%{$search}%");
+        }
+        if ($statusFilter) {
+            $rQuery->where('statuses.nama_status', $statusFilter);
         }
 
-        // Terapkan filter search
-        if (isset($request->search) && $request->search) {
-            $search = '%' . $request->search . '%';
-            $rQuery->where('nama_ruangan', 'like', $search);
-            $pQuery->where('nama_proyektor', 'like', $search);
-        } elseif ($type && $id) {
-            if ($type === 'status') {
-                $pQuery->where('id_status', $id);
-            }
+        // Query Proyektor
+        $pQuery = DB::table('proyektors')
+            ->join('statuses', 'proyektors.id_status', '=', 'statuses.id_status')
+            ->select(
+                DB::raw("'proyektor' as type"),
+                'proyektors.id_proyektor as id',
+                'proyektors.nama_proyektor as nama',
+                'proyektors.merk as detail',
+                'statuses.nama_status as nama_status',
+                'proyektors.gambar',
+                'proyektors.created_at'
+            );
+
+        if ($search) {
+            $pQuery->where('proyektors.nama_proyektor', 'like', "%{$search}%");
+        }
+        if ($statusFilter) {
+            $pQuery->where('statuses.nama_status', $statusFilter);
+        }
+
+        // Handle type/id specific filtering if needed (legacy support)
+        if ($type && $id && !$search && !$statusFilter) {
+             if ($type === 'status') {
+                $pQuery->where('proyektors.id_status', $id);
+                // Should we filter rooms too? Assuming legacy behavior was only for projectors based on previous code.
+             }
         }
 
         // Gabungkan dengan UNION dan paginate
         $items = $rQuery->union($pQuery)
-            ->orderByDesc('created_at')
+            ->orderBy('created_at', 'desc')
             ->paginate(12);
 
         return view('admin.sarpras.index', compact('s', 'items'));

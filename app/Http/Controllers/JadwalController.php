@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jadwal;
+use App\Models\Ruangan;
 use Illuminate\Http\Request;
 
 class JadwalController extends Controller
@@ -15,7 +16,8 @@ class JadwalController extends Controller
 
     public function create()
     {
-        return view('admin.jadwal.create');
+        $ruangans = Ruangan::all();
+        return view('admin.jadwal.create', compact('ruangans'));
     }
 
     public function store(Request $request)
@@ -27,7 +29,8 @@ class JadwalController extends Controller
     public function edit($id)
     {
         $j = Jadwal::findOrFail($id);
-        return view('admin.jadwal.edit', compact('j'));
+        $ruangans = Ruangan::all();
+        return view('admin.jadwal.edit', compact('j', 'ruangans'));
     }
 
     public function update(Request $request, $id)

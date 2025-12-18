@@ -7,16 +7,21 @@ use App\Models\Laporan;
 
 class LaporanController extends Controller
 {
-    public function index(Request $request, Laporan $l){
-        return $l->HalamanUtama($request);
+    public function index(Request $request)
+    {
+        $laporan = new Laporan();
+        return $laporan->HalamanUtama($request);
     }
 
-    public function exportPdf(Request $request, Laporan $l){
-        return $l->pdf($request);
+    public function exportPdf(Request $request)
+    {
+        $laporan = new Laporan();
+        return $laporan->pdf($request);
     }
 
-    public function exportExcel(Request $request, Laporan $l){
-        return $l->excel($request);
+    public function exportExcel(Request $request)
+    {
+        $laporan = new Laporan();
+        return $laporan->excel($request);
     }
 }
-

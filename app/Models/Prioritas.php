@@ -15,7 +15,9 @@ class Prioritas extends Model
 
     public function RuanganPrioritas()
     {
-        $peminjaman = Peminjaman::whereNotNull('id_ruangan')->get();
+        $peminjaman = Peminjaman::whereNotNull('id_ruangan')
+            ->where('status_peminjaman', 'Menunggu')
+            ->get();
 
         // Ambil kriteria dari database dan normalisasi nama_kriteria
         $dbKriteria = DB::table('kriteria')->get();
@@ -76,7 +78,9 @@ class Prioritas extends Model
 
     public function ProyektorPrioritas()
     {
-        $peminjaman = Peminjaman::whereNotNull('id_proyektor')->get();
+        $peminjaman = Peminjaman::whereNotNull('id_proyektor')
+            ->where('status_peminjaman', 'Menunggu')
+            ->get();
 
         $dbKriteria = DB::table('kriteria')->get();
 
@@ -160,8 +164,18 @@ class Prioritas extends Model
     private function hitungBobotAHP($data, $kriteria)
     {
         // original keys (from provided kriteria array)
-        $origKeys = array_keys($kriteria);
-        $n = count($origKeys);
+        $keys = array_keys($kriteria);
+        $n = count($keys);
+
+        if ($n === 0) {
+            return [
+                'pairwiseMatrix' => [],
+                'normalizedMatrix' => [],
+                'bobotAkhir' => [],
+                'cr' => 0,
+                'keys' => [],
+            ];
+        }
 
         if ($n === 1) {
             return [
@@ -169,36 +183,14 @@ class Prioritas extends Model
                 'normalizedMatrix' => [[1]],
                 'bobotAkhir' => [1],
                 'cr' => 0,
-                'keys' => $origKeys,
+                'keys' => $keys,
             ];
         }
 
-        // === priority order (Excel reference). Semakin awal = semakin penting.
-        $priorityOrder = [
-            'jenis_kegiatan',
-            'jumlah_peserta',
-            'pengajuan',
-            'durasi'
-        ];
-
-        // Build orderedKeys: take those in priorityOrder first (in that order), then append any other keys
-        $orderedKeys = [];
-        foreach ($priorityOrder as $p) {
-            if (in_array($p, $origKeys)) $orderedKeys[] = $p;
-        }
-        foreach ($origKeys as $k) {
-            if (!in_array($k, $orderedKeys)) $orderedKeys[] = $k;
-        }
-
-        $keys = $orderedKeys;
-        $n = count($keys);
-
-        // build priorityRank using canonical priorityOrder positions (lower = more important)
+        // build priorityRank using original order (lower index = more important)
         $priorityRank = [];
-        foreach ($keys as $k) {
-            $pos = array_search($k, $priorityOrder);
-            if ($pos === false) $pos = count($priorityOrder); // new keys get lowest priority
-            $priorityRank[$k] = $pos;
+        foreach ($keys as $index => $k) {
+            $priorityRank[$k] = $index;
         }
 
         // === build pairwise matrix (rows = keys order, cols = keys order)
@@ -256,7 +248,8 @@ class Prioritas extends Model
         $lambdaMax /= $n;
 
         $ci = ($lambdaMax - $n) / max($n - 1, 1);
-        $riList = [0, 0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45];
+        // Saaty RI values: n=1:0, n=2:0, n=3:0.58, n=4:0.90, n=5:1.12, ...
+        $riList = [0, 0, 0, 0.58, 0.90, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49, 1.51, 1.54, 1.56, 1.57, 1.59];
         $ri = $riList[$n] ?? end($riList);
         $cr = ($ri > 0) ? $ci / $ri : 0;
 
@@ -373,7 +366,16 @@ class Prioritas extends Model
                 if ($selisihHari >= 2) return 2;
                 return 1;
 
+            case 'proyektor':
+                return $p->id_proyektor ? 5 : 1;
+
             default:
+                // Fallback: cek jika ada kolom yang cocok di model Peminjaman
+                if (isset($p->$key)) {
+                    $val = $p->$key;
+                    if (is_numeric($val)) return $val > 0 ? 5 : 1;
+                    if (!empty($val)) return 5;
+                }
                 return 3;
         }
     }
@@ -387,9 +389,10 @@ class Prioritas extends Model
         $s_single = preg_replace('/\s+/', ' ', $s);
 
         if (strpos($s_single, 'kegiatan') !== false) return 'jenis_kegiatan';
-        if (strpos($s_single, 'jumlah peserta') !== false || strpos($s_single, 'jumlah') !== false || strpos($s_single, 'peserta') !== false) return 'jumlah_peserta';
+        if (strpos($s_single, 'jumlah peserta') !== false || (strpos($s_single, 'jumlah') !== false && strpos($s_single, 'peserta') !== false)) return 'jumlah_peserta';
         if (strpos($s_single, 'durasi') !== false) return 'durasi';
-        if (strpos($s_single, 'pengajuan') !== false || strpos($s_single, 'ajuan') !== false) return 'pengajuan';
+        if (strpos($s_single, 'pengajuan') !== false || strpos($s_single, 'ajuan') !== false || strpos($s_single, 'tanggal') !== false) return 'pengajuan';
+        if (strpos($s_single, 'proyektor') !== false) return 'proyektor';
 
         return str_replace(' ', '_', $s_single);
     }

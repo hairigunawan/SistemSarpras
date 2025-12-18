@@ -11,9 +11,11 @@ use App\Models\Peminjaman;
 use App\Models\Proyektor;
 use App\Models\Ruangan;
 use App\Models\User;
+use App\Models\Lokasi;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Laporan extends Model
 {
@@ -23,7 +25,7 @@ class Laporan extends Model
         'periode',
         'sarpras_terbanyak',
         'ruangan_tersering',
-        'jam_selesai',
+        'jam_rata_rata',
         'file_laporan',
     ];
 
@@ -32,100 +34,95 @@ class Laporan extends Model
         return $this->hasMany(Peminjaman::class, 'id_laporan');
     }
 
+    // Tampilan utama laporan
     public function HalamanUtama(Request $request)
     {
-        $periode = $request->get('periode', 'persemester');
+        // Default diseragamkan ke perbulan
+        $periode = $request->get('periode', 'perbulan');
 
-        $startDate = null;
-        $endDate = null;
+        $dateRange = $this->getDateRange($periode);
+        $startDate = $dateRange['startDate'];
+        $endDate   = $dateRange['endDate'];
 
-        if ($periode == 'persemester') {
-            $bulanSekarang = Carbon::now()->month;
-            $tahunSekarang = Carbon::now()->year;
+        // Menghapus filter status agar data sesuai dengan total input yang masuk (Permintaan)
+        $totalPeminjaman = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->count();
 
-            if ($bulanSekarang >= 1 && $bulanSekarang <= 6) {
-                $startDate = Carbon::create($tahunSekarang, 1, 1)->format('Y-m-d');
-                $endDate   = Carbon::create($tahunSekarang, 6, 30)->format('Y-m-d');
-            } else {
-                $startDate = Carbon::create($tahunSekarang, 7, 1)->format('Y-m-d');
-                $endDate   = Carbon::create($tahunSekarang, 12, 31)->format('Y-m-d');
-            }
-        } else {
-            $dateRange = $this->getDateRange($periode);
-            $startDate = $dateRange['startDate'];
-            $endDate   = $dateRange['endDate'];
-        }
+        $avgMinutes = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->whereNotNull('jam_mulai')
+            ->whereNotNull('jam_selesai')
+            ->select(DB::raw('AVG((julianday(jam_selesai) - julianday(jam_mulai)) * 24 * 60) as avg'))
+            ->value('avg') ?? 0;
 
-        $totalPeminjaman = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])->count();
+        $waktuRataRata = $avgMinutes / 60;
 
-        $waktuRataRata = Peminjaman::selectRaw("
-            AVG(
-                CAST(
-                    (CAST(SUBSTR(jam_selesai, 1, 2) AS INTEGER) - CAST(SUBSTR(jam_mulai, 1, 2) AS INTEGER))
-                    +
-                    (CAST(SUBSTR(jam_selesai, 4, 2) AS INTEGER) - CAST(SUBSTR(jam_mulai, 4, 2) AS INTEGER)) / 60.0
-                    AS REAL
-                )
-            ) as avg_jam
-        ")
+
+        $peminjamTeratas = Peminjaman::join('users', 'users.id_akun', '=', 'peminjamans.id_akun')
+            ->select(
+                'users.nama',
+                'users.email',
+                DB::raw('count(*) as jumlah')
+            )
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
-            ->value('avg_jam') ?? 0;
+            ->groupBy('users.nama', 'users.email')
+            ->orderByDesc('jumlah')
+            ->limit(3)
+            ->get();
 
-        $peminjamTeratas = Peminjaman::select('id_akun', DB::raw('count(*) as total'))
+        $ruanganPopuler = Peminjaman::join('ruangans', 'ruangans.id_ruangan', '=', 'peminjamans.id_ruangan')
+            ->join('lokasis', 'lokasis.id_lokasi', '=', 'peminjamans.id_lokasi')
+            ->select(
+                'ruangans.nama_ruangan as nama',
+                'lokasis.nama_lokasi as lokasi',
+                DB::raw('count(*) as jumlah'),
+                DB::raw("'ruangan' as type")
+            )
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
-            ->groupBy('id_akun')
-            ->orderByDesc('total')
-            ->take(3)
-            ->get()
-            ->map(function ($peminjam) {
-                $user = User::find($peminjam->id_akun);
-                return [
-                    'nama' => $user->nama ?? 'N/A',
-                    'email' => $user->email ?? 'N/A',
-                    'jumlah' => $peminjam->total,
-                ];
-            });
+            ->groupBy('ruangans.nama_ruangan', 'lokasis.nama_lokasi')
+            ->orderByDesc('jumlah')
+            ->get();
 
-        $sarprasTerpopuler = collect();
-
-        $ruanganPopuler = Peminjaman::whereNotNull('id_ruangan')
-            ->select('id_ruangan', DB::raw('count(*) as total'))
+        $proyektorPopuler = Peminjaman::join('proyektors', 'proyektors.id_proyektor', '=', 'peminjamans.id_proyektor')
+            ->join('lokasis', 'lokasis.id_lokasi', '=', 'peminjamans.id_lokasi')
+            ->select(
+                'proyektors.nama_proyektor as nama',
+                'proyektors.merk',
+                'lokasis.nama_lokasi as lokasi',
+                DB::raw('count(*) as jumlah'),
+                DB::raw("'proyektor' as type")
+            )
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
-            ->groupBy('id_ruangan')
-            ->orderByDesc('total')
-            ->take(3)
-            ->get()
-            ->map(function ($item) {
-                $ruangan = Ruangan::find($item->id_ruangan);
-                return [
-                    'nama' => $ruangan->nama_ruangan ?? 'N/A',
-                    'lokasi' => $ruangan->lokasi->nama_lokasi ?? 'N/A',
-                    'jumlah' => $item->total,
-                    'type' => 'ruangan',
-                ];
-            });
+            ->groupBy(
+                'proyektors.nama_proyektor',
+                'proyektors.merk',
+                'lokasis.nama_lokasi'
+            )
+            ->orderByDesc('jumlah')
+            ->get();
 
-        $proyektorPopuler = Peminjaman::whereNotNull('id_proyektor')
-            ->select('id_proyektor', DB::raw('count(*) as total'))
-            ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
-            ->groupBy('id_proyektor')
-            ->orderByDesc('total')
-            ->take(3)
-            ->get()
-            ->map(function ($item) {
-                $proyektor = Proyektor::find($item->id_proyektor);
-                return [
-                    'nama' => $proyektor->nama_proyektor ?? 'N/A',
-                    'merk' => $proyektor->merk ?? 'N/A',
-                    'jumlah' => $item->total,
-                    'type' => 'proyektor',
-                ];
-            });
 
         $sarprasTerpopuler = $ruanganPopuler->merge($proyektorPopuler)
             ->sortByDesc('jumlah')
-            ->take(3)
             ->values();
+
+        // Pastikan ada ruangan jika memungkinkan
+        if ($sarprasTerpopuler->isNotEmpty()) {
+            $hasRuangan = $sarprasTerpopuler->take(3)->contains('type', 'ruangan');
+
+            // Jika 3 teratas tidak ada ruangan, tapi ada data ruangan
+            if (!$hasRuangan && $ruanganPopuler->isNotEmpty()) {
+                // Ambil 2 teratas (yang pasti proyektor karena sorting)
+                $topTwo = $sarprasTerpopuler->take(2);
+                // Ambil ruangan teratas
+                $topRuangan = $ruanganPopuler->first();
+                // Gabungkan
+                $sarprasTerpopuler = $topTwo->push($topRuangan);
+            } else {
+                $sarprasTerpopuler = $sarprasTerpopuler->take(3);
+            }
+        } else {
+            $sarprasTerpopuler = collect([]);
+        }
 
         $topSarprasNama = 'N/A';
         $topSarprasKode = 'N/A';
@@ -142,17 +139,21 @@ class Laporan extends Model
             [
                 'sarpras_terbanyak' => $topSarprasNama,
                 'ruangan_tersering' => $topSarprasKode,
-                'jam_selesai' => sprintf('%.1f', $waktuRataRata ?? 0),
+                'jam_rata_rata' => sprintf('%.1f', $waktuRataRata),
             ]
         );
 
-        $PeminjamanHariIni = Peminjaman::whereDate('tanggal_pinjam', Carbon::today())->count();
+        $PeminjamanHariIni = Peminjaman::whereDate(
+            'tanggal_pinjam',
+            Carbon::now()->toDateString()
+        )
+        ->count();
 
         $status = $request->get('status', 'all');
         $query = Peminjaman::with(['user', 'ruangan', 'proyektor']);
 
         if ($status !== 'all') {
-            $query->where('status', $status);
+            $query->where('status_peminjaman', $status);
         }
 
         $Lokasi = Lokasi::all();
@@ -160,7 +161,6 @@ class Laporan extends Model
 
         return view('admin.laporan.index', [
             'PeminjamanHariIni' => $PeminjamanHariIni,
-            'peminjamanHariIniCount' => $PeminjamanHariIni,
             'peminjaman' => $peminjaman,
             'totalPeminjaman' => $totalPeminjaman,
             'waktuRataRata' => $waktuRataRata,
@@ -170,12 +170,14 @@ class Laporan extends Model
             'status' => $status,
             'periode' => $periode,
             'Lokasi' => $Lokasi,
-            'periodeLabel' => $this->getPeriodeLabel($periode),
+            'periodeLabel' => $periodeLabel,
         ]);
     }
 
+    // Export PDF
     public function pdf(Request $request)
     {
+        // samakan default
         $periode = $request->get('periode', 'perbulan');
         $dateRange = $this->getDateRange($periode);
         $startDate = $dateRange['startDate'];
@@ -183,13 +185,24 @@ class Laporan extends Model
         $periodeLabel = $this->getPeriodeLabel($periode);
 
         // Hitung data untuk PDF
-        $totalPeminjaman = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])->count();
-        $peminjamanHariIni = Peminjaman::whereDate('tanggal_pinjam', Carbon::today())->count();
-        $waktuRataRata = Peminjaman::selectRaw('AVG(TIMESTAMPDIFF(HOUR, jam_mulai, jam_selesai)) as avg_jam')
-            ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
-            ->value('avg_jam') ?? 0;
+        $totalPeminjaman = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->count();
+        $peminjamanHariIni = Peminjaman::whereDate('tanggal_pinjam', Carbon::today())
+            ->count();
 
-        // Peminjam teratas
+        $durations = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->whereNotNull('jam_mulai')
+            ->whereNotNull('jam_selesai')
+            ->get(['jam_mulai', 'jam_selesai'])
+            ->map(function ($peminjaman) {
+                $start = Carbon::parse($peminjaman->jam_mulai);
+                $end = Carbon::parse($peminjaman->jam_selesai);
+                return $end->diffInMinutes($start);
+            });
+
+        $avgMinutes = $durations->avg() ?? 0;
+        $waktuRataRata = $avgMinutes / 60;
+
         $peminjamTeratas = Peminjaman::select('id_akun', DB::raw('count(*) as total'))
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->groupBy('id_akun')
@@ -205,13 +218,11 @@ class Laporan extends Model
                 ];
             });
 
-        // Sarpras terpopuler
         $ruanganPopuler = Peminjaman::whereNotNull('id_ruangan')
             ->select('id_ruangan', DB::raw('count(*) as total'))
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->groupBy('id_ruangan')
             ->orderByDesc('total')
-            ->take(3)
             ->get()
             ->map(function ($item) {
                 $ruangan = Ruangan::find($item->id_ruangan);
@@ -228,7 +239,6 @@ class Laporan extends Model
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->groupBy('id_proyektor')
             ->orderByDesc('total')
-            ->take(3)
             ->get()
             ->map(function ($item) {
                 $proyektor = Proyektor::find($item->id_proyektor);
@@ -242,10 +252,19 @@ class Laporan extends Model
 
         $sarprasTerpopuler = $ruanganPopuler->merge($proyektorPopuler)
             ->sortByDesc('jumlah')
-            ->take(3)
             ->values();
 
-        // Ambil data peminjaman untuk detail laporan
+        if ($sarprasTerpopuler->isNotEmpty()) {
+            $hasRuangan = $sarprasTerpopuler->take(3)->contains('type', 'ruangan');
+            if (!$hasRuangan && $ruanganPopuler->isNotEmpty()) {
+                $topTwo = $sarprasTerpopuler->take(2);
+                $topRuangan = $ruanganPopuler->first();
+                $sarprasTerpopuler = $topTwo->push($topRuangan);
+            } else {
+                $sarprasTerpopuler = $sarprasTerpopuler->take(3);
+            }
+        }
+
         $peminjaman = Peminjaman::with(['user', 'ruangan', 'proyektor'])
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->latest()
@@ -268,6 +287,7 @@ class Laporan extends Model
         return $pdf->download($filename);
     }
 
+    // Export Excel
     public function excel(Request $request)
     {
         $periode = $request->get('periode', 'perbulan');
@@ -277,9 +297,19 @@ class Laporan extends Model
 
         $totalPeminjaman = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])->count();
         $peminjamanHariIni = Peminjaman::whereDate('tanggal_pinjam', Carbon::today())->count();
-        $waktuRataRata = Peminjaman::selectRaw('AVG(TIMESTAMPDIFF(HOUR, jam_mulai, jam_selesai)) as avg_jam')
-            ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
-            ->value('avg_jam') ?? 0;
+
+        $durations = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->whereNotNull('jam_mulai')
+            ->whereNotNull('jam_selesai')
+            ->get(['jam_mulai', 'jam_selesai'])
+            ->map(function ($peminjaman) {
+                $start = Carbon::parse($peminjaman->jam_mulai);
+                $end = Carbon::parse($peminjaman->jam_selesai);
+                return $end->diffInMinutes($start);
+            });
+
+        $avgMinutes = $durations->avg() ?? 0;
+        $waktuRataRata = $avgMinutes / 60;
 
         $peminjamTeratas = Peminjaman::select('id_akun', DB::raw('count(*) as total'))
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
@@ -335,6 +365,17 @@ class Laporan extends Model
             ->take(3)
             ->values();
 
+        if ($sarprasTerpopuler->isNotEmpty()) {
+            $hasRuangan = $sarprasTerpopuler->take(3)->contains('type', 'ruangan');
+            if (!$hasRuangan && $ruanganPopuler->isNotEmpty()) {
+                $topTwo = $sarprasTerpopuler->take(2);
+                $topRuangan = $ruanganPopuler->first();
+                $sarprasTerpopuler = $topTwo->push($topRuangan);
+            } else {
+                $sarprasTerpopuler = $sarprasTerpopuler->take(3);
+            }
+        }
+
         $data = [
             'totalPeminjaman' => $totalPeminjaman,
             'peminjamanHariIni' => $peminjamanHariIni,
@@ -348,30 +389,31 @@ class Laporan extends Model
         return Excel::download($export, $filename);
     }
 
+    // Mengembalikan range tanggal yang inklusif (startOfDay/endOfDay)
     private function getDateRange($periode)
     {
         $now = Carbon::now();
 
         switch ($periode) {
             case 'perbulan':
-                $startDate = $now->copy()->startOfMonth();
-                $endDate = $now->copy()->endOfMonth();
+                $startDate = $now->copy()->startOfMonth()->startOfDay();
+                $endDate = $now->copy()->endOfMonth()->endOfDay();
                 break;
             case 'persemester':
                 $month = $now->month;
                 $year = $now->year;
 
                 if ($month <= 6) {
-                    $startDate = Carbon::createFromDate($year, 1, 1);
-                    $endDate = Carbon::createFromDate($year, 6, 30);
+                    $startDate = Carbon::createFromDate($year, 1, 1)->startOfDay();
+                    $endDate = Carbon::createFromDate($year, 6, 30)->endOfDay();
                 } else {
-                    $startDate = Carbon::createFromDate($year, 7, 1);
-                    $endDate = Carbon::createFromDate($year, 12, 31);
+                    $startDate = Carbon::createFromDate($year, 7, 1)->startOfDay();
+                    $endDate = Carbon::createFromDate($year, 12, 31)->endOfDay();
                 }
                 break;
             default:
-                $startDate = $now->copy()->startOfMonth();
-                $endDate = $now->copy()->endOfMonth();
+                $startDate = $now->copy()->startOfMonth()->startOfDay();
+                $endDate = $now->copy()->endOfMonth()->endOfDay();
         }
 
         return ['startDate' => $startDate, 'endDate' => $endDate];

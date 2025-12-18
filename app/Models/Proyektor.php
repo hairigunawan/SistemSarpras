@@ -50,13 +50,27 @@ class Proyektor extends Model
 
     public static function Submit(Request $request)
     {
+        $messages = [
+            'nama_proyektor.required' => 'Nama proyektor wajib diisi.',
+            'nama_proyektor.max'      => 'Nama proyektor maksimal 255 karakter.',
+            'merk.required'           => 'Merk proyektor wajib diisi.',
+            'merk.max'                => 'Merk proyektor maksimal 255 karakter.',
+            'kode_proyektor.unique'   => 'Kode proyektor sudah digunakan.',
+            'id_status.required'      => 'Status proyektor wajib dipilih.',
+            'id_status.exists'        => 'Status yang dipilih tidak valid.',
+            'gambar.required'         => 'Gambar proyektor wajib diunggah.',
+            'gambar.image'            => 'File harus berupa gambar.',
+            'gambar.mimes'            => 'Format gambar harus jpg, jpeg, png, atau webp.',
+            'gambar.max'              => 'Ukuran gambar maksimal 2MB.',
+        ];
+
         $validated = $request->validate([
             'nama_proyektor' => 'required|string|max:255',
             'merk' => 'required|string|max:255',
             'kode_proyektor' => 'nullable|string|max:255|unique:proyektors,kode_proyektor',
             'id_status' => 'required|exists:statuses,id_status',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
+            'gambar' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ], $messages);
 
         try {
             Proyektor::SubmitFile($validated, $request->file('gambar'));

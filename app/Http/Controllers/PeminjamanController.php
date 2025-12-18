@@ -29,6 +29,10 @@ class PeminjamanController extends Controller
         try {
             $p = Peminjaman::findOrFail($id);
 
+            if ($p->tanggal_pinjam != now()->toDateString()) {
+                throw new \Exception('Peminjaman hanya dapat disetujui pada tanggal peminjaman (hari ini).');
+            }
+
             $p->approve();
 
             return $this->jsonResponse(true, 'Peminjaman berhasil disetujui.');

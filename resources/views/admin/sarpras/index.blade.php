@@ -18,6 +18,7 @@
                     <!-- Search -->
                     <div class="relative">
                         <input type="text" placeholder="Cari sarpras..."
+                            value="{{ request('search') }}"
                             class="w-full sm:w-64 pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm
                                    focus:ring-1 focus:ring-[#8bc9e2] focus:border-transparent focus:outline-none
                                    transition-all duration-200" />
@@ -34,7 +35,9 @@
                                    transition-all duration-200 appearance-none bg-white">
                             <option value="">Semua Status</option>
                             @foreach($s as $status)
-                                <option value="{{ $status->nama_status }}">{{ $status->nama_status }}</option>
+                                <option value="{{ $status->nama_status }}" {{ request('nama_status') == $status->nama_status ? 'selected' : '' }}>
+                                    {{ $status->nama_status }}
+                                </option>
                             @endforeach
                         </select>
                         <svg class="absolute right-3 top-2.5 w-5 h-5 text-gray-400 pointer-events-none" fill="none"
@@ -60,13 +63,8 @@
             @forelse ($items as $item)
                 <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
                     <div class="w-full aspect-[4/3] overflow-hidden">
-                        @php
-                            $itemData = $item->type === 'ruangan'
-                                ? \App\Models\Ruangan::find($item->id)
-                                : \App\Models\Proyektor::find($item->id);
-                        @endphp
-                        @if($itemData && $itemData->gambar)
-                            <img src="{{ asset('storage/' . str_replace('public/', '', $itemData->gambar)) }}"
+                        @if($item->gambar)
+                            <img src="{{ asset('storage/' . str_replace('public/', '', $item->gambar)) }}"
                                 alt="{{ $item->nama }}"
                                 class="w-full h-full object-cover">
                         @else
@@ -79,11 +77,7 @@
                     <div class="p-3">
                         <h2 class="text-gray-800 font-semibold">{{ $item->nama }}</h2>
                         <p class="text-xs font-medium text-gray-500 mb-3">
-                            @if($item->type === 'ruangan')
-                                {{ $itemData->lokasi->nama_lokasi ?? '-' }}
-                            @else
-                                {{ $itemData->merk ?? '-' }}
-                            @endif
+                            {{ $item->detail ?? '-' }}
                         </p>
 
                         <div class="mb-4">
