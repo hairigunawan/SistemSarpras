@@ -32,6 +32,28 @@
         </div>
     </div>
 
+    <script>
+        <?php if(session('success')): ?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: "<?php echo e(session('success')); ?>",
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        <?php endif; ?>
+
+        <?php if(session('error')): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: "<?php echo e(session('error')); ?>",
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'OK'
+            });
+        <?php endif; ?>
+    </script>
+    
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>

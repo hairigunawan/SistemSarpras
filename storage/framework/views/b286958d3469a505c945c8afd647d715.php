@@ -68,11 +68,7 @@
         <?php endif; ?>
 
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-
-            <!-- Card Header: Status & Actions -->
             <div class="px-6 py-5 border-b border-gray-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-
-                <!-- Status Badge -->
                 <div class="flex items-center gap-3">
                     <span class="text-gray-500 text-sm">Status:</span>
                     <span class="px-3 py-1 rounded-full text-sm font-medium
@@ -90,7 +86,6 @@
                     <?php endif; ?>
                 </div>
 
-                <!-- Action Buttons -->
                 <div class="flex flex-wrap items-center gap-2">
                     <?php if($mainPeminjaman->status_peminjaman == 'Menunggu'): ?>
                         <?php if($mainPeminjaman->tanggal_pinjam == now()->toDateString()): ?>
@@ -105,7 +100,7 @@
                             </form>
                         <?php else: ?>
                             <button type="button" onclick="showErrorMessage('Peminjaman hanya dapat disetujui pada hari peminjaman yang dijadwalkan.')"
-                                class="inline-flex items-center px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase">
+                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 Setujui
                             </button>
@@ -351,14 +346,10 @@ unset($__errorArgs, $__bag); ?>
     </div>
 </div>
 
-<!-- MODAL TOLAK (Hidden by default) -->
 <div id="rejectModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <!-- Background overlay -->
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeModal()"></div>
-
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <form id="rejectForm" action="#" method="POST" data-action-template="<?php echo e(route('peminjaman.reject', ['id' => ':peminjaman_id'])); ?>">
                 <?php echo csrf_field(); ?>

@@ -52,7 +52,7 @@
                 Proses Import
             </button>
         </form>
-        <p class="mt-2 text-xs text-gray-500">*Pastikan format header file Excel sesuai dengan template sistem.</p>
+        <p class="mt-2 text-[10px] uppercase tracking-wider text-gray-400 font-bold mt-0.5">*Pastikan format header file Excel sesuai dengan template sistem.</p>
     </div>
 
     <!-- Tabel Jadwal -->
@@ -62,10 +62,9 @@
                 <thead class="bg-gray-50 border-b border-gray-100">
                     <tr>
                         <th class="px-6 py-4 font-semibold text-gray-900">Kode MK</th>
-                        <th class="px-6 py-4 font-semibold text-gray-900">Nama Kelas</th>
-                        <th class="px-6 py-4 font-semibold text-gray-900 text-center">MK</th>
-                        <th class="px-6 py-4 font-semibold text-gray-900 text-center">Hari</th>
-                        <th class="px-6 py-4 font-semibold text-gray-900 text-center">Jam</th>
+                        <th class="px-6 py-4 font-semibold text-gray-900">Mata Kuliah & Sistem</th>
+                        <th class="px-6 py-4 font-semibold text-gray-900">Kelas & Sebaran</th>
+                        <th class="px-6 py-4 font-semibold text-gray-900 text-center">Waktu</th>
                         <th class="px-6 py-4 font-semibold text-gray-900 text-center">Ruang</th>
                         <th class="px-6 py-4 font-semibold text-gray-900 text-center">Kuota</th>
                         <th class="px-6 py-4 font-semibold text-gray-900 text-center">Aksi</th>
@@ -80,46 +79,44 @@
 
                             </td>
 
-                            <!-- Nama Kelas & Kelas Mhs -->
+                            <!-- Nama Kelas & Sistem Kuliah -->
                             <td class="px-6 py-4">
                                 <div class="flex flex-col">
                                     <span class="font-medium text-gray-700"><?php echo e($jadwal->nama_kelas); ?></span>
+                                    <span class="text-[10px] uppercase tracking-wider text-gray-400 font-bold mt-0.5"><?php echo e($jadwal->sistem_kuliah); ?></span>
                                 </div>
                             </td>
 
-                            <td>
-                                <div class="flex flex-col">
-                                    <span class="text-sm text-gray-700">Kelas: <span class="font-normal text-gray-700"><?php echo e($jadwal->kelas_mahasiswa); ?>
-
-                                </div>
-                            </td>
-
-                            <!-- Hari -->
+                            <!-- Kelas & Sebaran -->
                             <td class="px-6 py-4">
-                                <span class="inline-flex items-center text-gray-700 text-sm font-medium">
-                                    <?php echo e($jadwal->hari); ?>
-
-                                </span>
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-medium text-gray-700"><?php echo e($jadwal->kelas_mahasiswa); ?></span>
+                                    <span class="text-[10px] uppercase tracking-wider text-gray-400 font-bold mt-0.5"><?php echo e($jadwal->sebaran_kelas); ?></span>
+                                </div>
                             </td>
 
-                            <!-- Jam -->
-                            <td class="px-6 py-4 text-center whitespace-nowrap">
-                                <span class="text-gray-700 text-sm">
-                                    <?php echo e(\Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i')); ?> - <?php echo e(\Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i')); ?>
+                            <!-- Waktu (Hari & Jam) -->
+                            <td class="px-6 py-4 text-center">
+                                <div class="flex flex-col items-center">
+                                    <span class="font-semibold text-gray-800"><?php echo e($jadwal->hari); ?></span>
+                                    <span class="text-[10px] uppercase tracking-wider text-gray-400 font-bold mt-0.5">
+                                        <?php echo e(\Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i')); ?> - <?php echo e(\Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i')); ?>
 
-                                </span>
+                                    </span>
+                                </div>
                             </td>
 
                             <!-- Ruangan -->
                             <td class="px-6 py-4 text-center">
-                                <div class="flex items-center justify-center gap-1.5 text-gray-700">
-                                    <span class="font-medium"><?php echo e($jadwal->ruangan); ?></span>
-                                </div>
+                                <span class="inline-flex items-center text-xs font-medium text-gray-800">
+                                    <?php echo e($jadwal->ruangan); ?>
+
+                                </span>
                             </td>
 
                             <!-- Daya Tampung -->
                             <td class="px-6 py-4 text-center">
-                                <span class="inline-flex items-center justify-center text-sm font-medium">
+                                <span class="font-medium text-gray-900">
                                     <?php echo e($jadwal->daya_tampung); ?>
 
                                 </span>
@@ -164,7 +161,7 @@
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center">
+                            <td colspan="8" class="px-6 py-12 text-center">
                                 <div class="flex flex-col items-center justify-center text-gray-500">
                                     <p class="text-base font-medium text-gray-900">Belum ada jadwal</p>
                                     <p class="text-sm">Silakan tambah manual atau import data excel.</p>

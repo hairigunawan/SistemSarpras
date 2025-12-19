@@ -51,8 +51,13 @@ class Laporan extends Model
         $avgMinutes = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->whereNotNull('jam_mulai')
             ->whereNotNull('jam_selesai')
-            ->select(DB::raw('AVG((julianday(jam_selesai) - julianday(jam_mulai)) * 24 * 60) as avg'))
-            ->value('avg') ?? 0;
+            ->get(['jam_mulai', 'jam_selesai'])
+            ->map(function ($peminjaman) {
+                $start = Carbon::parse($peminjaman->jam_mulai);
+                $end = Carbon::parse($peminjaman->jam_selesai);
+                return $end->diffInMinutes($start);
+            })
+            ->avg() ?? 0;
 
         $waktuRataRata = $avgMinutes / 60;
 

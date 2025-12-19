@@ -17,14 +17,15 @@ class Jadwal extends Model
 
     protected $fillable = [
         'kode_mk',
+        'sistem_kuliah',
         'nama_kelas',
         'kelas_mahasiswa',
+        'sebaran_kelas',
         'hari',
         'jam_mulai',
         'jam_selesai',
         'ruangan',
         'daya_tampung',
-        'sebaran_mahasiswa'
     ];
 
     protected $casts = [
@@ -46,10 +47,11 @@ class Jadwal extends Model
     private function validateRequest(Request $request)
     {
         return $request->validate([
-            'kode_mk'           => 'required',
+            'kode_mk'           => 'nullable',
+            'sistem_kuliah'     => 'required',
             'nama_kelas'        => 'required',
             'kelas_mahasiswa'   => 'required',
-            'sebaran_mahasiswa' => 'required|integer',
+            'sebaran_kelas'     => 'required',
             'hari'              => 'required',
             'jam_mulai'         => 'required|date_format:H:i',
             'jam_selesai'       => 'required|date_format:H:i',
@@ -96,13 +98,20 @@ class Jadwal extends Model
 
     public static function Import(Request $request){
         $request->validate([
-            'file' => 'required|mimes:xls,xlsx|max:2048'
+            'file' => 'required|mimes:xls,xlsx,csv|max:2048'
         ]);
 
         try {
             Excel::import(new JadwalImport, $request->file('file'));
             return redirect()->route('admin.jadwal.index')
                 ->with('success', 'Data jadwal berhasil di-import!');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+             $failures = $e->failures();
+             $errorMsg = 'Gagal import: ';
+             foreach ($failures as $failure) {
+                 $errorMsg .= 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors()) . '. ';
+             }
+             return redirect()->back()->with('error', $errorMsg);
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Gagal import data: ' . $e->getMessage());

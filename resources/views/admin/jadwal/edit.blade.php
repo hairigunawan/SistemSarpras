@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto my-10">
-    
+
     {{-- Header Sederhana --}}
     <div class="flex items-center justify-between mb-6">
         <div>
@@ -43,6 +43,17 @@
                         </div>
                     </div>
 
+                    {{-- Sistem Kuliah --}}
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-700">Sistem Kuliah</label>
+                        <select name="sistem_kuliah"
+                            class="w-full px-4 py-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xs focus:ring-blue-500 focus:border-blue-500 block transition-all" required>
+                            <option value="" disabled>Pilih Sistem Kuliah</option>
+                            <option value="Reguler" {{ old('sistem_kuliah', $j->sistem_kuliah) == 'Reguler' ? 'selected' : '' }}>Reguler</option>
+                            <option value="Non Reguler" {{ old('sistem_kuliah', $j->sistem_kuliah) == 'Non Reguler' ? 'selected' : '' }}>Non Reguler</option>
+                        </select>
+                    </div>
+
                     {{-- Nama Kelas --}}
                     <div>
                         <label class="block mb-2 text-sm font-medium text-gray-700">Nama Kelas</label>
@@ -64,11 +75,11 @@
                             class="w-full px-4 py-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xs focus:ring-blue-500 focus:border-blue-500 block transition-all" required placeholder="A / B / C">
                     </div>
 
-                    {{-- Sebaran Mahasiswa --}}
+                    {{-- Sebaran Kelas --}}
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-700">Sebaran (Semester)</label>
-                        <input type="number" name="sebaran_mahasiswa" value="{{ old('sebaran_mahasiswa', $j->sebaran_mahasiswa) }}"
-                            class="w-full px-4 py-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xs focus:ring-blue-500 focus:border-blue-500 block transition-all" required>
+                        <label class="block mb-2 text-sm font-medium text-gray-700">Sebaran Kelas</label>
+                        <input type="text" name="sebaran_kelas" value="{{ old('sebaran_kelas', $j->sebaran_kelas) }}"
+                            class="w-full px-4 py-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xs focus:ring-blue-500 focus:border-blue-500 block transition-all" required placeholder="Semester 3">
                     </div>
                 </div>
             </div>
@@ -77,21 +88,21 @@
             <div>
                 <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4 border-b pb-2">Waktu & Tempat</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    
+
                     {{-- Hari dengan Alpine.js --}}
                     <div x-data="{ selectedHari: '{{ old('hari', $j->hari) }}' }" class="col-span-1">
                         <label class="block mb-2 text-sm font-medium text-gray-700">Pilih Hari</label>
-                        
+
                         {{-- Input Tersembunyi (Ini yang dikirim ke Server) --}}
                         <input type="hidden" name="hari" x-model="selectedHari">
 
                         {{-- Grid Tombol --}}
                         <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
                             @foreach (['Senin','Selasa','Rabu','Kamis','Jumat'] as $day)
-                                <button type="button" 
+                                <button type="button"
                                     @click="selectedHari = '{{ $day }}'"
-                                    :class="selectedHari === '{{ $day }}' 
-                                        ? 'bg-blue-300 text-white shadow-md ring-blue-500 ring-1 border-transparent' 
+                                    :class="selectedHari === '{{ $day }}'
+                                        ? 'bg-blue-300 text-white shadow-md ring-blue-500 ring-1 border-transparent'
                                         : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300'"
                                     class="py-2 px-2 text-sm font-medium border rounded-xs transition-all duration-200 focus:outline-none text-center truncate">
                                     {{ $day }}

@@ -135,7 +135,10 @@ class Peminjaman extends Model
             if (empty($validated['id_lokasi'])) {
                 throw new \Exception('Lokasi harus dipilih untuk peminjaman proyektor.');
             }
-            $validated['id_ruangan'] = $validated['id_ruangan_proyektor'];
+            // Hanya gunakan ruangan proyektor jika ruangan utama tidak dipilih
+            if (empty($validated['id_ruangan'])) {
+                $validated['id_ruangan'] = $validated['id_ruangan_proyektor'];
+            }
         }
 
         $user = Auth::user();
@@ -185,10 +188,6 @@ class Peminjaman extends Model
 
     public function reject($alasan)
     {
-        if ($this->status_peminjaman !== 'Menunggu') {
-            throw new \Exception('Hanya peminjaman berstatus Menunggu yang bisa ditolak.');
-        }
-
         $this->update([
             'status_peminjaman' => 'Ditolak',
             'alasan_penolakan' => $alasan

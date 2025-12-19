@@ -153,29 +153,11 @@
                                         {{ $item->status_peminjaman }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium flex items-center justify-center gap-2">
+                                <td class="px-6 py-5 whitespace-nowrap text-center text-sm font-medium flex items-center justify-center">
                                     <a href="{{ route('admin.peminjaman.lihat_peminjaman', $item->id_peminjaman) }}"
                                        class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors">
                                         Detail
                                     </a>
-                                    @if($item->status_peminjaman == 'Menunggu')
-                                        @if($item->tanggal_pinjam == now()->toDateString())
-                                            <form action="{{ route('peminjaman.approve', $item->id_peminjaman) }}" method="POST" class="inline">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyetujui peminjaman ini?')"
-                                                    class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-md transition-colors">
-                                                    Setujui
-                                                </button>
-                                            </form>
-                                        @else
-                                            <button type="button" 
-                                                onclick="showErrorMessage('Peminjaman hanya dapat disetujui pada hari peminjaman yang dijadwalkan ({{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d/m/Y') }}).')"
-                                                class="text-gray-400 bg-gray-100 px-3 py-1.5 rounded-md transition-colors">
-                                                Setujui
-                                            </button>
-                                        @endif
-                                    @endif
                                 </td>
                             </tr>
                         @empty

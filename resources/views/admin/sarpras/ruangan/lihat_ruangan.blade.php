@@ -8,9 +8,9 @@
     <header class="pt-6 bg-white">
                 <!-- Global Alert -->
     @if(session('error'))
-    <div 
-        x-data="{ show: true }" 
-        x-init="setTimeout(() => show = false, 3000)" 
+    <div
+        x-data="{ show: true }"
+        x-init="setTimeout(() => show = false, 3000)"
         x-show="show"
         x-transition
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4"
@@ -22,9 +22,9 @@
     @endif
 
     @if(session('success'))
-        <div 
-            x-data="{ show: true }" 
-            x-init="setTimeout(() => show = false, 3000)" 
+        <div
+            x-data="{ show: true }"
+            x-init="setTimeout(() => show = false, 3000)"
             x-show="show"
             x-transition
             class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4"

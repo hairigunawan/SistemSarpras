@@ -163,29 +163,11 @@
 
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium flex items-center justify-center gap-2">
+                                <td class="px-6 py-5 whitespace-nowrap text-center text-sm font-medium flex items-center justify-center">
                                     <a href="<?php echo e(route('admin.peminjaman.lihat_peminjaman', $item->id_peminjaman)); ?>"
                                        class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors">
                                         Detail
                                     </a>
-                                    <?php if($item->status_peminjaman == 'Menunggu'): ?>
-                                        <?php if($item->tanggal_pinjam == now()->toDateString()): ?>
-                                            <form action="<?php echo e(route('peminjaman.approve', $item->id_peminjaman)); ?>" method="POST" class="inline">
-                                                <?php echo csrf_field(); ?>
-                                                <?php echo method_field('PATCH'); ?>
-                                                <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyetujui peminjaman ini?')"
-                                                    class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-md transition-colors">
-                                                    Setujui
-                                                </button>
-                                            </form>
-                                        <?php else: ?>
-                                            <button type="button" 
-                                                onclick="showErrorMessage('Peminjaman hanya dapat disetujui pada hari peminjaman yang dijadwalkan (<?php echo e(\Carbon\Carbon::parse($item->tanggal_pinjam)->format('d/m/Y')); ?>).')"
-                                                class="text-gray-400 bg-gray-100 px-3 py-1.5 rounded-md transition-colors">
-                                                Setujui
-                                            </button>
-                                        <?php endif; ?>
-                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
