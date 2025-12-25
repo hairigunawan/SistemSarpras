@@ -8,8 +8,6 @@
 </head>
 
 <body class="min-h-screen flex flex-col justify-between bg-gradient-to-br from-blue-50 to-white">
-
-    <!-- ================= MAIN CARD ================= -->
     <div class="flex-grow w-full flex items-center justify-center p-4">
         <div class="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
 

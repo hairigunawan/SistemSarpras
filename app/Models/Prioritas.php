@@ -19,7 +19,6 @@ class Prioritas extends Model
             ->where('status_peminjaman', 'Menunggu')
             ->get();
 
-        // Ambil kriteria dari database dan normalisasi nama_kriteria
         $dbKriteria = DB::table('kriteria')->get();
 
         $kriteria = [];
@@ -49,19 +48,15 @@ class Prioritas extends Model
         $bobot = $ahp['bobotAkhir'];
         $orderedKeys = $ahp['keys'] ?? array_keys($kriteria);
 
-        // Susun ulang kriteria sesuai orderedKeys agar tampilannya sinkron
         $kriteriaOrdered = [];
         foreach ($orderedKeys as $key) {
-            // jika kriteria dari DB tidak punya tipe (safety), beri default benefit
             $kriteriaOrdered[$key] = $kriteria[$key] ?? ['id' => null, 'nama_asli' => ucfirst(str_replace('_', ' ', $key)), 'tipe' => 'benefit'];
         }
 
-        // sinkronisasi bobot dengan kriteria (index-safe) mengikuti orderedKeys
         foreach ($orderedKeys as $idx => $key) {
             $kriteriaOrdered[$key]['bobot'] = round($bobot[$idx] ?? 0, 3);
         }
 
-        // hitung SAW menggunakan kriteria terurut
         [$hasil, $alternatif] = $this->hitungSAW($peminjaman, $kriteriaOrdered);
 
         return view('admin.prioritas.ruangan', [
@@ -136,7 +131,7 @@ class Prioritas extends Model
 
     public function tambahKriteria()
     {
-        return view('kriteria.tambah_kruang');
+        return view('admin.kriteria.create');
     }
 
     public function storeKriteria(Request $request)

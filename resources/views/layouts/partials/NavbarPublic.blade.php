@@ -2,11 +2,47 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-20">
 
-            <div class="flex-shrink-0 flex items-center gap-3">
+            <div class="flex-shrink-0 flex items-center gap-2">
                 <a href="{{ route('public.beranda.index') }}" class="flex items-center gap-2.5">
-                    <img src="{{ asset('storage/images/TI.png') }}" alt="Logo TI" class="w-8 h-8 sm:w-10 sm:h-10 object-contain">
-                    <img src="{{ asset('storage/images/politala.png') }}" alt="Logo Politala" class="w-8 h-8 sm:w-10 sm:h-10 object-contain">
-                    <span class="text-lg sm:text-xl font-bold text-gray-600">SIMPERSITE.</span>
+                    <div class="flex gap-3">
+                        <img
+                            src="{{ asset('storage/images/TI.png') }}"
+                            alt="Logo TI"
+                            class="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                        >
+
+                        <img
+                            src="{{ asset('storage/images/politala.png') }}"
+                            alt="Logo Politala"
+                            class="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                        >
+                    </div>
+                    <svg
+                        viewBox="0 0 330 70"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-8 sm:h-10 w-auto"
+                        aria-label="SIMPERSITE"
+                    >
+                        <defs>
+                            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#179ACE"/>
+                            </linearGradient>
+                        </defs>
+
+                        <text
+                            x="50%"
+                            y="55%"
+                            text-anchor="middle"
+                            dominant-baseline="middle"
+                            font-size="42"
+                            font-weight="800"
+                            letter-spacing="4"
+                            fill="url(#grad)"
+                        >
+                            SIMPERSITE
+                        </text>
+                    </svg>
+
                 </a>
             </div>
 

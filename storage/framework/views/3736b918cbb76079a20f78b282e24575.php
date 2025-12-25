@@ -47,7 +47,7 @@
                     </div>
 
                     <button id="btn-tambah-sarpras"
-                        class="bg-[#179ACE] hover:bg-[#0F6A8F] text-white px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-normal transition flex items-center gap-2">
+                        class="bg-[#179ACE] hover:bg-[#0F6A8F] text-white px-4 py-2.5 border border-gray-200 rounded-lg text-xs uppercase tracking-widest font-normal transition flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -93,12 +93,12 @@
 
                         <?php if($item->type === 'ruangan'): ?>
                             <a href="<?php echo e(route('sarpras.ruangan.lihat_ruangan', $item->id)); ?>"
-                            class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-1.5 border border-gray-200 rounded-lg text-xs font-normal transition">
+                            class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-1.5 border border-gray-200 rounded-lg text-xs uppercase tracking-widest font-normal transition">
                                 Lihat Detail
                             </a>
                         <?php else: ?>
                             <a href="<?php echo e(route('sarpras.proyektor.lihat_proyektor', $item->id)); ?>"
-                            class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-1.5 border border-gray-200 rounded-lg text-xs font-normal transition">
+                            class="block text-center bg-[#66bfe2] hover:bg-[#179ACE] text-white py-1.5 border border-gray-200 rounded-lg text-xs uppercase tracking-widest font-normal transition">
                                 Lihat Detail
                             </a>
                         <?php endif; ?>
@@ -130,17 +130,17 @@
 
         <div class="flex flex-col gap-3">
             <a href="<?php echo e(route('sarpras.ruangan.tambah_ruangan')); ?>"
-                class="bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition">
+                class="bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition text-xs uppercase tracking-widest border border-blue-300">
                 Tambah Ruangan
             </a>
             <a href="<?php echo e(route('sarpras.proyektor.tambah_proyektor')); ?>"
-                class="text-white py-2 rounded-lg bg-green-500 hover:bg-green-600 transition border border-gray-300">
+                class="text-white py-2 rounded-lg bg-green-500 hover:bg-green-600 transition text-xs uppercase tracking-widest border border-green-300">
                 Tambah Proyektor
             </a>
         </div>
 
         <button id="btn-tutup-modal"
-            class="mt-5 text-gray-500 hover:text-gray-700 px-4 py-1.5 text-sm font-medium">
+            class="mt-5 text-gray-500 hover:text-gray-700 px-4 py-1.5 text-xs uppercase tracking-widest font-medium border border-gray-300 rounded-lg transition">
             Batal
         </button>
     </div>

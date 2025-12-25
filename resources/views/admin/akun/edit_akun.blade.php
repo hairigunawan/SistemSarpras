@@ -17,9 +17,7 @@
             </a>
         </nav>
 
-        <!-- Main Card -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-
             <div class="px-8 pb-8">
                 <div class="flex items-end mt-5 mb-8 gap-5">
                     <div class="pb-1">
@@ -27,16 +25,12 @@
                         <p class="text-sm text-slate-500">Perbarui data profil dan hak akses pengguna.</p>
                     </div>
                 </div>
-
-                <!-- Form -->
                 <form method="POST" action="{{ route('admin.akun.update', $akun->id_akun) }}">
                     @csrf
                     @method('PATCH')
 
                     <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                            <!-- Nama -->
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label>
                                 <div class="relative">
@@ -52,7 +46,6 @@
                                 @error('nama') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
 
-                            <!-- Email -->
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Alamat Email</label>
                                 <div class="relative">
@@ -68,7 +61,6 @@
                                 @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
 
-                            <!-- Nomor Telepon -->
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">WhatsApp / Telepon</label>
                                 <div class="relative">
@@ -89,8 +81,6 @@
 
                     <div class="space-y-6 mt-8">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                            <!-- Role -->
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Role / Peran</label>
                                 <select name="role_id" class="pl-10 block w-full py-2 border rounded-lg border-gray-300 shadow-sm sm:text-sm transition-colors">
@@ -104,7 +94,6 @@
                                 @error('role_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
 
-                            <!-- Password -->
                             <div class="mb-4">
                         <label class="font-medium text-gray-700 text-sm">Password</label>
                         <div class="relative">
@@ -144,7 +133,6 @@
                     </div>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="mt-10 pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
                         <a href="{{ route('admin.akun.index') }}"
                            class="inline-flex justify-center items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-500 transition-all">

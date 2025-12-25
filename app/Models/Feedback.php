@@ -48,13 +48,12 @@ class Feedback extends Model
     public static function HalamanUtama(Request $request)
     {
         $id_sarpras = $request->input('id_sarpras');
-        $sarpras_type = $request->input('type'); // 'ruangan' atau 'proyektor'
+        $sarpras_type = $request->input('type'); 
 
         if (!$id_sarpras || !$sarpras_type) {
             abort(400, 'Parameter id_sarpras dan type diperlukan');
         }
 
-        // Validasi apakah pengguna memiliki akses ke feedback ini
         $peminjaman = Peminjaman::where('id_akun', Auth::id())
             ->where(function ($query) use ($id_sarpras, $sarpras_type) {
                 if ($sarpras_type === 'ruangan') {
@@ -86,7 +85,6 @@ class Feedback extends Model
             }
         }
 
-        // Ambil data sumber daya
         if ($sarpras_type === 'ruangan') {
             $ruangan = Ruangan::findOrFail($id_sarpras);
             $proyektor = null;
@@ -97,7 +95,6 @@ class Feedback extends Model
             $sarpras = $proyektor;
         }
 
-        // Ambil semua feedback untuk sarpras ini (tidak dibatasi per peminjaman)
         $feedbacks = Feedback::where(function ($query) use ($id_sarpras, $sarpras_type) {
             if ($sarpras_type === 'ruangan') {
                 $query->where('id_ruangan', $id_sarpras);
@@ -106,7 +103,6 @@ class Feedback extends Model
             }
         })->orderBy('created_at', 'desc')->paginate(10);
 
-        // Tidak ada pembatasan feedback per peminjaman
         $existingFeedback = null;
 
         return view('public.feedback.index', compact(
@@ -135,7 +131,6 @@ class Feedback extends Model
                 ->withInput();
         }
 
-        // Validasi apakah pengguna memiliki akses ke feedback ini
         $peminjaman = Peminjaman::where('id_akun', Auth::id())
             ->where('id_peminjaman', $request->id_peminjaman)
             ->whereIn('status_peminjaman', ['Disetujui', 'Selesai'])
@@ -145,9 +140,6 @@ class Feedback extends Model
             abort(403, 'Anda tidak memiliki akses untuk memberikan feedback pada peminjaman ini. Peminjaman harus disetujui/selesai terlebih dahulu.');
         }
 
-        // User dapat memberikan feedback berkali-kali untuk peminjaman yang berbeda
-
-        // Simpan feedback
         $feedback = new Feedback();
         $feedback->id_peminjaman = $request->id_peminjaman;
         $feedback->isi_feedback = $request->isi_feedback;
@@ -155,11 +147,9 @@ class Feedback extends Model
 
         if ($request->type === 'ruangan') {
             $feedback->id_ruangan = $request->id_sarpras;
-            // Set id_proyektor ke NULL untuk ruangan
             $feedback->id_proyektor = null;
         } else {
             $feedback->id_proyektor = $request->id_sarpras;
-            // Set id_ruangan ke NULL untuk proyektor
             $feedback->id_ruangan = null;
         }
 
@@ -174,7 +164,6 @@ class Feedback extends Model
 
     public static function deleteFeedback(Feedback $feedback)
     {
-        // Validasi apakah pengguna adalah pemilik feedback
         if (Auth::id() !== $feedback->peminjaman->id_akun) {
             abort(403, 'Anda tidak memiliki akses untuk menghapus feedback ini');
         }

@@ -292,7 +292,6 @@ class Laporan extends Model
         return $pdf->download($filename);
     }
 
-    // Export Excel
     public function excel(Request $request)
     {
         $periode = $request->get('periode', 'perbulan');

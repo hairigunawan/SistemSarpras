@@ -27,45 +27,79 @@
             </a>
         </div>
 
-        <?php if(session('success')): ?>
-            <div class="mb-6 rounded-md bg-green-50 p-4 border-l-4 border-green-400 shadow-sm">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        <div class="space-y-4 mb-6">
+            <?php if(session('success')): ?>
+            <div x-data="{ show: true }" 
+                x-init="setTimeout(() => show = false, 2000)" 
+                x-show="show"
+                x-transition:leave="transition ease-in duration-500"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="flex p-4 rounded-2xl bg-emerald-50 border border-emerald-100 shadow-sm shadow-emerald-100/50">
+                <div class="flex-shrink-0">
+                    <div class="flex items-center justify-center h-10 w-10 rounded-xl bg-emerald-100 text-emerald-600">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-green-700"><?php echo e(session('success')); ?></p>
-                    </div>
                 </div>
+                <div class="ml-4 flex-1">
+                    <h3 class="text-sm font-bold text-emerald-900 leading-none mb-1">Berhasil!</h3>
+                    <p class="text-sm text-emerald-700 font-medium"><?php echo e(session('success')); ?></p>
+                </div>
+                <button @click="show = false" class="ml-auto flex-shrink-0 text-emerald-400 hover:text-emerald-600 transition-colors">
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
             </div>
-        <?php endif; ?>
-        <?php if(session('warning')): ?>
-            <div class="mb-6 rounded-md bg-yellow-50 p-4 border-l-4 border-yellow-400 shadow-sm">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            <?php endif; ?>
+            <?php if(session('warning')): ?>
+            <div x-data="{ show: true }" 
+                x-init="setTimeout(() => show = false, 2000)" 
+                x-show="show" 
+                x-transition:leave="transition ease-in duration-500"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="mb-6 flex items-center p-4 text-red-700 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-xl shadow-sm transition-all" 
+                role="alert">
+                    <div class="flex items-center justify-center h-10 w-10 rounded-xl bg-amber-100 text-amber-600">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-yellow-700"><?php echo e(session('warning')); ?></p>
+                </div>
+                <div class="ml-4 flex-1">
+                    <h3 class="text-sm font-bold text-amber-900 leading-none mb-1">Peringatan</h3>
+                    <p class="text-sm text-amber-700 font-medium"><?php echo e(session('warning')); ?></p>
+                </div>
+                <button @click="show = false" class="ml-auto flex-shrink-0 text-amber-400 hover:text-amber-600 transition-colors">
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
+            </div>
+            <?php endif; ?>
+            <?php if($errors->any()): ?>
+            <div x-data="{ show: true }" x-show="show" x-transition
+                class="flex p-4 rounded-2xl bg-rose-50 border border-rose-100 shadow-sm shadow-rose-100/50">
+                <div class="flex-shrink-0">
+                    <div class="flex items-center justify-center h-10 w-10 rounded-xl bg-rose-100 text-rose-600">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                     </div>
                 </div>
-            </div>
-        <?php endif; ?>
-        <?php if($errors->any()): ?>
-            <div class="mb-6 rounded-md bg-red-50 p-4 border-l-4 border-red-400 shadow-sm">
-                <div class="ml-3">
-                    <ul class="list-disc pl-5 text-sm text-red-700">
+                <div class="ml-4 flex-1">
+                    <h3 class="text-sm font-bold text-rose-900 leading-none mb-1">Terjadi Kesalahan</h3>
+                    <ul class="list-disc pl-4 text-sm text-rose-700 font-medium">
                         <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <li><?php echo e($error); ?></li>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </ul>
                 </div>
+                <button @click="show = false" class="ml-auto flex-shrink-0 text-rose-400 hover:text-rose-600 transition-colors">
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
             </div>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
 
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="px-6 py-5 border-b border-gray-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -393,15 +427,6 @@ unset($__errorArgs, $__bag); ?>
     // Simple vanilla JS for Modal
     const rejectModal = document.getElementById('rejectModal');
     const rejectForm = document.getElementById('rejectForm');
-
-    function showErrorMessage(message) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal',
-            text: message,
-            confirmButtonColor: '#d33',
-        });
-    }
 
     function openRejectModal(id) {
         const template = rejectForm.getAttribute('data-action-template');

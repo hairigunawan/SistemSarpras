@@ -1,0 +1,147 @@
+<?php $__env->startSection('title', 'Tambah Proyektor Baru'); ?>
+
+<?php $__env->startSection('content'); ?>
+<div class="bg-white">
+    <div class="bg-white p-6  w-full max-w-full mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Tambah Proyektor Baru</h2>
+            <a href="<?php echo e(route('admin.sarpras.index')); ?>" class="flex text-gray-600 hover:text-gray-800">
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m0 0l6 6m-6-6l6-6"/>
+                    </svg>
+                </span>
+                Kembali
+            </a>
+        </div>
+
+        <form action="<?php echo e(route('sarpras.proyektor.store_proyektor')); ?>" method="POST" enctype="multipart/form-data">
+            <?php echo csrf_field(); ?>
+            <div class="space-y-4">
+
+                <div>
+                    <label for="nama_proyektor" class="block text-sm font-medium text-gray-700">Nama Proyektor</label>
+                    <input type="text" name="nama_proyektor" id="nama_proyektor" placeholder="Epson EB-2255" value="<?php echo e(old('nama_proyektor')); ?>" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" onblur="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)">
+                    <?php $__errorArgs = ['nama_proyektor'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                </div>
+
+                <div>
+                    <label for="merk" class="block text-sm font-medium text-gray-700">Merk Proyektor</label>
+                    <input type="text" name="merk" placeholder="Epson" id="merk" value="<?php echo e(old('merk')); ?>" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" oninput="this.value = this.value.toUpperCase().trimStart()">
+                    <?php $__errorArgs = ['merk'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                </div>
+
+                <div>
+                    <label for="kode_proyektor" class="block text-sm font-medium text-gray-700">Kode Proyektor</label>
+                    <input type="text" name="kode_proyektor" id="kode_proyektor" placeholder="EB-2255" value="<?php echo e(old('kode_proyektor')); ?>" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" oninput="this.value = this.value.toUpperCase().trimStart()">
+                    <?php $__errorArgs = ['kode_proyektor'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                </div>
+
+                <div>
+                    <label for="id_status" class="block text-sm font-medium text-gray-700">Status</label>
+                    <select name="id_status" id="id_status" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                        <option value="">Pilih Status</option>
+                        <?php $__currentLoopData = $s; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $status): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($status->id_status); ?>" <?php echo e(old('id_status', $defaultStatus) == $status->id_status ? 'selected' : ''); ?>>
+                                <?php echo e($status->nama_status); ?>
+
+                            </option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </select>
+                    <?php $__errorArgs = ['id_status'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                </div>
+
+                <div x-data="{
+                        previewUrl: null,
+                        previewFile(event) {
+                            const file = event.target.files[0];
+                            if (file) {
+                                this.previewUrl = URL.createObjectURL(file);
+                            }
+                        }
+                    }">
+
+                    <label for="gambar" class="block text-sm font-medium text-gray-700">Gambar</label>
+
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div class="space-y-1 text-center">
+
+                            <!-- Preview Image -->
+                            <template x-if="previewUrl">
+                                <img :src="previewUrl" class="mx-auto h-40 object-cover rounded-md" />
+                            </template>
+
+                            <!-- Default Icon (hilang ketika ada gambar) -->
+                            <svg x-show="!previewUrl" class="mx-auto h-12 w-12 text-gray-400"
+                                stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+
+                            <!-- Upload Button -->
+                            <div class="flex text-sm text-gray-600">
+                                <label for="gambar" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500">
+                                    <span>Upload file</span>
+                                    <input id="gambar" name="gambar" type="file" class="sr-only"
+                                        accept=".jpeg,.png,.jpg,.webp"
+                                        @change="previewFile">
+                                </label>
+                                <p class="pl-1">atau drag and drop</p>
+                            </div>
+
+                            <p class="text-xs text-gray-500">PNG, JPG, WEBP up to 2MB</p>
+                        </div>
+                    </div>
+
+                    <?php $__errorArgs = ['gambar'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <span class="text-red-500 text-xs"><?php echo e($message); ?></span>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                </div>
+
+                <div class="text-right">
+                    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg font-normal hover:bg-blue-600 transition-colors">
+                        Simpan
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\SIMPERSITE\SistemSarpras\resources\views/admin/sarpras/proyektor/tambah_proyektor.blade.php ENDPATH**/ ?>

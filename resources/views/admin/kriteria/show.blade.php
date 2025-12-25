@@ -1,102 +1,90 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-4xl mx-auto my-10 px-4">
-
-    {{-- Header & Navigasi --}}
-    <div class="flex items-center justify-between mb-6">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-800">Detail Kriteria</h1>
-            <p class="text-sm text-gray-500">Rincian informasi untuk kriteria terpilih.</p>
-        </div>
-        <a href="{{ route('admin.kriteria.index') }}" class="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Kembali
-        </a>
-    </div>
-
-    {{-- Kartu Utama --}}
-    <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
-
-        {{-- Bagian Atas: Judul Kriteria --}}
-        <div class="p-8 border-b border-gray-100">
-            <span class="text-xs font-bold tracking-wider text-gray-400 uppercase">Nama Kriteria</span>
-            <h2 class="text-3xl font-extrabold text-gray-900 mt-1">{{ $kriteria->nama_kriteria }}</h2>
-        </div>
-
-        <div class="p-8">
-            {{-- Grid Informasi Utama --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
-                {{-- Card 1: Tipe Kriteria (Netral) --}}
-                <div class="flex items-center p-4 rounded-lg border border-gray-200 bg-white">
-                    <div class="p-3 rounded-full mr-4 bg-gray-100 text-gray-600">
-                        @if($kriteria->tipe === 'benefit')
-                            {{-- Ikon Naik --}}
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
-                        @else
-                            {{-- Ikon Turun --}}
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-                            </svg>
-                        @endif
-                    </div>
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-8 pb-0">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Tipe Kriteria</p>
-                        <p class="text-xl font-bold text-gray-900">
-                            {{ ucfirst($kriteria->tipe) }}
-                        </p>
+                        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">{{ $kriteria->nama_kriteria }}</h1>
+                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider mb-2 
+                            {{ $kriteria->tipe === 'benefit' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
+                            {{ $kriteria->tipe }}
+                        </span>
                     </div>
-                </div>
-
-                {{-- Card 2: Bobot (Netral) --}}
-                <div class="flex items-center p-4 rounded-lg border border-gray-200 bg-white">
-                    <div class="p-3 rounded-full mr-4 bg-gray-100 text-gray-600">
-                        {{-- Ikon Timbangan --}}
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-500">Nilai Bobot</p>
-                        <p class="text-xl font-bold text-gray-900 font-mono">
-                            {{ number_format($kriteria->bobot, 4) }}
-                        </p>
+                    <div class="flex items-center gap-3">
+                        <div class="justify-between items-center">
+                            <a href="{{ route('admin.kriteria.index') }}" class="flex px-6 py-2 text-xs font-semibold border border-gray-300 rounded-lg text-gray-500 hover:text-gray-700 transition-colors uppercase tracking-wider">
+                                Tutup
+                            </a>
+                        </div>
+                        <div class="justify-between items-center">
+                            <a href="{{ route('admin.kriteria.edit', $kriteria) }}" 
+                            class="flex px-6 py-2 text-xs font-semibold border border-yellow-300 rounded-lg text-yellow-600 hover:text-yellow-700 transition-colors uppercase tracking-wider">
+                                Edit
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Metadata (Tanggal) --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-gray-100 pt-6 text-sm text-gray-500">
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span>Dibuat: <span class="font-medium text-gray-700">{{ $kriteria->created_at->format('d M Y, H:i') }}</span></span>
+            <div class="p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 flex items-center gap-5">
+                        <div class="h-14 w-14 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Bobot Kriteria</p>
+                            <p class="text-3xl font-black text-gray-900">{{ number_format($kriteria->bobot, 4) }}</p>
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl p-6 border flex items-center gap-5 
+                        {{ $kriteria->tipe === 'benefit' ? 'bg-emerald-50/50 border-emerald-100' : 'bg-amber-50/50 border-amber-100' }}">
+                        <div class="h-14 w-14 rounded-xl flex items-center justify-center shadow-lg 
+                            {{ $kriteria->tipe === 'benefit' ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-amber-500 text-white shadow-amber-200' }}">
+                            @if($kriteria->tipe === 'benefit')
+                                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                            @else
+                                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>
+                            @endif
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Sifat Kriteria</p>
+                            <p class="text-lg font-bold text-gray-900 leading-tight">
+                                {{ $kriteria->tipe === 'benefit' ? 'Semakin Tinggi Semakin Baik' : 'Semakin Rendah Semakin Baik' }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2 md:justify-end">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>Terakhir update: <span class="font-medium text-gray-700">{{ $kriteria->updated_at->format('d M Y, H:i') }}</span></span>
+
+                {{-- Deskripsi/Info Tambahan --}}
+                <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 mb-8">
+                    <h3 class="text-sm font-bold text-gray-900 mb-4 flex items-center">
+                        <svg class="h-4 w-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                        Analisis Penggunaan
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        Kriteria <span class="font-bold text-gray-900">"{{ $kriteria->nama_kriteria }}"</span> akan berkontribusi sebesar <span class="font-bold text-gray-900">{{ number_format($kriteria->bobot * 100, 2) }}%</span> dalam perhitungan keputusan akhir. 
+                        Sistem akan mengolah data ini menggunakan normalisasi skala 
+                        <span class="px-2 py-0.5 bg-white border border-gray-200 rounded-md text-gray-700 text-xs">{{ $kriteria->tipe }}</span>.
+                    </p>
+                </div>
+
+                {{-- Metadata Tanggal --}}
+                <div class="flex flex-col sm:flex-row justify-between gap-4 text-xs text-gray-400 font-medium">
+                    <div class="flex items-center gap-2">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <span>Ditambahkan pada {{ $kriteria->created_at->translatedFormat('d F Y, H:i') }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span>Pembaruan terakhir: {{ $kriteria->updated_at->diffForHumans() }}</span>
+                    </div>
                 </div>
             </div>
-
-        </div>
-
-        {{-- Footer Actions --}}
-        <div class="px-8 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
-             <a href="{{ route('admin.kriteria.edit', $kriteria) }}"
-                class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:outline-none focus:border-gray-900 focus:ring focus:ring-gray-300 active:bg-gray-900 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Edit Kriteria
-            </a>
         </div>
     </div>
 </div>

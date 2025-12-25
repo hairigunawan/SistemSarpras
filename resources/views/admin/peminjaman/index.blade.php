@@ -5,8 +5,6 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
-
-        <!-- Header & Search Section -->
         <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Data Peminjaman</h1>
@@ -31,37 +29,47 @@
             </form>
         </div>
 
-        <!-- Alert Section -->
         @if (session('success'))
-            <div class="mb-6 rounded-md bg-green-50 p-4 border-l-4 border-green-400 shadow-sm">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-green-700">{{ session('success') }}</p>
-                    </div>
+            <div x-data="{ show: true }" 
+                x-init="setTimeout(() => show = false, 2000)" 
+                x-show="show"
+                x-transition:leave="transition ease-in duration-500"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="flex p-4 rounded-2xl bg-emerald-50 border border-emerald-100 shadow-sm shadow-emerald-100/50">
+                <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-emerald-500 bg-emerald-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                 </div>
-            </div>
-        @endif
-        @if (session('error'))
-            <div class="mb-6 rounded-md bg-red-50 p-4 border-l-4 border-red-400 shadow-sm">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-red-700">{{ session('error') }}</p>
-                    </div>
+                <div class="ml-3 text-sm font-medium">
+                    {{ session('success') }}
                 </div>
+                <button @click="show = false" type="button" class="ml-auto -mx-1.5 -my-1.5 bg-emerald-50 text-emerald-500 rounded-lg focus:ring-2 focus:ring-emerald-400 p-1.5 hover:bg-emerald-200 inline-flex h-8 w-8 transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                </button>
             </div>
-        @endif
+            @endif
 
-        <!-- Filter Tabs -->
+            @if (session('error'))
+            <div x-data="{ show: true }" 
+                x-init="setTimeout(() => show = false, 2000)" 
+                x-show="show" 
+                x-transition:leave="transition ease-in duration-500"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="mb-6 flex items-center p-4 text-red-700 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-xl shadow-sm transition-all" 
+                role="alert">
+                <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                </div>
+                <div class="ml-3 text-sm font-medium">
+                    {{ session('error') }}
+                </div>
+                <button @click="show = false" type="button" class="ml-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex h-8 w-8 transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                </button>
+            </div>
+            @endif
+
         <div class="mb-6 border-b border-gray-200">
             <nav class="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
                 @php
@@ -87,7 +95,6 @@
             </nav>
         </div>
 
-        <!-- Table Card -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -177,15 +184,8 @@
                 </table>
             </div>
 
-            <!-- Pagination (Jika ada) -->
             @if(method_exists($peminjaman, 'links'))
                 <div class="bg-white px-4 py-4 border-t border-gray-200 sm:px-6 flex items-center justify-between">
-                    <div class="text-sm text-gray-500">
-                        Menampilkan <span class="font-medium">{{ ($peminjaman->currentPage() - 1) * $peminjaman->perPage() + 1 }}</span>
-                        hingga <span class="font-medium">{{ min($peminjaman->currentPage() * $peminjaman->perPage(), $peminjaman->total()) }}</span>
-                        dari <span class="font-medium">{{ $peminjaman->total() }}</span> data
-                    </div>
-
                     <div class="mt-8 flex justify-center items-center px-4 pb-4">
                         {{ $peminjaman->appends(request()->query())->links('pagination.tailwind-custom') }}
                     </div>
@@ -194,7 +194,7 @@
         </div>
     </div>
 </div>
-
+{{-- 
 <script>
     function showErrorMessage(message) {
         Swal.fire({
@@ -204,5 +204,5 @@
             confirmButtonColor: '#d33',
         });
     }
-</script>
+</script> --}}
 @endsection

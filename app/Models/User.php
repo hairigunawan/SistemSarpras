@@ -95,7 +95,6 @@ class User extends Authenticatable
             'password' => 'required',
         ]);
 
-        // Cek apakah user dengan email ini ada
         $u = User::where('email', $request->email)->first();
 
         if (!$u) {
@@ -104,17 +103,14 @@ class User extends Authenticatable
             ]);
         }
 
-        // Cek password
         if (!Hash::check($request->password, $u->password)) {
             return back()->withErrors([
                 'password' => 'Password salah.',
             ]);
         }
 
-        // Login user
         Auth::login($u);
 
-        // Arahkan user berdasarkan peran
         if ($u->userRole->nama_role === 'Admin') {
             return redirect()->route('admin.dashboard.index');
         } else {
@@ -131,10 +127,8 @@ class User extends Authenticatable
                 'email',
                 'unique:users,email',
                 function ($attribute, $value, $fail) {
-                    // Cek apakah email sudah terdaftar
                     $existingUser = User::where('email', $value)->first();
                     if ($existingUser) {
-                        // Jika sudah terdaftar tapi belum diverifikasi, beri info bisa verifikasi ulang
                         if (!$existingUser->is_verified) {
                             $fail('Email ini sudah terdaftar tapi belum diverifikasi. Silakan cek email Anda atau kirim ulang kode verifikasi.');
                         } else {
@@ -148,7 +142,6 @@ class User extends Authenticatable
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Validasi domain email untuk mahasiswa
         if ($validated['role'] === 'Mahasiswa') {
             $emailDomain = explode('@', $validated['email'])[1] ?? '';
             if ($emailDomain !== 'mhs.politala.ac.id') {
@@ -158,15 +151,12 @@ class User extends Authenticatable
             }
         }
 
-        // Perbaikan: ambil role yang benar
         $r = Role::CekRole($request->role);
 
-        // jika cekRole mengembalikan redirect, hentikan proses
         if (!($r instanceof Role)) {
             return $r;
         }
 
-        // Generate kode verifikasi
         $verificationCode = mt_rand(100000, 999999);
 
         $u = User::create([
@@ -180,15 +170,11 @@ class User extends Authenticatable
             'is_verified' => false,
         ]);
 
-        // Kirim email verifikasi
         try {
             \Illuminate\Support\Facades\Mail::to($u->email)->send(new \App\Mail\VerificationEmail($u, $verificationCode));
         } catch (\Exception $e) {
-            // Log error jika gagal mengirim email
             \Illuminate\Support\Facades\Log::error('Failed to send verification email: ' . $e->getMessage());
         }
-
-        // Tidak login otomatis, user harus verifikasi email dulu
         return $u;
     }
 
@@ -252,7 +238,6 @@ class User extends Authenticatable
 
     public static function storeAkun(Request $request)
     {
-        // 1. Validasi Input
         $validatedData = $request->validate([
             'nama'          => 'required|string|max:255',
             'email'         => 'required|string|email|max:255|unique:users',
@@ -261,7 +246,6 @@ class User extends Authenticatable
             'role_id'       => 'required|exists:roles,id_role',
         ]);
 
-        // Buat user baru
         $u = User::create([
             'nama' => $validatedData['nama'],
             'email' => $validatedData['email'],

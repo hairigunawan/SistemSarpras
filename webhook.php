@@ -1,37 +1,20 @@
 <?php
-/*
-  WHATSAPP CLOUD API WEBHOOK (FINAL VERSION)
-  ------------------------------------------
-  Fitur:
-  ✓ Verifikasi GET (hub.challenge)
-  ✓ Verifikasi Signature (X-Hub-Signature-256) — aman, tidak error
-  ✓ Auto reply text
-  ✓ Log request (whatsapp_log.json & whatsapp_send.log)
-  ✓ Struktur kode bersih dan siap produksi
-*/
 
-// ----------------- CONFIG -----------------
 const VERIFY_TOKEN     = 'token-saya';
 const APP_SECRET       = 'b988277c2aacd294613ab9b1a3872c58';
 const ACCESS_TOKEN     = 'EAASuZBf54mZBMBPzLyqAZCAZAMJKrULKEzv05SFt2321qtg0zBrskFxzogZCfYYMQWAk8KuZAAPzQyQ0LCaTg3PebgJ07UNH9ZClMSYEOwiRyZALSmTaETkEhNsRiWJ9fdmodrTgYszcxnb4VmCp3PZBIg8f3MAWcVTg8EDn0OLU2PapxuDpgC0aacnsBTuUW5dE2mBh0H6NZA3Q4LIiJh5cTHjZCsJ36j5BwuIRbFZC1fP53QZCb8QZDZD';
 const PHONE_NUMBER_ID  = '819120471293431';
 // ------------------------------------------
 
-
-// Helper response
 function respond($code, $body = ''){
     http_response_code($code);
     if ($body !== '') echo $body;
     exit;
 }
 
-
-// Read incoming request
 $rawBody = file_get_contents('php://input');
 $method  = $_SERVER['REQUEST_METHOD'];
 
-
-// ----------------- GET (Verification) -----------------
 if ($method === 'GET') {
 
     $mode      = $_GET['hub_mode']        ?? $_GET['hub.mode']        ?? null;
@@ -46,10 +29,6 @@ if ($method === 'GET') {
 }
 
 
-
-// ----------------- POST (Incoming Messages) -----------------
-
-// Signature verification (SAFEST VERSION)
 $signatureHeader = $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? null;
 
 if ($signatureHeader) {
@@ -62,22 +41,15 @@ if ($signatureHeader) {
     }
 }
 
-
-// Logging
 file_put_contents(__DIR__.'/whatsapp_log.json',
     date('c') . "\n" . $rawBody . "\n\n",
     FILE_APPEND
 );
 
-
-// Parse json
 $data = json_decode($rawBody, true);
 if (json_last_error() !== JSON_ERROR_NONE) {
     respond(400, 'Invalid JSON');
 }
-
-
-// ----------------- PROCESS MESSAGE -----------------
 
 $entries = $data['entry'] ?? [];
 
@@ -102,8 +74,6 @@ foreach ($entries as $entry) {
 
                     sendTextMessage($from, $reply);
                 }
-
-                // Future features: images, buttons, interactive, etc.
             }
         }
     }

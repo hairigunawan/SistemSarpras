@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Akun - Buat Akun')
 
-{{-- Tambahkan style ini jika belum ada di layout utama untuk mencegah kedipan icon --}}
 @push('styles')
 <style>
     [x-cloak] { display: none !important; }
@@ -33,14 +32,12 @@
             </a>
         </div>
 
-        <!-- Form Card -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-8">
                 <form method="POST" action="{{ route('admin.akun.store.new') }}">
                     @csrf
 
                     <div class="space-y-6">
-                        <!-- Nama Lengkap -->
                         <div>
                             <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
                             <div class="relative rounded-md shadow-sm">
@@ -55,7 +52,6 @@
                             @enderror
                         </div>
 
-                        <!-- Email -->
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Alamat Email</label>
                             <div class="relative rounded-md shadow-sm">
@@ -70,7 +66,6 @@
                             @enderror
                         </div>
 
-                        <!-- Role -->
                         <div>
                             <label for="role_id" class="block text-sm font-medium text-gray-700 mb-1">Role Pengguna</label>
                             <div class="relative">
@@ -89,7 +84,6 @@
                             @enderror
                         </div>
 
-                        <!-- Nomor Telepon -->
                         <div>
                             <label for="nomor_telepon" class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon (WhatsApp)</label>
                             <div class="relative rounded-md shadow-sm">
@@ -104,10 +98,8 @@
                             @enderror
                         </div>
 
-                        <!-- Password Section Grid -->
                         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
 
-                            <!-- Password Input -->
                             <div x-data="{ showPassword: false }">
                                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                                 <div class="relative rounded-md shadow-sm">
@@ -134,7 +126,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Confirm Password Input -->
                             <div x-data="{ showConfirm: false }">
                                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password</label>
                                 <div class="relative rounded-md shadow-sm">
@@ -160,7 +151,6 @@
                         </div>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="mt-8 pt-5 border-t border-gray-200 flex items-center justify-end space-x-3">
                         <a href="{{ route('admin.akun.index') }}"
                            class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">

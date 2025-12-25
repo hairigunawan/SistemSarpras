@@ -78,50 +78,52 @@
                     </a>
                 </li>
 
-                <li class="mb-0.5">
-                    <details class="group" {{ request()->is('prioritas*') ? 'open' : '' }}>
-                        <summary
-                            class="flex items-center justify-between p-2 rounded cursor-pointer text-sm font-medium {{ request()->routeIs('admin.prioritas*') ? 'pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <span class="flex items-center gap-2">
-                                <!-- 🔹 ICON PRIORITAS -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                    viewBox="0 0 24 24">
-                                    <path fill="currentColor"
-                                        d="M12 2a1 1 0 0 1 .9.55l2.12 4.29l4.74.69a1 1 0 0 1 .55 1.7l-3.43 3.34l.81 4.73a1 1 0 0 1-1.45 1.05L12 17.77l-4.24 2.23a1 1 0 0 1-1.45-1.05l.81-4.73l-3.43-3.34a1 1 0 0 1 .55-1.7l4.74-.69l2.12-4.29A1 1 0 0 1 12 2" />
-                                </svg>
-                                Prioritas
-                            </span>
+                <li class="mb-0.5" x-data="{ isOpen: {{ request()->is('admin/prioritas*') || request()->routeIs('admin.kriteria*') ? 'true' : 'false' }} }">
+                <div 
+                    @click="isOpen = !isOpen"
+                    class="flex items-center justify-between p-2 rounded cursor-pointer text-sm font-medium transition-all duration-200
+                    {{ request()->is('admin/prioritas*') || request()->routeIs('admin.kriteria*') ? 'bg-[#1180ab] bg-opacity-10 text-[#127ea9]' : 'text-gray-600 hover:bg-gray-100' }}">
+                    
+                    <span class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M12 2a1 1 0 0 1 .9.55l2.12 4.29l4.74.69a1 1 0 0 1 .55 1.7l-3.43 3.34l.81 4.73a1 1 0 0 1-1.45 1.05L12 17.77l-4.24 2.23a1 1 0 0 1-1.45-1.05l.81-4.73l-3.43-3.34a1 1 0 0 1 .55-1.7l4.74-.69l2.12-4.29A1 1 0 0 1 12 2" />
+                        </svg>
+                        Prioritas
+                    </span>
 
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                viewBox="0 0 24 24"
-                                class="transition-transform duration-200 group-open:rotate-180">
-                                <path fill="currentColor" d="M7 10l5 5l5-5z" />
-                            </svg>
-                        </summary>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                        class="transition-transform duration-200"
+                        :class="isOpen ? 'rotate-180' : ''">
+                        <path fill="currentColor" d="M7 10l5 5l5-5z" />
+                    </svg>
+                </div>
 
-                        <!-- Submenu -->
-                        <ul class="mt-2 mb-3 ml-8 space-y-1">
-                            <li>
-                                <a href="{{ Route('admin.prioritas.ruangan') }}"
-                                    class="{{ request()->is('admin.prioritas.ruangan*') || request()->routeIs('admin.prioritas.ruangan') ? 'block text-sm pl-5 bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
-                                    Ruangan
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ Route('admin.prioritas.proyektor') }}"
-                                    class="{{ request()->is('prioritas/proyektor*') || request()->routeIs('admin.prioritas.proyektor') ? 'block p-1.5 text-sm pl-5 bg-[#1180ab] bg-opacity-10 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
-                                    Proyektor
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ Route('admin.kriteria.index') }}"
-                                    class="{{ request()->routeIs('admin.kriteria*') ? 'block text-sm pl-5 bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
-                                    Kriteria
-                                </a>
-                            </li>
-                        </ul>
-                    </details>
-                </li>
+                <ul 
+                    x-show="isOpen" 
+                    x-collapse
+                    x-cloak
+                    class="mt-2 mb-3 ml-8 space-y-1">
+                    
+                    <li>
+                        <a href="{{ route('admin.prioritas.ruangan') }}"
+                            class="{{ request()->routeIs('admin.prioritas.ruangan') ? 'block text-sm bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
+                            Ruangan
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.prioritas.proyektor') }}"
+                            class="{{ request()->routeIs('admin.prioritas.proyektor') ? 'block p-1.5 text-sm bg-[#1180ab] bg-opacity-10 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
+                            Proyektor
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.kriteria.index') }}"
+                            class="{{ request()->routeIs('admin.kriteria*') ? 'block text-sm bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
+                            Kriteria
+                        </a>
+                    </li>
+                </ul>
+            </li>
         </nav>
     </div>
     <div class="grid text-xs text-gray-700 gap-y-3">

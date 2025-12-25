@@ -2,65 +2,144 @@
 
 namespace App\Services;
 
+use App\Exceptions\WhatsappException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class WhatsappService
 {
-    protected $token;
-    protected $apiUrl = 'https://api.fonnte.com/send';
-
+    protected string $token;
+    protected string $apiUrl;
+    protected string $countryCode;
+    protected int $timeout;
+    protected int $retries;
+    protected string $authPrefix;
+    
     public function __construct()
     {
-        $this->token = config('services.fonnte.token') ?? config('services.whatsapp.token');
+        $this->token = config('services.fonnte.token') ?? config('services.whatsapp.token', '');
+        $this->apiUrl = config('services.fonnte.api_url', 'https://api.fonnte.com/send');
+        $this->countryCode = config('services.fonnte.country', '62');
+        $this->timeout = (int) config('services.fonnte.timeout', 10);
+        $this->retries = (int) config('services.fonnte.retries', 3);
+        $this->authPrefix = trim((string) config('services.fonnte.auth_prefix', '')); // e.g. "Bearer"
     }
 
-    public function sendMessage(string $to, string $message)
+    /**
+     * @param string $number
+     * @return string
+     * @throws WhatsappException
+     */
+    private function sanitizeNumber(string $number): string
     {
-        if (!$this->token) {
-            $errorMessage = "Fonnte Token belum dikonfigurasi. Silakan set FONNTE_TOKEN di .env";
-            Log::error($errorMessage);
-            throw new \Exception($errorMessage);
+        $raw = trim($number);
+
+        $digits = preg_replace('/[^0-9]/', '', $raw);
+        if ($digits === '') {
+            throw new WhatsappException('Nomor telepon tidak valid');
         }
 
-        $sanitizedNumber = $this->sanitizeNumber($to);
-        Log::info("Mengirim pesan Fonnte ke: " . $sanitizedNumber);
+        // Remove leading international "00" if present
+        if (strpos($digits, '00') === 0) {
+            $digits = preg_replace('/^00+/', '', $digits);
+        }
+
+        if ($digits[0] === '0') {
+            $digits = $this->countryCode . substr($digits, 1);
+        }
+
+        if (strpos($digits, $this->countryCode) !== 0) {
+            $digits = $this->countryCode . $digits;
+        }
+
+        if (strlen($digits) < 6) {
+            throw new WhatsappException('Nomor telepon terlalu pendek setelah sanitasi');
+        }
+
+        return '+' . $digits;
+    }
+
+    /**
+     *
+     * @param string $to
+     * @param string $message
+     * @return array
+     * @throws WhatsappException
+     */
+    public function sendMessage(string $to, string $message): array
+    {
+        if (empty($this->token)) {
+            throw new WhatsappException('FONNTE token belum diset pada konfigurasi');
+        }
+
+        $target = $this->sanitizeNumber($to);
 
         $payload = [
-            "target" => $sanitizedNumber,
-            "message" => $message
+            'target' => $target,
+            'message' => $message,
         ];
 
-        $response = Http::withHeaders([
-            'Authorization' => $this->token,
-        ])->post($this->apiUrl, $payload);
+        $authHeader = $this->authPrefix !== '' ? $this->authPrefix . ' ' . $this->token : $this->token;
 
-        $responseData = $response->json();
-
-        if ($response->failed()) {
-            $errorBody = $response->body();
-            $errorMessage = $responseData['reason'] ?? $responseData['message'] ?? $errorBody;
-
-            Log::error("Gagal mengirim pesan Fonnte ke {$sanitizedNumber}. Status: {$response->status()}", [
-                'request_payload' => $payload,
-                'response_body' => $errorBody,
-                'response_data' => $responseData
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => $authHeader,
+                'Accept' => 'application/json',
+            ])
+                ->timeout($this->timeout)
+                ->retry($this->retries, 200)
+                ->post($this->apiUrl, $payload);
+        } catch (\Throwable $e) {
+            // Network level error
+            Log::error('Fonnte HTTP error', [
+                'target' => $this->maskNumber($target),
+                'error' => $e->getMessage(),
             ]);
-
-            throw new \Exception("Gagal mengirim pesan WhatsApp: " . $errorMessage);
+            throw new WhatsappException('Gagal melakukan request ke layanan WhatsApp', 0, $e);
         }
 
-        Log::info("Pesan Fonnte berhasil dikirim ke {$sanitizedNumber}.", [
-            'response_data' => $responseData
+        $statusCode = $response->status();
+        $data = $response->json();
+
+        $ok = ($statusCode >= 200 && $statusCode < 300) && (isset($data['status']) ? $data['status'] === true : true);
+
+        if (!$ok) {
+            Log::error('Fonnte send failed', [
+                'target' => $this->maskNumber($target),
+                'payload' => [
+                    'target' => $this->maskNumber($payload['target']),
+                    'message_length' => mb_strlen($message),
+                ],
+                'http_status' => $statusCode,
+                'response' => $this->safeResponseForLog($data),
+            ]);
+
+            $reason = $data['reason'] ?? ($data['message'] ?? 'Gagal mengirim pesan WhatsApp');
+            throw new WhatsappException($reason);
+        }
+
+        Log::info('Fonnte send success', [
+            'target' => $this->maskNumber($target),
+            'http_status' => $statusCode,
+            'response_id' => $data['id'] ?? null,
         ]);
 
-        return $responseData;
+        return $data;
     }
 
-    private function sanitizeNumber($number)
+    protected function maskNumber(string $number): string
     {
-        $number = preg_replace('/[^0-9]/', '', $number);
-        if (strpos($number, '62') === 0) return $number;
-        return '62' . ltrim($number, '0');
+        if (strlen($number) <= 6) {
+            return '***';
+        }
+        return substr($number, 0, 6) . str_repeat('*', max(0, strlen($number) - 10)) . substr($number, -4);
+    }
+
+    protected function safeResponseForLog(array $data): array
+    {
+        if (isset($data['message'])) {
+            $data['message'] = '[redacted]';
+        }
+        return $data;
     }
 }

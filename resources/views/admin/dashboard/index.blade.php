@@ -83,7 +83,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
                         </div>
-                        <h3 class="text-gray-800 font-medium">Tambah Ruangan</h3>
+                        <h3 class="text-gray-800 font-medium text-sm">Tambah Ruangan</h3>
                     </div>
                 </div>
             </a>
@@ -96,7 +96,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-gray-800 font-medium">Tambah Proyektor</h3>
+                        <h3 class="text-gray-800 font-medium text-sm">Tambah Proyektor</h3>
                     </div>
                 </div>
             </a>
@@ -105,11 +105,11 @@
                 <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-red-200 group-hover:transform group-hover:scale-100">
                     <div class="flex flex-col items-center text-center">
                         <div class="bg-red-100 p-4 rounded-full group-hover:bg-red-200 transition-colors mb-4">
-                            <svg class="w-6 h-6 text-gray-600 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            <svg class="w-6 h-6 text-gray-400 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-gray-800 font-medium">Laporan PDF</h3>
+                        <h3 class="text-gray-800 font-medium text-sm">Laporan PDF</h3>
                     </div>
                 </div>
             </a>
@@ -122,7 +122,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v1a1 1 0 001 1h4a1 1 0 001-1v-1m3-2V8a2 2 0 00-2-2H8a2 2 0 00-2 2v6m9-5h-6a2 2 0 100 4h6a2 2 0 100-4z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-gray-800 font-medium">Laporan Excel</h3>
+                        <h3 class="text-gray-800 font-medium text-sm">Laporan Excel</h3>
                     </div>
                 </div>
             </a>

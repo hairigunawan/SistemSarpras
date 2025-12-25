@@ -40,6 +40,11 @@ return [
 
     'fonnte' => [
         'token' => env('FONNTE_TOKEN'),
+        'api_url' => env('FONNTE_API_URL', 'https://api.fonnte.com/send'),
+        'country' => env('FONNTE_COUNTRY', '62'),
+        'timeout' => env('FONNTE_TIMEOUT', 30),
+        'retries' => env('FONNTE_RETRIES', 3),
+        'auth_prefix' => env('FONNTE_AUTH_PREFIX', ''),
     ],
 
 

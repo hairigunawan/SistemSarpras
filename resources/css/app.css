@@ -24,128 +24,138 @@ div {
     animation: fade-in 0.3s ease-out;
 }
 
-/* Container Kalender */
+/* Container Utama Kalender */
 #calendar {
     background: #ffffff;
-    border-radius: 16px;
+    border-radius: 20px; /* Lebih bulat untuk kesan modern */
     padding: 24px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
     border: 1px solid #f3f4f6;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #1f2937;
 }
 
-/* Header Toolbar */
+/* Header & Judul */
 .fc .fc-toolbar-title {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 800;
     color: #111827;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
 }
 
+/* Tombol Navigasi */
 .fc .fc-button {
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    color: #374151;
-    font-weight: 500;
-    text-transform: capitalize;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb !important;
+    color: #4b5563;
+    font-weight: 600;
+    font-size: 0.875rem;
     padding: 8px 16px;
-    border-radius: 8px;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    transition: all 0.2s;
+    border-radius: 10px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    text-transform: capitalize;
 }
 
 .fc .fc-button:hover {
-    background-color: #f9fafb;
-    border-color: #d1d5db;
-    color: #111827;
+    background-color: #f9fafb !important;
+    color: #111827 !important;
+    border-color: #d1d5db !important;
+    transform: translateY(-1px);
 }
 
 .fc .fc-button-primary:not(:disabled).fc-button-active,
 .fc .fc-button-primary:not(:disabled):active {
-    background-color: #eff6ff;
-    border-color: #3b82f6;
-    color: #2563eb;
-    box-shadow: none;
+    background-color: #eff6ff !important;
+    border-color: #3b82f6 !important;
+    color: #1d4ed8 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.fc .fc-button-primary:disabled {
-    background-color: #f3f4f6;
-    color: #9ca3af;
-    border-color: #e5e7eb;
+/* Grid & Garis Pembatas */
+.fc-theme-standard td, 
+.fc-theme-standard th,
+.fc-theme-standard .fc-scrollgrid {
+    border: 1px solid #f3f4f6 !important;
 }
 
-/* Grid & Cells */
-.fc-theme-standard td, .fc-theme-standard th {
-    border-color: #f3f4f6;
-}
-
+/* Header Nama Hari */
 .fc .fc-col-header-cell-cushion {
-    padding: 12px 0;
-    color: #6b7280;
-    font-size: 0.875rem;
-    font-weight: 600;
+    padding: 16px 0;
+    color: #9ca3af;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
 }
 
+/* Angka Tanggal */
 .fc .fc-daygrid-day-number {
-    color: #374151;
-    font-size: 0.9rem;
-    padding: 8px 12px;
+    color: #4b5563;
+    font-size: 0.875rem;
+    padding: 12px !important;
     font-weight: 500;
+    transition: color 0.2s;
 }
 
-/* Hari Ini (Today) */
+/* Penanda Hari Ini */
 .fc .fc-day-today {
-    background-color: #f0f9ff !important; /* Biru sangat muda */
+    background-color: #f8fafc !important;
 }
+
 .fc .fc-day-today .fc-daygrid-day-number {
     background-color: #3b82f6;
-    color: white;
-    border-radius: 50%;
-    width: 28px;
+    color: #ffffff !important;
+    border-radius: 8px;
+    min-width: 28px;
     height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 4px;
+    margin: 8px;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
 }
 
-/* Events (Bar) */
+/* Styling Event/Kegiatan */
 .fc-event {
-    border: none;
-    border-radius: 6px;
-    padding: 2px 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    margin-bottom: 2px;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    margin: 2px 4px !important;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
 }
 
-/* Badge Container Custom */
+.fc-event:hover {
+    transform: scale(1.02);
+    filter: brightness(0.95);
+}
+
+/* Container Badge Custom */
 .custom-badge-container {
     position: absolute;
-    bottom: 4px;
-    right: 4px;
-    left: 4px;
+    bottom: 6px;
+    right: 6px;
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
     justify-content: flex-end;
-    pointer-events: auto;
 }
 
 .badge-item {
-    font-size: 0.7rem;
+    font-size: 10px;
     padding: 2px 8px;
-    border-radius: 9999px;
-    font-weight: 600;
-    backdrop-filter: blur(4px);
-    transition: transform 0.1s;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
 }
+
 .badge-item:hover {
-    transform: scale(1.05);
-    z-index: 20;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

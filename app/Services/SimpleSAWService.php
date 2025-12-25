@@ -4,10 +4,10 @@ namespace App\Services;
 
 use App\Models\Peminjaman;
 use App\Models\Kriteria;
+use Carbon\Carbon;
 
 class SimpleSAWService
 {
-
     public function calculateSAW($peminjamans, $kriterias, $bobotAHP)
     {
         if ($peminjamans->isEmpty() || $kriterias->isEmpty()) {
@@ -17,134 +17,121 @@ class SimpleSAWService
             ];
         }
 
-        // Prepare kriteria data
-        $kriteriaArray = $kriterias->keyBy('id')->toArray();
-
-        // Calculate scores for each peminjaman
-        $hasil = [];
+        // 1. Gather Raw Values
         $alternatif = [];
+        $rawValues = []; // Store raw values for max/min calculation
 
-        foreach ($peminjamans as $index => $peminjaman) {
-            $totalScore = 0;
-            $alternatifRow = [];
+        foreach ($peminjamans as $peminjaman) {
+            $row = [
+                'id' => $peminjaman->id, // Ensure we use the correct ID key (id or id_peminjaman)
+                'nama' => $peminjaman->nama_peminjam ?? $peminjaman->user->name ?? 'User',
+            ];
 
-            // Calculate score for each kriteria
             foreach ($kriterias as $kriteria) {
-                $kriteriaId = $kriteria->id;
-                $nilai = $this->getCriteriaValue($peminjaman, $kriteria);
-                $bobot = $bobotAHP[$kriteriaId] ?? 0;
-
-                $alternatifRow[$kriteriaId] = $nilai;
-                $totalScore += $nilai * $bobot;
+                $val = $this->getCriteriaValue($peminjaman, $kriteria);
+                $row[$kriteria->id] = $val;
+                $rawValues[$kriteria->id][] = $val;
             }
+            $alternatif[] = $row;
+        }
 
-            $alternatif[] = $alternatifRow;
-
-            // Add to hasil with ranking
-            $hasil[] = [
-                'id' => $peminjaman->id_peminjaman,
-                'nama' => $peminjaman->nama_peminjam,
-                'nilai' => round($totalScore, 3),
-                'ranking' => 0 // Will be calculated later
+        // 2. Find Max/Min for each criterion
+        $maxMin = [];
+        foreach ($kriterias as $kriteria) {
+            $values = $rawValues[$kriteria->id] ?? [0];
+            $maxMin[$kriteria->id] = [
+                'max' => max($values) ?: 1, // Avoid div by zero
+                'min' => min($values) ?: 0.1, // Avoid div by zero
             ];
         }
 
-        // Calculate rankings
-        $this->calculateRankings($hasil);
+        // 3. Normalize and Calculate Score
+        $hasil = [];
+        foreach ($alternatif as $alt) {
+            $totalScore = 0;
+            $normalizedRow = $alt; // To store normalized values if needed for display
+
+            foreach ($kriterias as $kriteria) {
+                $kid = $kriteria->id;
+                $val = $alt[$kid];
+                $max = $maxMin[$kid]['max'];
+                $min = $maxMin[$kid]['min'];
+                $bobot = $bobotAHP[$kid] ?? 0;
+                $tipe = $kriteria->tipe;
+
+                // SAW Normalization
+                $normalized = 0;
+                if ($tipe === 'cost') {
+                    // Min / Value (Low is good)
+                    // Avoid division by zero if value is 0 (unlikely for duration/date but possible)
+                    $normalized = ($val == 0) ? 1 : ($min / $val);
+                } else {
+                    // Benefit: Value / Max (High is good)
+                    $normalized = $val / $max;
+                }
+
+                $totalScore += $normalized * $bobot;
+                $normalizedRow[$kid] = $normalized; // Update if we want to return normalized matrix
+            }
+
+            $hasil[] = [
+                'id' => $alt['id'],
+                'nama' => $alt['nama'],
+                'nilai' => round($totalScore, 4),
+                'ranking' => 0
+            ];
+        }
+
+        // 4. Ranking
+        usort($hasil, function ($a, $b) {
+            return $b['nilai'] <=> $a['nilai'];
+        });
+
+        $rank = 1;
+        foreach ($hasil as &$h) {
+            $h['ranking'] = $rank++;
+        }
 
         return [
             'hasil' => $hasil,
-            'alternatif' => $alternatif
+            'alternatif' => $alternatif // Returning raw values for display
         ];
     }
 
     /**
-     * Get criteria value for a peminjaman
+     * Get raw criteria value for a peminjaman
      */
     private function getCriteriaValue($peminjaman, $kriteria)
     {
-        $nilai = 0;
+        $name = strtolower($kriteria->nama_kriteria);
 
-        switch ($kriteria->nama_kriteria) {
-            case 'Tanggal':
-                // More recent dates get higher values
-                $tanggalPinjam = \Carbon\Carbon::parse($peminjaman->tanggal_pinjam);
-                $today = \Carbon\Carbon::today();
-                $daysDiff = $today->diffInDays($tanggalPinjam, false);
-                $nilai = max(0, $daysDiff + 7); // Give higher value for closer dates
-                break;
-
-            case 'Jumlah Peserta':
-                // More participants get higher values
-                $nilai = $peminjaman->jumlah_peserta ?? 0;
-                break;
-
-            case 'Durasi':
-                // Longer duration gets higher values
-                $start = \Carbon\Carbon::parse($peminjaman->tanggal_pinjam . ' ' . $peminjaman->jam_mulai);
-                $end = \Carbon\Carbon::parse($peminjaman->tanggal_pinjam . ' ' . $peminjaman->jam_selesai);
-                $duration = $end->diffInMinutes($start);
-                $nilai = $duration / 60; // Convert to hours
-                break;
-
-            case 'Proyektor':
-                // Give higher value for specific proyektor if needed
-                if ($peminjaman->id_proyektor) {
-                    $nilai = 1; // Has proyektor
-                } else {
-                    $nilai = 0; // No proyektor
-                }
-                break;
-
-            default:
-                // Default value based on kriteria tipe
-                $nilai = $this->getDefaultCriteriaValue($peminjaman, $kriteria);
-                break;
+        if (str_contains($name, 'tanggal') || str_contains($name, 'date')) {
+            // Days from today. 
+            // If event is today: 0. Tomorrow: 1.
+            // If handling urgency: This should likely be a COST criteria (Lower is better).
+            // If handling "Booked in advance": BENEFIT (Higher is better).
+            // We return raw days.
+            $tanggalPinjam = Carbon::parse($peminjaman->tanggal_pinjam);
+            $today = Carbon::today();
+            return max(0, $today->diffInDays($tanggalPinjam, false));
         }
 
-        // Normalize nilai to 0-1 range if needed
-        return $this->normalizeValue($nilai, $kriteria->tipe);
-    }
-
-    /**
-     * Get default criteria value
-     */
-    private function getDefaultCriteriaValue($peminjaman, $kriteria)
-    {
-        // Default implementation - can be customized
-        return 0.5; // Default middle value
-    }
-
-    /**
-     * Normalize value based on criteria type (benefit or cost)
-     */
-    private function normalizeValue($nilai, $tipe)
-    {
-        // For benefit criteria, higher is better
-        // For cost criteria, lower is better
-
-        // Simple normalization - adjust based on your needs
-        if ($tipe === 'benefit') {
-            return min(1, max(0, $nilai / 10)); // Normalize to 0-1 range
-        } else {
-            return min(1, max(0, 1 - ($nilai / 10))); // Inverse for cost criteria
+        if (str_contains($name, 'peserta') || str_contains($name, 'jumlah')) {
+            return (int) ($peminjaman->jumlah_peserta ?? 0);
         }
-    }
 
-    /**
-     * Calculate rankings based on scores
-     */
-    private function calculateRankings(&$hasil)
-    {
-        // Sort by nilai descending
-        usort($hasil, function($a, $b) {
-            return $b['nilai'] <=> $a['nilai'];
-        });
-
-        // Assign rankings
-        $rank = 1;
-        foreach ($hasil as &$item) {
-            $item['ranking'] = $rank++;
+        if (str_contains($name, 'durasi') || str_contains($name, 'waktu')) {
+            // Duration in hours
+            $start = Carbon::parse($peminjaman->tanggal_pinjam . ' ' . $peminjaman->jam_mulai);
+            $end = Carbon::parse($peminjaman->tanggal_pinjam . ' ' . $peminjaman->jam_selesai);
+            return max(0, $end->diffInMinutes($start) / 60);
         }
+
+        if (str_contains($name, 'proyektor') || str_contains($name, 'alat')) {
+            return $peminjaman->id_proyektor ? 1 : 0;
+        }
+
+        // Default fallback
+        return 0;
     }
 }

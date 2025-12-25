@@ -5,7 +5,6 @@
 <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
 
-        <!-- Header Section: Judul & Tombol Kembali -->
         <div class="mb-6 flex items-center justify-between">
             <div class="flex items-center space-x-4">
                 <a href="{{ route('admin.akun.index') }}" class="p-2 rounded-lg hover:bg-gray-200 transition-colors">
@@ -26,7 +25,6 @@
             </a>
         </div>
 
-        <!-- Flash Messages -->
         @if(session('success'))
             <div class="mb-6 rounded-md bg-green-50 p-4 border-l-4 border-green-400 shadow-sm">
                 <div class="flex">
@@ -57,10 +55,7 @@
             </div>
         @endif
 
-        <!-- Main Card Content -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-
-            <!-- Card Header: Title & Actions -->
             <div class="px-6 py-5 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h3 class="text-lg leading-6 font-medium text-gray-900">Informasi Pengguna</h3>
@@ -87,7 +82,6 @@
                         Hapus
                     </button>
 
-                    <!-- Modal Konfirmasi -->
                     <div id="modal-{{ $u->id_akun }}"
                         class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
                         <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm text-center">
@@ -118,17 +112,13 @@
                 </div>
             </div>
 
-            <!-- Data List -->
             <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
                 <dl class="sm:divide-y sm:divide-gray-200">
-
-                    <!-- Nama -->
                     <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">Nama Lengkap</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 font-semibold">{{ $u->nama }}</dd>
                     </div>
 
-                    <!-- Email -->
                     <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">Alamat Email</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 flex items-center">
@@ -139,7 +129,6 @@
                         </dd>
                     </div>
 
-                    <!-- Nomor Telepon -->
                     <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">Nomor Telepon (WhatsApp)</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 flex items-center">
@@ -150,7 +139,6 @@
                         </dd>
                     </div>
 
-                    <!-- Role -->
                     <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">Role / Jabatan</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -160,7 +148,6 @@
                         </dd>
                     </div>
 
-                    <!-- Tanggal Dibuat -->
                     <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">Tanggal Registrasi</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -168,7 +155,6 @@
                         </dd>
                     </div>
 
-                    <!-- Tanggal Diupdate -->
                     <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">Terakhir Diperbarui</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -176,11 +162,9 @@
                             <span class="text-gray-400 text-sm ml-1">({{ $u->updated_at ? $u->updated_at->format('d/m/Y H:i') : '' }})</span>
                         </dd>
                     </div>
-
                 </dl>
             </div>
         </div>
-
     </div>
 </div>
 

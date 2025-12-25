@@ -1,85 +1,106 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-2xl mx-auto">
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">Tambah Kriteria Baru</h1>
+        
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Tambah Kriteria Baru</h1>
+                <p class="mt-2 text-sm text-gray-500 font-medium">Lengkapi detail kriteria untuk sistem pendukung keputusan.</p>
+            </div>
+            <a href="{{ route('admin.kriteria.index') }}" class="border border-gray-300 px-6 py-1.5 rounded-sm font-semibold text-gray-600 hover:text-gray-500 transition-colors">
+                Kembali
+            </a>
+        </div>
 
-            <form action="{{ route('admin.kriteria.store') }}" method="POST" class="space-y-6">
-                @csrf
-                @error('nama_kriteria')
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                        {{ $message }}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-8">
+                
+                {{-- Alert Error Menggunakan Gaya Modern yang Kita Buat Sebelumnya --}}
+                @if ($errors->any())
+                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition
+                    class="mb-6 flex p-4 rounded-xl bg-rose-50 border border-rose-100 shadow-sm shadow-rose-100/50">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
                     </div>
-                @enderror
-
-                <div>
-                    <label for="nama_kriteria" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nama Kriteria
-                    </label>
-                    <input type="text"
-                           id="nama_kriteria"
-                           name="nama_kriteria"
-                           value="{{ old('nama_kriteria') }}"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           placeholder="Contoh: Jenis Kegiatan, Jumlah Peserta, Durasi"
-                           required>
-                    <p class="mt-1 text-sm text-gray-500">Masukkan nama kriteria (maksimal 100 karakter)</p>
+                    <div class="ml-3 flex-1">
+                        <p class="text-sm font-bold text-rose-900 leading-none mb-1">Terjadi Kesalahan</p>
+                        <ul class="text-xs text-rose-700 list-disc pl-4 space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
+                @endif
 
-                <div>
-                    <label for="tipe" class="block text-sm font-medium text-gray-700 mb-2">
-                        Tipe Kriteria
-                    </label>
-                    <select id="tipe"
-                            name="tipe"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            required>
-                        <option value="">Pilih tipe kriteria</option>
-                        <option value="benefit" {{ old('tipe') === 'benefit' ? 'selected' : '' }}>
-                            Benefit (Semakin baik semakin tinggi)
-                        </option>
-                        <option value="cost" {{ old('tipe') === 'cost' ? 'selected' : '' }}>
-                            Cost (Semakin baik semakin rendah)
-                        </option>
-                    </select>
-                    <p class="mt-1 text-sm text-gray-500">
-                        <strong>Benefit:</strong> Kriteria di mana nilai semakin tinggi semakin baik (contoh: keuntungan)<br>
-                        <strong>Cost:</strong> Kriteria di mana nilai semakin rendah semakin baik (contoh: biaya)
-                    </p>
-                </div>
+                <form action="{{ route('admin.kriteria.store') }}" method="POST" class="space-y-6">
+                    @csrf
 
-                <div>
-                    <label for="bobot" class="block text-sm font-medium text-gray-700 mb-2">
-                        Bobot Kriteria
-                    </label>
-                    <input type="number"
-                           id="bobot"
-                           name="bobot"
-                           value="{{ old('bobot', 0.0000) }}"
-                           step="0.0001"
-                           min="0"
-                           max="1"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           placeholder="0.0000"
-                           required>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Masukkan nilai bobot antara 0 hingga 1 dengan 4 desimal. Total semua bobot harus sama dengan 1.
-                    </p>
-                </div>
+                    <div class="group">
+                        <label for="nama_kriteria" class="block text-sm font-bold text-gray-700 mb-2 transition-colors">
+                            Nama Kriteria
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="nama_kriteria" name="nama_kriteria" value="{{ old('nama_kriteria') }}"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-1 focus:bg-white transition-all duration-200 placeholder-gray-400"
+                                placeholder="Contoh: Jenis Kegiatan, Jumlah Peserta" required>
+                        </div>
+                        <p class="mt-2 text-xs text-gray-500 italic">Masukkan nama kriteria unik (maksimal 100 karakter).</p>
+                    </div>
 
-                <div class="flex justify-end space-x-4 pt-4">
-                    <a href="{{ route('admin.kriteria.index') }}"
-                       class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
-                        Batal
-                    </a>
-                    <button type="submit"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
-                        <i class="fas fa-save mr-2"></i>Simpan Kriteria
-                    </button>
-                </div>
-            </form>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div class="group">
+                            <label for="tipe" class="block text-sm font-bold text-gray-700 mb-2">
+                                Tipe Kriteria
+                            </label>
+                            <select id="tipe" name="tipe" required
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-1 focus:bg-white transition-all duration-200">
+                                <option value="" disabled selected>Pilih tipe...</option>
+                                <option value="benefit" {{ old('tipe') === 'benefit' ? 'selected' : '' }}>Benefit (+)</option>
+                                <option value="cost" {{ old('tipe') === 'cost' ? 'selected' : '' }}>Cost (-)</option>
+                            </select>
+                        </div>
+
+                        <div class="group">
+                            <label for="bobot" class="block text-sm font-bold text-gray-700 mb-2">
+                                Bobot Kriteria
+                            </label>
+                            <div class="relative">
+                                <input type="number" id="bobot" name="bobot" value="{{ old('bobot', '0.0000') }}" step="0.0001" min="0" max="1"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-1 focus:bg-white transition-all duration-200"
+                                    placeholder="0.0000" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 space-y-3 mt-4">
+                        <div class="flex gap-3">
+                            <svg class="h-5 w-5 text-blue-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div class="text-xs text-blue-800 leading-relaxed">
+                                <p><strong>Benefit:</strong> Semakin tinggi nilai semakin baik. <strong>Cost:</strong> Semakin rendah nilai semakin baik.</p>
+                                <p class="mt-1 font-semibold text-blue-600 underline">Catatan: Pastikan total semua bobot kriteria berjumlah 1.0000.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
+                        <a href="{{ route('admin.kriteria.index') }}"
+                            class="px-6 py-3 text-xs font-semibold border border-gray-300 rounded-lg text-gray-500 hover:text-gray-700 transition-colors uppercase tracking-wider">
+                            Batal
+                        </a>
+                        <button type="submit"
+                                class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transform transition active:scale-95 uppercase tracking-widest flex items-center">
+                            <i class="fas fa-save mr-2"></i> Simpan Kriteria
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

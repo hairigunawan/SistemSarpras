@@ -11,7 +11,6 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <!-- Toggle Button Import -->
             <button @click="showImport = !showImport"
                 :class="showImport ? 'bg-gray-200 text-gray-800' : 'bg-white text-gray-700 hover:bg-gray-50'"
                 class="flex items-center gap-2 px-4 py-2 text-sm font-medium transition border border-gray-300 rounded-lg shadow-sm">
@@ -20,8 +19,6 @@
                 </svg>
                 <span x-text="showImport ? 'Tutup Import' : 'Import Excel'"></span>
             </button>
-
-            <!-- Tombol Tambah -->
             <a href="<?php echo e(route('admin.jadwal.create')); ?>" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 shadow-blue-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -31,7 +28,6 @@
         </div>
     </div>
 
-    <!-- Section Import (Hidden by default using Alpine) -->
     <div x-show="showImport"
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0 -translate-y-2"
@@ -40,7 +36,6 @@
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 -translate-y-2"
          class="p-5 bg-white border border-blue-100 rounded-xl shadow-sm ring-1 ring-blue-500/10">
-
         <form action="<?php echo e(route('admin.jadwal.import.store')); ?>" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4 sm:flex-row sm:items-end">
             <?php echo csrf_field(); ?>
             <div class="flex-1 w-full">
@@ -59,27 +54,25 @@
     <div class="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
-                <thead class="bg-gray-50 border-b border-gray-100">
+                <thead class="bg-gray-100 border-b border-gray-100">
                     <tr>
-                        <th class="px-6 py-4 font-semibold text-gray-900">Kode MK</th>
-                        <th class="px-6 py-4 font-semibold text-gray-900">Mata Kuliah & Sistem</th>
-                        <th class="px-6 py-4 font-semibold text-gray-900">Kelas & Sebaran</th>
-                        <th class="px-6 py-4 font-semibold text-gray-900 text-center">Waktu</th>
-                        <th class="px-6 py-4 font-semibold text-gray-900 text-center">Ruang</th>
-                        <th class="px-6 py-4 font-semibold text-gray-900 text-center">Kuota</th>
-                        <th class="px-6 py-4 font-semibold text-gray-900 text-center">Aksi</th>
+                        <th class="px-6 py-4 font-semibold text-gray-900 uppercase text-xs">Kode MK</th>
+                        <th class="px-6 py-4 font-semibold text-gray-900 uppercase text-xs">Mata Kuliah & Sistem</th>
+                        <th class="px-6 py-4 font-semibold text-gray-900 uppercase text-xs">Kelas & Sebaran</th>
+                        <th class="px-6 py-4 font-semibold text-gray-900 uppercase text-xs text-center">Waktu</th>
+                        <th class="px-6 py-4 font-semibold text-gray-900 uppercase text-xs text-center">Ruang</th>
+                        <th class="px-6 py-4 font-semibold text-gray-900 uppercase text-xs text-center">Kuota</th>
+                        <th class="px-6 py-4 font-semibold text-gray-900 uppercase text-xs text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     <?php $__empty_1 = true; $__currentLoopData = $j; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $jadwal): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr class="hover:bg-gray-50/80 transition-colors group">
-                            <!-- Kode MK -->
-                            <td class="px-6 py-4 font-medium text-gray-900">
+                            <td class="px-6 py-4 font-medium text-gray-700">
                                 <?php echo e($jadwal->kode_mk); ?>
 
                             </td>
 
-                            <!-- Nama Kelas & Sistem Kuliah -->
                             <td class="px-6 py-4">
                                 <div class="flex flex-col">
                                     <span class="font-medium text-gray-700"><?php echo e($jadwal->nama_kelas); ?></span>
@@ -98,7 +91,7 @@
                             <!-- Waktu (Hari & Jam) -->
                             <td class="px-6 py-4 text-center">
                                 <div class="flex flex-col items-center">
-                                    <span class="font-semibold text-gray-800"><?php echo e($jadwal->hari); ?></span>
+                                    <span class="font-medium text-gray-700"><?php echo e($jadwal->hari); ?></span>
                                     <span class="text-[10px] uppercase tracking-wider text-gray-400 font-bold mt-0.5">
                                         <?php echo e(\Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i')); ?> - <?php echo e(\Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i')); ?>
 

@@ -175,11 +175,11 @@
 
             <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
                 <a href="{{ route('admin.kriteria.index') }}"
-                   class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-1 focus:outline-none focus:ring-gray-200 transition-all">
+                   class="px-5 py-2.5 text-xs uppercase tracking-widest font-medium text-gray-700 bg-white border  border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-1 focus:outline-none focus:ring-gray-200 transition-all">
                    Batal
                 </a>
                 <button type="submit"
-                        class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-1 focus:outline-none focus:ring-blue-300 shadow-lg shadow-blue-500/30 transition-all">
+                        class="flex items-center gap-2 px-5 py-2.5 text-xs uppercase tracking-widest font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-1 focus:outline-none focus:ring-blue-300 shadow-lg shadow-blue-500/30 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>

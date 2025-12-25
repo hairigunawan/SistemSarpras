@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\PeminjamanHelper;
+use App\Helpers\WhatsappMessageHelper;
 use App\Services\WhatsappService;
 use Illuminate\Http\Request;
 
@@ -178,11 +179,7 @@ class Peminjaman extends Model
             PeminjamanHelper::autoRejectConflictingPeminjaman($this);
         });
 
-        $msg = "Pengajuan Disetujui\n" .
-            "Sarpras: {$this->nama_sarpras}\n" .
-            "Tanggal: {$this->tanggal_pinjam}\n" .
-            "Waktu: {$this->jam_mulai} - {$this->jam_selesai}";
-
+        $msg = WhatsappMessageHelper::approved($this);
         self::sendNotification($this->user->nomor_telepon, $msg);
     }
 
@@ -193,7 +190,7 @@ class Peminjaman extends Model
             'alasan_penolakan' => $alasan
         ]);
 
-        $msg = "Pengajuan Ditolak\nAlasan: {$alasan}";
+        $msg = WhatsappMessageHelper::rejected($this, $alasan);
         self::sendNotification($this->user->nomor_telepon, $msg);
     }
 
@@ -208,9 +205,10 @@ class Peminjaman extends Model
             PeminjamanHelper::updateResourceStatus($this, 'Selesai');
         });
 
-        $msg = "Peminjaman Selesai\nTerima kasih telah menggunakan fasilitas.";
+        $msg = WhatsappMessageHelper::completed($this);
         self::sendNotification($this->user->nomor_telepon, $msg);
     }
+
 
     protected static function sendNotification($number, $message)
     {

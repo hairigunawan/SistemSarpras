@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $__env->yieldContent('title', 'SIMPERSITE'); ?></title>
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
-    
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -31,29 +29,6 @@
             </main>
         </div>
     </div>
-
-    <script>
-        <?php if(session('success')): ?>
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: "<?php echo e(session('success')); ?>",
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
-            });
-        <?php endif; ?>
-
-        <?php if(session('error')): ?>
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: "<?php echo e(session('error')); ?>",
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'OK'
-            });
-        <?php endif; ?>
-    </script>
-    
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>

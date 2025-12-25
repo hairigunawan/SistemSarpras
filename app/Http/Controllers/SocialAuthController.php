@@ -12,9 +12,6 @@ use Laravel\Socialite\Two\GoogleProvider;
 
 class SocialAuthController extends Controller
 {
-    /**
-     * Redirect ke halaman login Google
-     */
     public function redirectToGoogle()
     {
         /** @var GoogleProvider $driver */
@@ -27,10 +24,6 @@ class SocialAuthController extends Controller
             ])
             ->redirect();
     }
-
-    /**
-     * Callback dari Google
-     */
     public function handleGoogleCallback()
     {
         try {
@@ -54,7 +47,6 @@ class SocialAuthController extends Controller
                 );
             }
 
-            // Cek hosted domain (hd) jika ada
             $hd = $googleUser->user['hd'] ?? null;
             if ($hd && $hd !== $allowedDomain) {
                 Log::warning('Google Login Ditolak - Hosted Domain Tidak Sesuai', [
@@ -71,8 +63,6 @@ class SocialAuthController extends Controller
             $existingUser = User::where('email', $email)->first();
 
             if ($existingUser) {
-
-                // Admin dilarang login via Google
                 if (
                     $existingUser->userRole &&
                     $existingUser->userRole->nama_role === 'Admin'
@@ -82,8 +72,6 @@ class SocialAuthController extends Controller
                         'Admin harus login menggunakan email dan password.'
                     );
                 }
-
-                // Pastikan provider Google
                 if ($existingUser->provider === 'google') {
                     $existingUser->update([
                         'nama' => $googleUser->getName(),
@@ -100,11 +88,7 @@ class SocialAuthController extends Controller
                     );
                 }
             } else {
-
-                // Role default Mahasiswa
-                $defaultRole = Role::where('nama_role', 'Mahasiswa')->first();
-
-                // Buat user baru
+                $defaultRole = Role::where('nama_role', 'Mahasiswa')->first();  
                 $userToLogin = User::create([
                     'nama' => $googleUser->getName(),
                     'email' => $email,

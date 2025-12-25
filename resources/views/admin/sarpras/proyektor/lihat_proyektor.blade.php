@@ -7,9 +7,9 @@
     <!-- Header -->
         <!-- Global Alert -->
     @if(session('error'))
-    <div 
-        x-data="{ show: true }" 
-        x-init="setTimeout(() => show = false, 3000)" 
+    <div
+        x-data="{ show: true }"
+        x-init="setTimeout(() => show = false, 3000)"
         x-show="show"
         x-transition
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4"
@@ -21,9 +21,9 @@
     @endif
 
     @if(session('success'))
-        <div 
-            x-data="{ show: true }" 
-            x-init="setTimeout(() => show = false, 3000)" 
+        <div
+            x-data="{ show: true }"
+            x-init="setTimeout(() => show = false, 3000)"
             x-show="show"
             x-transition
             class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4"
@@ -141,7 +141,7 @@
                             <button
                                 type="button"
                                 onclick="openModal('{{ $p->id_proyektor }}')"
-                                class="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-6 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 transition"
+                                class="inline-flex items-center gap-1 rounded-md border  border-red-300 bg-white px-6 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 transition"
                             >
                                 <!-- Icon Trash -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
@@ -168,7 +168,7 @@
                                         <div class="flex justify-center gap-3 mt-4">
                                             <button type="button"
                                                     onclick="closeModal('{{ $p->id_proyektor }}')"
-                                                    class="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700">
+                                                    class="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300">
                                                 Batal
                                             </button>
 
