@@ -109,11 +109,13 @@
                 </div>
             @endforelse
         </div>
-        <!-- Pagination Links -->
-        <div class="mt-8 flex justify-center items-center px-4 pb-4">
-            {{ $items->appends(request()->query())->links('pagination.tailwind-custom') }}
-        </div>
-
+        @if(method_exists($items, 'links'))
+            <div class="bg-white px-4 py-4 border-t border-gray-200 sm:px-6 flex items-center justify-between">
+                <div class="mt-8 flex justify-center items-center px-4 pb-4">
+                    {{ $items->links() }}
+                    </div>
+                </div>
+            @endif
     </div>
 </div>
 
