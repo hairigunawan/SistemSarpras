@@ -30,8 +30,8 @@
         </div>
 
         @if (session('success'))
-            <div x-data="{ show: true }" 
-                x-init="setTimeout(() => show = false, 2000)" 
+            <div x-data="{ show: true }"
+                x-init="setTimeout(() => show = false, 2000)"
                 x-show="show"
                 x-transition:leave="transition ease-in duration-500"
                 x-transition:leave-start="opacity-100"
@@ -50,13 +50,13 @@
             @endif
 
             @if (session('error'))
-            <div x-data="{ show: true }" 
-                x-init="setTimeout(() => show = false, 2000)" 
-                x-show="show" 
+            <div x-data="{ show: true }"
+                x-init="setTimeout(() => show = false, 2000)"
+                x-show="show"
                 x-transition:leave="transition ease-in duration-500"
                 x-transition:leave-start="opacity-100"
                 x-transition:leave-end="opacity-0"
-                class="mb-6 flex items-center p-4 text-red-700 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-xl shadow-sm transition-all" 
+                class="mb-6 flex items-center p-4 text-red-700 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-xl shadow-sm transition-all"
                 role="alert">
                 <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
@@ -187,14 +187,14 @@
             @if(method_exists($peminjaman, 'links'))
                 <div class="bg-white px-4 py-4 border-t border-gray-200 sm:px-6 flex items-center justify-between">
                     <div class="mt-8 flex justify-center items-center px-4 pb-4">
-                        {{ $peminjaman->appends(request()->query())->links('pagination.tailwind-custom') }}
+                        {{ $peminjaman->links() }}
                     </div>
                 </div>
             @endif
         </div>
     </div>
 </div>
-{{-- 
+{{--
 <script>
     function showErrorMessage(message) {
         Swal.fire({

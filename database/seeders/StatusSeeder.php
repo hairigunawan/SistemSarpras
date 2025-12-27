@@ -12,12 +12,13 @@ class StatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $statuses = ['Tersedia', 'Dipakai', 'Diperbaiki', 'Rusak'];
+        $statuses = ['Dipinjam', 'Tersedia', 'Dipakai', 'Diperbaiki', 'Rusak'];
 
         foreach ($statuses as $statusName) {
-            if (!Status::where('nama_status', $statusName)->exists()) {
-                Status::create(['nama_status' => $statusName]);
-            }
+            Status::updateOrCreate(
+                ['nama_status' => $statusName],
+                ['nama_status' => $statusName]
+            );
         }
     }
 }

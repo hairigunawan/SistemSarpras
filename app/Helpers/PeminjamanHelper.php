@@ -73,14 +73,15 @@ class PeminjamanHelper
         } elseif ($status === 'Selesai') {
             $namaStatus = 'Tersedia';
         } else {
-            return; 
+            return;
         }
 
         // Gunakan transaction untuk menghindari race condition
         DB::transaction(function () use ($peminjaman, $namaStatus) {
-            $idStatus = Status::where('nama_status', $namaStatus)->first()->id_status;
+            $statusModel = Status::where('nama_status', $namaStatus)->first();
+            $idStatus = $statusModel ? $statusModel->id_status : null;
 
-            if (!$idStatus) {
+            if (is_null($idStatus)) {
                 Log::error("Status '{$namaStatus}' tidak ditemukan untuk update resource status");
                 return;
             }
@@ -127,7 +128,13 @@ class PeminjamanHelper
      */
     public static function getAvailableResources($includeWaiting = true)
     {
-        $idStatusTersedia = Status::where('nama_status', 'Tersedia')->first()->id_status;
+        $statusTersedia = Status::where('nama_status', 'Tersedia')->first();
+        $idStatusTersedia = $statusTersedia ? $statusTersedia->id_status : null;
+
+        if (is_null($idStatusTersedia)) {
+            Log::error("Status 'Tersedia' tidak ditemukan, getAvailableResources akan mengembalikan koleksi kosong");
+            return ['ruangan' => collect(), 'proyektor' => collect()];
+        }
 
         // Dapatkan ID proyektor dan ruangan yang sedang dipinjang (disetujui)
         $approvedRuanganIds = Peminjaman::where('status_peminjaman', 'Disetujui')
