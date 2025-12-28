@@ -51,6 +51,7 @@ class Laporan extends Model
         $avgMinutes = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->whereNotNull('jam_mulai')
             ->whereNotNull('jam_selesai')
+            ->whereIn('status_peminjaman', ['Disetujui', 'Selesai'])
             ->get(['jam_mulai', 'jam_selesai'])
             ->map(function ($peminjaman) {
                 $start = Carbon::parse(
@@ -205,6 +206,7 @@ class Laporan extends Model
         $durations = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->whereNotNull('jam_mulai')
             ->whereNotNull('jam_selesai')
+            ->whereIn('status_peminjaman', ['Disetujui', 'Selesai'])
             ->get(['jam_mulai', 'jam_selesai'])
             ->map(function ($peminjaman) {
                 $start = Carbon::parse($peminjaman->jam_mulai);
@@ -312,6 +314,7 @@ class Laporan extends Model
         $durations = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->whereNotNull('jam_mulai')
             ->whereNotNull('jam_selesai')
+            ->whereIn('status_peminjaman', ['Disetujui', 'Selesai'])
             ->get(['jam_mulai', 'jam_selesai'])
             ->map(function ($peminjaman) {
                 $start = Carbon::parse($peminjaman->jam_mulai);
