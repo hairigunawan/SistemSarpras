@@ -64,12 +64,10 @@
                 <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
                     <div class="w-full aspect-[4/3] overflow-hidden bg-gray-100 relative">
                         @if($item->gambar)
-                            {{-- Menampilkan gambar asli dari storage --}}
                             <img src="{{ asset('storage/' . $item->gambar) }}"
                                 alt="{{ $item->nama }}"
                                 class="w-full h-full object-cover">
                         @else
-                            {{-- Jika gambar kosong, tampilkan placeholder berdasarkan tipe sarpras --}}
                             <div class="w-full h-full flex flex-col items-center justify-center text-gray-400 p-4">
                                 @if($item->type === 'ruangan')
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -85,7 +83,6 @@
                             </div>
                         @endif
 
-                        {{-- Label tipe di pojok gambar (Opsional, agar user tahu itu Ruangan atau Proyektor) --}}
                         <div class="absolute top-2 right-2">
                             <span class="px-2 py-1 text-[10px] font-bold uppercase rounded shadow-sm {{ $item->type === 'ruangan' ? 'bg-blue-500 text-white' : 'bg-purple-500 text-white' }}">
                                 {{ $item->type }}
@@ -94,7 +91,7 @@
                     </div>
 
                     <div class="p-3">
-                        <h2 class="text-gray-800 font-semibold">{{ $item->nama }}</h2>
+                        <h2 class="text-gray-800 font-semibold">{{ Str::limit($item->nama, 17) }}</h2>
                         <p class="text-xs font-medium text-gray-500 mb-3">
                             {{ $item->detail ?? '-' }}
                         </p>

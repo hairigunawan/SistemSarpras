@@ -14,7 +14,7 @@
 
         <div class="mb-6 flex flex-col sm:flex-row justify-start items-start sm:items-center gap-3">
             <form action="{{ route('public.sarana_perasarana.halamansarpras') }}" method="GET" class="relative w-full sm:w-auto" x-data="{ open: false }">
-                
+
                 <input type="hidden" name="jenis_sarpras" x-ref="inputJenis" value="{{ $jenisSarprasFilter }}">
 
                 @if($lokasiRuanganFilter !== 'all')
@@ -35,7 +35,7 @@
                     </svg>
                 </button>
 
-                <ul x-show="open" 
+                <ul x-show="open"
                     x-transition:enter="transition ease-out duration-100"
                     x-transition:enter-start="transform opacity-0 scale-95"
                     x-transition:enter-end="transform opacity-100 scale-100"
@@ -65,7 +65,7 @@
 
             @if($jenisSarprasFilter === 'ruangan')
             <form action="{{ route('public.sarana_perasarana.halamansarpras') }}" method="GET" class="relative w-full sm:w-auto" x-data="{ open: false }">
-                
+
                 <input type="hidden" name="jenis_sarpras" value="ruangan">
                 <input type="hidden" name="lokasi_ruangan" x-ref="inputLokasi" value="{{ $lokasiRuanganFilter }}">
 
@@ -85,7 +85,7 @@
                     </svg>
                 </button>
 
-                <ul x-show="open" 
+                <ul x-show="open"
                     x-transition:enter="transition ease-out duration-100"
                     x-transition:enter-start="transform opacity-0 scale-95"
                     x-transition:enter-end="transform opacity-100 scale-100"
@@ -103,11 +103,11 @@
                     @foreach($lokasis as $lokasi)
                         <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
                             @click="$refs.inputLokasi.value = '{{ $lokasi->id_lokasi }}'; $el.closest('form').submit()">
-                            
+
                             <span class="block {{ $lokasiRuanganFilter == $lokasi->id_lokasi ? 'font-semibold text-gray-600' : 'font-normal' }}">
                                 {{ $lokasi->nama_lokasi }}
                             </span>
-                            
+
                             @if($lokasiRuanganFilter == $lokasi->id_lokasi)
                             <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-600">
                                 <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -149,7 +149,7 @@
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-3">
                                 <h2 class="text-base font-bold text-gray-800 truncate" title="{{ $item->nama_ruangan }}">
-                                    {{ $item->nama_ruangan }}
+                                    {{ Str::limit($item->nama_ruangan, 17) }}
                                 </h2>
                                 <p class="text-xs text-gray-500 flex items-center mt-1 truncate">
                                     <svg class="w-3 h-3 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -199,7 +199,7 @@
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-3">
                                 <h2 class="text-base font-bold text-gray-800 truncate" title="{{ $item->nama_proyektor }}">
-                                    {{ $item->nama_proyektor }}
+                                    {{ Str::limit($item->nama_proyektor, 17) }}
                                 </h2>
                                 <p class="text-xs text-gray-500 mt-1 truncate">
                                     Merk: <span class="font-medium text-gray-700">{{ $item->merk }}</span>

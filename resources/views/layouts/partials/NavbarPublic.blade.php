@@ -178,6 +178,10 @@
                class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('public.sarana_perasarana.*') ? 'bg-blue-50 text-[#179ACE]' : 'text-gray-700 hover:bg-gray-50 hover:text-[#179ACE]' }}">
                 Sarana & Prasarana
             </a>
+            <a href="{{ route('public.tentang_kami.index') }}"
+                class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('public.tentang_kami.*') ? 'bg-blue-50 text-[#179ACE]' : 'text-gray-700 hover:bg-gray-50 hover:text-[#179ACE]' }}">
+                Tentang Kami
+            </a>
         </div>
 
         @guest

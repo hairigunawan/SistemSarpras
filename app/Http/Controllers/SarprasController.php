@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ruangan;
 use App\Models\Proyektor;
 use App\Models\Status;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -66,7 +67,6 @@ class SarprasController extends Controller
         if ($type && $id && !$search && !$statusFilter) {
              if ($type === 'status') {
                 $pQuery->where('proyektors.id_status', $id);
-                // Should we filter rooms too? Assuming legacy behavior was only for projectors based on previous code.
              }
         }
 
