@@ -53,13 +53,20 @@ class Laporan extends Model
             ->whereNotNull('jam_selesai')
             ->get(['jam_mulai', 'jam_selesai'])
             ->map(function ($peminjaman) {
-                $start = Carbon::parse($peminjaman->jam_mulai);
-                $end = Carbon::parse($peminjaman->jam_selesai);
+                $start = Carbon::parse(
+                    $peminjaman->tanggal_pinjam . ' ' . $peminjaman->jam_mulai
+                );
+                $end = Carbon::parse(
+                    $peminjaman->tanggal_pinjam . ' ' . $peminjaman->jam_selesai
+                );
+                if ($end->lessThan($start)) {
+                    $end->addDay();
+                }
                 return $end->diffInMinutes($start);
             })
             ->avg() ?? 0;
 
-        $waktuRataRata = $avgMinutes / 60;
+        $waktuRataRata = round(($avgMinutes ?? 0) / 60, 1);
 
 
         $peminjamTeratas = Peminjaman::join('users', 'users.id_akun', '=', 'peminjamans.id_akun')
