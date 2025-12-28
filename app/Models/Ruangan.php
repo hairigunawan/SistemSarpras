@@ -86,7 +86,7 @@ class Ruangan extends Model
         $defaultStatus = Status::where('nama_status', 'Tersedia')->first();
 
         if (!$defaultLokasi) {
-            $defaultStatus = Lokasi::create(['nama_lokasi' => 'Gedung Teknik Informatika']);
+            $defaultLokasi = Lokasi::create(['nama_lokasi' => 'Gedung Teknik Informatika']);
         }
         $defaultLokasiId = $defaultLokasi->id_lokasi;
 
