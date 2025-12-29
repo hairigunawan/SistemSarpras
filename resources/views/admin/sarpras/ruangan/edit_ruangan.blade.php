@@ -86,7 +86,7 @@
                 <label for="gambar" class="block text-sm font-medium text-gray-700">Ubah Gambar</label>
                 <div class="rounded border border-gray-500 border-dashed p-2">
                     @if($r->gambar)
-                        <img src="{{ asset('storage/' . $r->gambar) }}" alt="{{ $r->nama_ruangan }}" class="my-2 h-32 w-auto">
+                        <img src="{{ Storage::url($r->gambar) }}" alt="{{ $r->nama_ruangan }}" class="my-2 h-32 w-auto">
                     @endif
                     <input type="file" name="gambar" id="gambar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-6 file:rounded-xl file:border-0 file:font-semibold file:bg-blue-50 file:text-[#1180ab] hover:file:bg-blue-100">
                 </div>

@@ -133,7 +133,7 @@
                     <div class="group bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col h-full">
                         <div class="h-40 w-full bg-gray-100 relative overflow-hidden">
                             @if($item->gambar)
-                                <img src="{{ asset('storage/' . str_replace('public/', '', $item->gambar)) }}"
+                                <img src="{{ Storage::url(str_replace('public/', '', $item->gambar)) }}"
                                      alt="{{ $item->nama_ruangan }}"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             @else
@@ -183,7 +183,7 @@
                     <div class="group bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col h-full">
                         <div class="h-40 w-full bg-gray-100 relative overflow-hidden">
                             @if($item->gambar)
-                                <img src="{{ asset('storage/' . str_replace('public/', '', $item->gambar)) }}"
+                                <img src="{{ Storage::url(str_replace('public/', '', $item->gambar)) }}"
                                      alt="{{ $item->nama_proyektor }}""
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             @else

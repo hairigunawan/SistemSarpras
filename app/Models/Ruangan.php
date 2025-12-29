@@ -284,13 +284,13 @@ class Ruangan extends Model
 
     private static function uploadImage($file)
     {
-        return $file->store('ruangan', 'public');
+        return $file->store('ruangan');
     }
 
     private function removeImage()
     {
-        if ($this->gambar && Storage::disk('public')->exists($this->gambar)) {
-            Storage::disk('public')->delete($this->gambar);
+        if ($this->gambar && Storage::exists($this->gambar)) {
+            Storage::delete($this->gambar);
         }
     }
 }

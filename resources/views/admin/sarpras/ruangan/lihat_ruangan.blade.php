@@ -70,7 +70,7 @@
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 fade-in">
                     <div class="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                        @if($r->gambar) <img src="{{ asset('storage/' . $r->gambar) }}" alt="{{ $r->nama_ruangan }}" class="aspect-video w-full rounded-xl object-cover shadow-md"> @else <div class="flex aspect-video w-full items-center justify-center rounded-xl bg-gray-100"> <span class="text-gray-400">Tidak ada gambar</span> </div> @endif
+                        @if($r->gambar) <img src="{{ Storage::url($r->gambar) }}" alt="{{ $r->nama_ruangan }}" class="aspect-video w-full rounded-xl object-cover shadow-md"> @else <div class="flex aspect-video w-full items-center justify-center rounded-xl bg-gray-100"> <span class="text-gray-400">Tidak ada gambar</span> </div> @endif
                     </div>
 
                     @php
