@@ -6,7 +6,7 @@
   <title>Login - SIMPERSITE</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
+<body class="min-h-screen flex flex-col mt-5 items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
 
   <div class="w-full max-w-5xl bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200 grid grid-cols-1 md:grid-cols-2 overflow-hidden animate-fadeIn">
 
@@ -32,14 +32,14 @@
       <p class="text-gray-500 text-sm text-center mb-6">Gunakan email kampus untuk masuk ke sistem</p>
 
       @if (session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
           <strong class="font-semibold">Error!</strong>
           <span class="block text-sm">{{ session('error') }}</span>
         </div>
       @endif
 
       @if (session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
+        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
           <strong class="font-semibold">Sukses!</strong>
           <span class="block text-sm">{{ session('success') }}</span>
         </div>
@@ -127,7 +127,7 @@
 toggleLoginPassword.addEventListener('click', function() {
     const type = loginPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
     loginPasswordInput.setAttribute('type', type);
-    
+
     // Toggle eye icons
     if (type === 'text') {
         loginEyeIcon.classList.add('hidden');

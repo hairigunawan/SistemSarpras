@@ -17,13 +17,13 @@
             </div>
 
             @if(session('success'))
-                <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"  class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
                     <p class="text-green-800 text-sm">{{ session('success') }}</p>
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"  class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                     <p class="text-red-800 text-sm">{{ session('error') }}</p>
                 </div>
             @endif

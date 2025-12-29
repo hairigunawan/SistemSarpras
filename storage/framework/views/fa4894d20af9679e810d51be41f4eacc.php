@@ -12,7 +12,7 @@
 
         <div class="mb-6 flex flex-col sm:flex-row justify-start items-start sm:items-center gap-3">
             <form action="<?php echo e(route('public.sarana_perasarana.halamansarpras')); ?>" method="GET" class="relative w-full sm:w-auto" x-data="{ open: false }">
-                
+
                 <input type="hidden" name="jenis_sarpras" x-ref="inputJenis" value="<?php echo e($jenisSarprasFilter); ?>">
 
                 <?php if($lokasiRuanganFilter !== 'all'): ?>
@@ -33,7 +33,7 @@
                     </svg>
                 </button>
 
-                <ul x-show="open" 
+                <ul x-show="open"
                     x-transition:enter="transition ease-out duration-100"
                     x-transition:enter-start="transform opacity-0 scale-95"
                     x-transition:enter-end="transform opacity-100 scale-100"
@@ -63,7 +63,7 @@
 
             <?php if($jenisSarprasFilter === 'ruangan'): ?>
             <form action="<?php echo e(route('public.sarana_perasarana.halamansarpras')); ?>" method="GET" class="relative w-full sm:w-auto" x-data="{ open: false }">
-                
+
                 <input type="hidden" name="jenis_sarpras" value="ruangan">
                 <input type="hidden" name="lokasi_ruangan" x-ref="inputLokasi" value="<?php echo e($lokasiRuanganFilter); ?>">
 
@@ -83,7 +83,7 @@
                     </svg>
                 </button>
 
-                <ul x-show="open" 
+                <ul x-show="open"
                     x-transition:enter="transition ease-out duration-100"
                     x-transition:enter-start="transform opacity-0 scale-95"
                     x-transition:enter-end="transform opacity-100 scale-100"
@@ -101,12 +101,12 @@
                     <?php $__currentLoopData = $lokasis; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lokasi): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
                             @click="$refs.inputLokasi.value = '<?php echo e($lokasi->id_lokasi); ?>'; $el.closest('form').submit()">
-                            
+
                             <span class="block <?php echo e($lokasiRuanganFilter == $lokasi->id_lokasi ? 'font-semibold text-gray-600' : 'font-normal'); ?>">
                                 <?php echo e($lokasi->nama_lokasi); ?>
 
                             </span>
-                            
+
                             <?php if($lokasiRuanganFilter == $lokasi->id_lokasi): ?>
                             <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-600">
                                 <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -148,7 +148,7 @@
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-3">
                                 <h2 class="text-base font-bold text-gray-800 truncate" title="<?php echo e($item->nama_ruangan); ?>">
-                                    <?php echo e($item->nama_ruangan); ?>
+                                    <?php echo e(Str::limit($item->nama_ruangan, 17)); ?>
 
                                 </h2>
                                 <p class="text-xs text-gray-500 flex items-center mt-1 truncate">
@@ -201,7 +201,7 @@
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="mb-3">
                                 <h2 class="text-base font-bold text-gray-800 truncate" title="<?php echo e($item->nama_proyektor); ?>">
-                                    <?php echo e($item->nama_proyektor); ?>
+                                    <?php echo e(Str::limit($item->nama_proyektor, 17)); ?>
 
                                 </h2>
                                 <p class="text-xs text-gray-500 mt-1 truncate">

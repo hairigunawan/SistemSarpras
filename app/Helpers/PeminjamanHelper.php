@@ -50,10 +50,6 @@ class PeminjamanHelper
 
         $query->where(function ($timeQuery) use ($tanggalPinjam, $jamMulai, $jamSelesai) {
             $timeQuery->where(function ($subQuery) use ($tanggalPinjam, $jamMulai, $jamSelesai) {
-                // Cek apakah ada tumpang tindih waktu untuk 1 hari peminjaman:
-                // tanggal_pinjam sama dengan tanggal_pinjam_peminjaman_lama AND
-                // jam_mulai < jam_selesai_peminjaman_lama AND
-                // jam_selesai > jam_mulai_peminjaman_lama
                 $subQuery->where('tanggal_pinjam', $tanggalPinjam)
                     ->where('jam_mulai', '<', $jamSelesai)
                     ->where('jam_selesai', '>', $jamMulai);
@@ -63,9 +59,6 @@ class PeminjamanHelper
         return $query->exists();
     }
 
-    /**
-     * Update status sumber daya setelah peminjaman disetujui/ditolak
-     */
     public static function updateResourceStatus($peminjaman, $status)
     {
         if ($status === 'Disetujui') {

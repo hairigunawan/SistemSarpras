@@ -37,16 +37,17 @@ class Laporan extends Model
     // Tampilan utama laporan
     public function HalamanUtama(Request $request)
     {
-        // Default diseragamkan ke perbulan
         $periode = $request->get('periode', 'perbulan');
 
         $dateRange = $this->getDateRange($periode);
         $startDate = $dateRange['startDate'];
         $endDate   = $dateRange['endDate'];
 
-        // Menghapus filter status agar data sesuai dengan total input yang masuk (Permintaan)
         $totalPeminjaman = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->whereIn('status_peminjaman', ['Disetujui', 'Ditolak', 'Selesai'])
             ->count();
+
+        $totalPeminjaman = $totalPeminjaman % 1000;
 
         $avgMinutes = Peminjaman::whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->whereNotNull('jam_mulai')
@@ -71,10 +72,11 @@ class Laporan extends Model
 
 
         $peminjamTeratas = Peminjaman::join('users', 'users.id_akun', '=', 'peminjamans.id_akun')
+            ->whereIn('status_peminjaman', ['Disetujui', 'Selesai'])
             ->select(
                 'users.nama',
                 'users.email',
-                DB::raw('count(*) as jumlah')
+                DB::raw(value: 'count(*) as jumlah')
             )
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
             ->groupBy('users.nama', 'users.email')

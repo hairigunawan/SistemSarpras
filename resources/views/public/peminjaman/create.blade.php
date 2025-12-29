@@ -5,7 +5,6 @@
 @section('content')
 
 @php
-    // 1. Ruangan
     $defRuanganId = old('id_ruangan', ($selectedSarprasType == 'ruangan' ? $selectedSarprasId : ''));
     $defRuanganLabel = '';
     if($defRuanganId) {
@@ -13,19 +12,15 @@
         $defRuanganLabel = $found ? $found->nama_ruangan : '';
     }
 
-    // 2. Proyektor
     $defProyektorId = old('id_proyektor', ($selectedSarprasType == 'proyektor' ? $selectedSarprasId : ''));
     $defProyektorLabel = '';
     if($defProyektorId) {
         $found = $proyektorTersedia->firstWhere('id_proyektor', $defProyektorId);
         $defProyektorLabel = $found ? $found->nama_proyektor : '';
     }
-
-    // 3. Lokasi
     $defLokasiId = old('id_lokasi');
     $defLokasiLabel = $defLokasiId && isset($lokasiList[$defLokasiId]) ? $lokasiList[$defLokasiId] : '';
 
-    // 4. Ruangan untuk Proyektor
     $defRuanganProyektorId = old('id_ruangan_proyektor');
     $defRuanganProyektorLabel = '';
     if($defRuanganProyektorId) {
@@ -33,7 +28,6 @@
         $defRuanganProyektorLabel = $found ? $found->nama_ruangan : '';
     }
 
-    // 5. Jenis Kegiatan
     $defKegiatan = old('jenis_kegiatan');
 @endphp
 
@@ -374,9 +368,7 @@
                 kegiatan: initialData.kegiatan
             },
 
-            // Computed property untuk Logic "Hanya Proyektor"
             get isHanyaProyektor() {
-                // Return TRUE jika Proyektor dipilih TAPI Ruangan KOSONG
                 return this.form.proyektorId !== '' && this.form.ruanganId === '';
             },
 
@@ -384,10 +376,7 @@
                 this.form.ruanganId = id;
                 this.form.ruanganLabel = label;
 
-                // Jika user memilih ruangan, otomatis reset logic lokasi manual proyektor
-                // karena diasumsikan proyektor dipakai di ruangan tersebut.
                 if (id !== '') {
-                    // Opsional: reset nilai lokasi tambahan jika ingin bersih
                     this.form.lokasiId = '';
                     this.form.lokasiLabel = '';
                 }

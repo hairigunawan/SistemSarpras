@@ -14,7 +14,7 @@
 
         @if (session('success'))
             <div x-data="{ show: true }"
-                x-init="setTimeout(() => show = false, 2000)"
+                x-init="setTimeout(() => show = false, 3000)"
                 x-show="show"
                 x-transition:leave="transition ease-in duration-500"
                 x-transition:leave-start="opacity-100"
@@ -34,7 +34,7 @@
 
             @if (session('error'))
             <div x-data="{ show: true }"
-                x-init="setTimeout(() => show = false, 2000)"
+                x-init="setTimeout(() => show = false, 3000)"
                 x-show="show"
                 x-transition:leave="transition ease-in duration-500"
                 x-transition:leave-start="opacity-100"

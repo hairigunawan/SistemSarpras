@@ -55,9 +55,6 @@ class AHPValidationHelper
             $suggestions[] = "Consistency Ratio melebihi batas yang dianjurkan (0.1), pertimbangkan untuk meninjau kembali perbandingan berpasangan.";
         }
         
-        // Additional logic for suggesting specific comparisons that might need revision
-        // This is a simplified version; in practice, you might use algorithms to identify
-        // the most inconsistent comparisons
         if (count($comparisonMatrix) > 0) {
             $suggestions[] = "Fokus pada perbandingan antar kriteria yang memiliki perbedaan penilaian ekstrem (misalnya perbandingan dengan nilai tinggi dan rendah secara bersamaan).";
         }
