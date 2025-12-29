@@ -52,7 +52,7 @@ class Laporan extends Model
             ->whereNotNull('jam_mulai')
             ->whereNotNull('jam_selesai')
             ->whereIn('status_peminjaman', ['Disetujui', 'Selesai'])
-            ->get(['jam_mulai', 'jam_selesai'])
+            ->get(['jam_mulai', 'jam_selesai', 'tanggal_pinjam'])
             ->map(function ($peminjaman) {
                 $start = Carbon::parse(
                     $peminjaman->tanggal_pinjam . ' ' . $peminjaman->jam_mulai
@@ -63,7 +63,7 @@ class Laporan extends Model
                 if ($end->lessThan($start)) {
                     $end->addDay();
                 }
-                return $end->diffInMinutes($start);
+                return $start->diffInMinutes($end);
             })
             ->avg() ?? 0;
 
@@ -211,7 +211,10 @@ class Laporan extends Model
             ->map(function ($peminjaman) {
                 $start = Carbon::parse($peminjaman->jam_mulai);
                 $end = Carbon::parse($peminjaman->jam_selesai);
-                return $end->diffInMinutes($start);
+                if ($end->lessThan($start)) {
+                    $end->addDay();
+                }
+                return $start->diffInMinutes($end);
             });
 
         $avgMinutes = $durations->avg() ?? 0;
@@ -319,7 +322,10 @@ class Laporan extends Model
             ->map(function ($peminjaman) {
                 $start = Carbon::parse($peminjaman->jam_mulai);
                 $end = Carbon::parse($peminjaman->jam_selesai);
-                return $end->diffInMinutes($start);
+                if ($end->lessThan($start)) {
+                    $end->addDay();
+                }
+                return $start->diffInMinutes($end);
             });
 
         $avgMinutes = $durations->avg() ?? 0;
