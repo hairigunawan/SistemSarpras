@@ -11,7 +11,7 @@
             <div class="mb-6 p-4 bg-blue-50 rounded-lg">
                 <h3 class="text-lg font-semibold text-[#1180ab] mb-2">Detail Ruangan</h3>
                 <div class="flex items-center gap-4">
-                    <img src="{{ Storage::url($ruangan->gambar) }}" alt="{{ $ruangan->nama_ruangan }}" 
+                    <img src="{{ str_starts_with($ruangan->gambar, 'http') ? $ruangan->gambar : asset('storage/' . $ruangan->gambar) }}" alt="{{ $ruangan->nama_ruangan }}" 
                          class="w-24 h-24 rounded-lg object-cover">
                     <div>
                         <p class="font-medium text-gray-800">{{ $ruangan->nama_ruangan }}</p>
@@ -25,7 +25,7 @@
             <div class="mb-6 p-4 bg-green-50 rounded-lg">
                 <h3 class="text-lg font-semibold text-green-800 mb-2">Detail Proyektor</h3>
                 <div class="flex items-center gap-4">
-                    <img src="{{ Storage::url($proyektor->gambar) }}" alt="{{ $proyektor->nama_proyektor }}" 
+                    <img src="{{ str_starts_with($proyektor->gambar, 'http') ? $proyektor->gambar : asset('storage/' . $proyektor->gambar) }}" alt="{{ $proyektor->nama_proyektor }}" 
                          class="w-24 h-24 rounded-lg object-cover">
                     <div>
                         <p class="font-medium text-gray-800">{{ $proyektor->nama_proyektor }}</p>
