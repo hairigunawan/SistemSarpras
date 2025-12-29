@@ -122,6 +122,12 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    // Custom Asset URLs (Supabase)
+    'favicon_url' => env('APP_FAVICON_URL'),
+    'logo_ti_url' => env('APP_LOGO_TI_URL'),
+    'logo_politala_url' => env('APP_LOGO_POLITALA_URL'),
+    'bg_login_url' => env('APP_BG_LOGIN_URL'),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
