@@ -54,10 +54,12 @@
                 </div>
             </form>
 
-                <a href="{{ route('admin.akun.create') }}"
+                <a href="{{ route('admin.akun.tambah_akun') }}"
                    class="inline-flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-[#1180ab] to-[#1180ab]
                    text-white font-medium text-xs uppercase rounded-lg hover:from-[#0d7198] hover:to-[#0d7198] transition-all duration-200 whitespace-nowrap">
                     <i class="fa-solid fa-user-plus text-sm"></i>
+                    Tambah Akun
+                </a>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
