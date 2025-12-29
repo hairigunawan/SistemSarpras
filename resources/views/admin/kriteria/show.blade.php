@@ -32,7 +32,7 @@
             <div class="p-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 flex items-center gap-5">
-                        <div class="h-14 w-14 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                        <div class="h-14 w-14 rounded-xl bg-[#1180ab] flex items-center justify-center text-white shadow-lg shadow-blue-200">
                             <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
                         </div>
                         <div>
@@ -61,7 +61,7 @@
                 {{-- Deskripsi/Info Tambahan --}}
                 <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 mb-8">
                     <h3 class="text-sm font-bold text-gray-900 mb-4 flex items-center">
-                        <svg class="h-4 w-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                        <svg class="h-4 w-4 mr-2 text-[#1180ab]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
                         Analisis Penggunaan
                     </h3>
                     <p class="text-sm text-gray-600 leading-relaxed">

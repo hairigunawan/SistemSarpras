@@ -10,7 +10,7 @@
 
   <div class="w-full max-w-5xl bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200 grid grid-cols-1 md:grid-cols-2 overflow-hidden animate-fadeIn">
 
-    <div class="relative flex flex-col justify-center items-center text-white p-10 md:p-12 bg-gradient-to-br from-blue-600 to-indigo-600">
+    <div class="relative flex flex-col justify-center items-center text-white p-10 md:p-12 bg-gradient-to-br from-[#1180ab] to-indigo-600">
 
     <img src="{{ asset('storage/images/GKT.jpg') }}"
         alt="Gedung Kampus"
@@ -89,17 +89,17 @@
             <input type="checkbox" class="mr-2 rounded border-gray-300">
             Ingat saya
           </label>
-          <a href="{{ route('password.forgot') }}" class="text-blue-600 hover:underline">Lupa password?</a>
+          <a href="{{ route('password.forgot') }}" class="text-[#1180ab] hover:underline">Lupa password?</a>
         </div>
 
         <button type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg shadow-md focus:ring-1 focus:ring-blue-300 transition">
+                class="w-full bg-[#1180ab] hover:bg-[#0d7198] text-white font-semibold py-2.5 rounded-lg shadow-md focus:ring-1 focus:ring-[#0d7198] transition">
           Masuk
         </button>
 
         <p class="text-center text-sm text-gray-600 mt-5">
           Belum punya akun?
-          <a href="{{ route('register') }}" class="text-blue-600 font-semibold hover:text-blue-800 transition">Daftar Sekarang</a>
+          <a href="{{ route('register') }}" class="text-[#1180ab] font-semibold hover:text-[#0f7299] transition">Daftar Sekarang</a>
         </p>
       </form>
     </div>

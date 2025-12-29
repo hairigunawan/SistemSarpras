@@ -8,13 +8,13 @@
     <div class="flex justify-between items-center mb-8">
         <div>
             <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                <i class="fa-solid fa-comments text-blue-600"></i>
+                <i class="fa-solid fa-comments text-[#1180ab]"></i>
                 Feedback Peminjaman
             </h2>
             <p class="text-sm text-gray-500">Berikan masukan untuk meningkatkan kualitas layanan sarana & prasarana.</p>
         </div>
         <a href="{{ route('public.sarana_perasarana.detail_sarpras', ['type' => $sarpras_type, 'id' => $id_sarpras]) }}"
-           class="inline-flex items-center text-blue-600 hover:text-blue-800 transition font-medium">
+           class="inline-flex items-center text-[#1180ab] hover:text-[#0f7299] transition font-medium">
             <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
         </a>
     </div>
@@ -22,7 +22,7 @@
     {{-- Form Feedback Baru (Selalu ditampilkan) --}}
     <div class="bg-white rounded-2xl shadow-md p-8 mb-10 hover:shadow-lg transition">
         <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-pen-to-square text-blue-500"></i> Tambah Feedback
+            <i class="fa-solid fa-pen-to-square text-[#1180ab]"></i> Tambah Feedback
         </h3>
 
         <form action="{{ route('public.feedback.store') }}" method="POST" class="space-y-5">
@@ -36,7 +36,7 @@
                         Isi Feedback <span class="text-red-500">*</span>
                     </label>
                     <textarea id="isi_feedback" name="isi_feedback" rows="5"
-                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 resize-none"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0d7198] focus:border-transparent text-gray-700 resize-none"
                               placeholder="Tulis pengalaman atau saran Anda di sini..."
                               required>{{ old('isi_feedback') }}</textarea>
                     @error('isi_feedback')
@@ -47,7 +47,7 @@
 
                 <div class="flex justify-end">
                     <button type="submit"
-                            class="px-6 py-1.5 bg-blue-600 text-white rounded-sm font-medium hover:bg-blue-700 active:scale-[.98] transition duration-200">
+                            class="px-6 py-1.5 bg-[#1180ab] text-white rounded-sm font-medium hover:bg-[#0d7198] active:scale-[.98] transition duration-200">
                         Kirim Feedback
                     </button>
                 </div>
@@ -58,7 +58,7 @@
     @if ($feedbacks->isNotEmpty())
         <div class="mt-8">
             <h4 class="text-lg font-semibold text-gray-800 mb-5 flex items-center gap-2">
-                <i class="fa-solid fa-clock-rotate-left text-blue-500"></i> Feedback Sebelumnya
+                <i class="fa-solid fa-clock-rotate-left text-[#1180ab]"></i> Feedback Sebelumnya
             </h4>
 
             <div class="space-y-6">

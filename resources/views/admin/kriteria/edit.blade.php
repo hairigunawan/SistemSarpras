@@ -8,7 +8,7 @@
             <h1 class="text-2xl font-bold text-gray-800">Edit Kriteria</h1>
             <p class="text-sm text-gray-500">Perbarui detail dan bobot kriteria penilaian.</p>
         </div>
-        <a href="{{ route('admin.kriteria.index') }}" class="text-sm text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors">
+        <a href="{{ route('admin.kriteria.index') }}" class="text-sm text-gray-600 hover:text-[#0f7299] flex items-center gap-1 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -46,7 +46,7 @@
                             id="nama_kriteria"
                             name="nama_kriteria"
                             value="{{ old('nama_kriteria', $kriteria->nama_kriteria) }}"
-                            class="w-full pl-4 pr-4 py-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block transition-all @error('nama_kriteria') border-red-500 bg-red-50 @enderror"
+                            class="w-full pl-4 pr-4 py-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#0d7198] focus:border-blue-500 block transition-all @error('nama_kriteria') border-red-500 bg-red-50 @enderror"
                             placeholder="Contoh: IPK, Penghasilan Orang Tua" required>
                     </div>
                     @error('nama_kriteria')
@@ -62,7 +62,7 @@
                             name="bobot"
                             value="{{ old('bobot', $kriteria->bobot) }}"
                             step="0.0001" min="0" max="1"
-                            class="w-full pl-4 pr-4 py-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block transition-all"
+                            class="w-full pl-4 pr-4 py-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#0d7198] focus:border-blue-500 block transition-all"
                             placeholder="0.0000" required>
                     </div>
                     @error('bobot')
@@ -80,7 +80,7 @@
                         return 'Pilih Tipe Kriteria';
                     },
                     getColor() {
-                        if (this.selected === 'benefit') return 'text-blue-700 bg-gray-50 border-gray-200';
+                        if (this.selected === 'benefit') return 'text-[#1180ab] bg-gray-50 border-gray-200';
                         if (this.selected === 'cost') return 'text-yellow-700 bg-gray-50 border-gray-200';
                         return 'text-gray-700 bg-gray-50 border-gray-300';
                     }
@@ -93,11 +93,11 @@
                         @click="open = !open"
                         @click.outside="open = false"
                         :class="getColor()"
-                        class="relative w-full py-2 pl-10 pr-10 text-left border rounded-lg focus:outline-none focus:ring-0.5 focus:ring-blue-500 transition-all duration-200">
+                        class="relative w-full py-2 pl-10 pr-10 text-left border rounded-lg focus:outline-none focus:ring-0.5 focus:ring-[#0d7198] transition-all duration-200">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         {{-- Ikon berubah sesuai pilihan --}}
                         <template x-if="selected === 'benefit'">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#1180ab]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                             </svg>
                         </template>
@@ -179,7 +179,7 @@
                    Batal
                 </a>
                 <button type="submit"
-                        class="flex items-center gap-2 px-5 py-2.5 text-xs uppercase tracking-widest font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-1 focus:outline-none focus:ring-blue-300 shadow-lg shadow-blue-500/30 transition-all">
+                        class="flex items-center gap-2 px-5 py-2.5 text-xs uppercase tracking-widest font-medium text-white bg-[#1180ab] rounded-lg hover:bg-[#0d7198] focus:ring-1 focus:outline-none focus:ring-[#0d7198] shadow-lg shadow-blue-500/30 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>

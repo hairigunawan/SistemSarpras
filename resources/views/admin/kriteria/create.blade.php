@@ -79,12 +79,12 @@
 
                     <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 space-y-3 mt-4">
                         <div class="flex gap-3">
-                            <svg class="h-5 w-5 text-blue-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="h-5 w-5 text-[#1180ab] mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <div class="text-xs text-blue-800 leading-relaxed">
+                            <div class="text-xs text-[#1180ab] leading-relaxed">
                                 <p><strong>Benefit:</strong> Semakin tinggi nilai semakin baik. <strong>Cost:</strong> Semakin rendah nilai semakin baik.</p>
-                                <p class="mt-1 font-semibold text-blue-600 underline">Catatan: Pastikan total semua bobot kriteria berjumlah 1.0000.</p>
+                                <p class="mt-1 font-semibold text-[#1180ab] underline">Catatan: Pastikan total semua bobot kriteria berjumlah 1.0000.</p>
                             </div>
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                             Batal
                         </a>
                         <button type="submit"
-                                class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transform transition active:scale-95 uppercase tracking-widest flex items-center">
+                                class="px-8 py-3 bg-[#1180ab] hover:bg-[#0d7198] text-white text-xs font-semibold rounded-lg transform transition active:scale-95 uppercase tracking-widest flex items-center">
                             <i class="fas fa-save mr-2"></i> Simpan Kriteria
                         </button>
                     </div>

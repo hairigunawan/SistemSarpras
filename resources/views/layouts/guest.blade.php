@@ -103,7 +103,7 @@
         @endif
 
         @if(session('info'))
-            <div class="notification notification-enter bg-blue-500 text-white p-4 rounded-lg shadow-lg flex items-start space-x-3">
+            <div class="notification notification-enter bg-[#1180ab] text-white p-4 rounded-lg shadow-lg flex items-start space-x-3">
                 <div class="flex-shrink-0">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -113,7 +113,7 @@
                     <h4 class="font-semibold text-sm mb-1">Informasi</h4>
                     <p class="text-sm">{{ session('info') }}</p>
                 </div>
-                <button onclick="this.parentElement.remove()" class="flex-shrink-0 ml-2 hover:bg-blue-600 rounded p-1 transition-colors">
+                <button onclick="this.parentElement.remove()" class="flex-shrink-0 ml-2 hover:bg-[#0d7198] rounded p-1 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>

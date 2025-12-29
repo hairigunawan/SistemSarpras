@@ -49,19 +49,15 @@
                         value="{{ request('search') }}"
                         placeholder="Cari berdasarkan nama atau email..."
                         class="w-full pl-10 pr-4 py-2 text-sm border border-slate-300 rounded-lg
-                            focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent
+                            focus:outline-none focus:ring-1 focus:ring-[#0d7198] focus:border-transparent
                             transition-all duration-200">
                 </div>
             </form>
 
-            <a href="{{ route('admin.akun.tambah_akun', ['id' => 'new']) }}"
-               class="inline-flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700
-                   text-white font-medium text-xs uppercase rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 whitespace-nowrap">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-                </svg>
-                Tambah Akun
-            </a>
+                <a href="{{ route('admin.akun.create') }}"
+                   class="inline-flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-[#1180ab] to-[#1180ab]
+                   text-white font-medium text-xs uppercase rounded-lg hover:from-[#0d7198] hover:to-[#0d7198] transition-all duration-200 whitespace-nowrap">
+                    <i class="fa-solid fa-user-plus text-sm"></i>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -98,7 +94,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <a href="{{ route('admin.akun.lihat_akun', $akuns->id_akun) }}"
-                                       class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600
+                                       class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#1180ab]
                                            bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-150">
                                         Detail
                                     </a>

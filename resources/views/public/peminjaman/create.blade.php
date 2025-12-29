@@ -133,10 +133,10 @@
                                         @foreach($ruanganTersedia as $ruangan)
                                             <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
                                                 @click="selectRuangan('{{ $ruangan->id_ruangan }}', '{{ $ruangan->nama_ruangan }}'); open = false">
-                                                <span class="block truncate" :class="form.ruanganId == '{{ $ruangan->id_ruangan }}' ? 'font-semibold text-blue-600' : 'font-normal'">
+                                                <span class="block truncate" :class="form.ruanganId == '{{ $ruangan->id_ruangan }}' ? 'font-semibold text-[#1180ab]' : 'font-normal'">
                                                     {{ $ruangan->nama_ruangan }}
                                                 </span>
-                                                <span x-show="form.ruanganId == '{{ $ruangan->id_ruangan }}'" class="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-600">
+                                                <span x-show="form.ruanganId == '{{ $ruangan->id_ruangan }}'" class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#1180ab]">
                                                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
                                                 </span>
                                             </li>
@@ -324,9 +324,9 @@
                                 @foreach(['Seminar Tugas Akhir', 'Seminar PKL', 'Kelas Materi', 'Kelas Praktikum', 'Rapat Organisasi', 'Lainnya'] as $item)
                                     <li class="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 transition-colors"
                                         @click="form.kegiatan = '{{ $item }}'; open = false">
-                                        <span class="block truncate" :class="form.kegiatan == '{{ $item }}' ? 'font-semibold text-blue-600' : 'font-normal'">{{ $item }}</span>
+                                        <span class="block truncate" :class="form.kegiatan == '{{ $item }}' ? 'font-semibold text-[#1180ab]' : 'font-normal'">{{ $item }}</span>
 
-                                        <span x-show="form.kegiatan == '{{ $item }}'" class="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-600">
+                                        <span x-show="form.kegiatan == '{{ $item }}'" class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#1180ab]">
                                             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
                                         </span>
                                     </li>
@@ -344,7 +344,7 @@
                         Batal
                     </a>
                     <button type="submit"
-                        class="px-8 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium text-sm rounded-xl shadow-lg transform transition-all duration-200 hover:-translate-y-0.2">
+                        class="px-8 py-2 bg-gradient-to-r from-[#1180ab] to-indigo-600 hover:from-[#0d7198] hover:to-indigo-700 text-white font-medium text-sm rounded-xl shadow-lg transform transition-all duration-200 hover:-translate-y-0.2">
                         Ajukan
                     </button>
                 </div>

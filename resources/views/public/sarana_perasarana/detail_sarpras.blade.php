@@ -85,7 +85,7 @@
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-sm font-medium text-gray-600">Status:</span>
                                 @if($mainPeminjaman)
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-[#1180ab] border border-blue-100">
                                         {{ $mainPeminjaman->status_peminjaman }}
                                     </span>
                                 @else

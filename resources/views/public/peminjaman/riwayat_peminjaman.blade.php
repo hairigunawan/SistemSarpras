@@ -57,7 +57,7 @@
 
                 <!-- Tombol Ajukan -->
                 <a href="{{ route('public.peminjaman.create') }}"
-                   class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all">
+                   class="inline-flex items-center justify-center rounded-lg bg-[#1180ab] px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0d7198] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all">
                     <svg class="-ml-0.5 mr-2 h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                     </svg>
@@ -150,7 +150,7 @@
                                 @php
                                     $statusConfig = [
                                         'Disetujui' => ['bg' => 'bg-emerald-50', 'text' => 'text-emerald-700', 'ring' => 'ring-emerald-600/20'],
-                                        'Selesai'   => ['bg' => 'bg-blue-50',    'text' => 'text-blue-700',    'ring' => 'ring-blue-700/10'],
+                                        'Selesai'   => ['bg' => 'bg-blue-50',    'text' => 'text-[#1180ab]',    'ring' => 'ring-[#0d7198]/10'],
                                         'Ditolak'   => ['bg' => 'bg-red-50',     'text' => 'text-red-700',     'ring' => 'ring-red-600/10'],
                                         'Menunggu'  => ['bg' => 'bg-yellow-50',  'text' => 'text-yellow-700',  'ring' => 'ring-yellow-600/10'],
                                     ];

@@ -6,7 +6,7 @@
 <div class="space-y-6">
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
+        <div class="bg-gradient-to-br from-[#0f7299] to-[#1180ab] p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-blue-100 text-sm font-medium mb-1">Total Akun</p>
@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
+        <div class="bg-gradient-to-br from-[#0f7299] to-[#1180ab] p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-green-100 text-sm font-medium mb-1">Total Sarpras</p>
@@ -35,10 +35,10 @@
         </div>
 
         <a href="{{ route('admin.peminjaman.index', ['status' => 'Menunggu']) }}" class="block group">
-            <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
+            <div class="bg-gradient-to-br from-[#0f7299] to-[#1180ab] p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-yellow-100 text-sm font-medium mb-1">Peminjaman Menunggu</p>
+                        <p class="text-white text-sm font-medium mb-1">Peminjaman Menunggu</p>
                         <p class="text-3xl text-white font-bold">{{ $peminjaman_menunggu ?? 0 }}</p>
                     </div>
                     <div class="bg-white bg-opacity-20 p-3 rounded-lg backdrop-blur-sm group-hover:bg-opacity-30 transition-all">
@@ -51,7 +51,7 @@
         </a>
 
         <a href="{{ route('admin.peminjaman.index', ['status' => 'disetujui']) }}" class="block group">
-            <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
+            <div class="bg-gradient-to-br from-[#0f7299] to-[#1180ab] p-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-100 hover:shadow-xl">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-green-100 text-sm font-medium mb-1">Peminjaman<br>Disetujui</p>
@@ -67,7 +67,7 @@
         </a>
     </div>
 
-    <div class="bg-gradient-to-tl from-blue-600 to-blue-700 p-6 rounded-xl shadow-lg">
+    <div class="bg-gradient-to-tl from-[#0f7299] to-[#1180ab] p-6 rounded-xl shadow-lg">
         <h3 class="text-lg font-medium text-white mb-6 flex items-center">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -78,7 +78,7 @@
             <a href="{{ route('sarpras.ruangan.tambah_ruangan') }}" class="group">
                 <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-blue-200 group-hover:transform group-hover:scale-100">
                     <div class="flex flex-col items-center text-center">
-                        <div class="bg-blue-100 p-4 rounded-full group-hover:bg-blue-200 transition-colors mb-4">
+                        <div class="bg-[#a4e2fb] p-4 rounded-full group-hover:bg-[#80d4f6] transition-colors mb-4">
                             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
@@ -91,7 +91,7 @@
             <a href="{{ route('sarpras.proyektor.tambah_proyektor') }}" class="group">
                 <div class="bg-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-green-200 group-hover:transform group-hover:scale-100">
                     <div class="flex flex-col items-center text-center">
-                        <div class="bg-blue-100 p-4 rounded-full group-hover:bg-blue-200 transition-colors mb-4">
+                        <div class="bg-[#a4e2fb] p-4 rounded-full group-hover:bg-[#80d4f6] transition-colors mb-4">
                             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg>
@@ -144,7 +144,7 @@
                         <!-- Toggle Dropdown -->
                         <button
                             @click="open = !open"
-                            class="px-3 py-1.5 border text-xs rounded-md bg-gray-100 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="px-3 py-1.5 bg-[#dee4e7] hover:bg-[#c1ecfd] border-[#babfc1] rounded-sm text-xs font-medium flex items-center gap-2 transition-colors">
 
                             <span x-text="currentChart.charAt(0).toUpperCase() + currentChart.slice(1)"></span>
 
@@ -161,7 +161,7 @@
 
                             <template x-for="type in ['line','bar','pie','doughnut']">
                                 <div @click="currentChart = type; open = false; renderChart(type)"
-                                    class="px-3 py-1.5 hover:bg-blue-100 cursor-pointer capitalize"
+                                    class="px-3 py-1.5 hover:bg-[#ecf7fb] hover:text-[#1180ab] cursor-pointer capitalize"
                                     x-text="type">
                                 </div>
                             </template>
@@ -172,7 +172,7 @@
 
 
                     <div class="relative">
-                        <button @click="open = !open" class="px-3 py-1.5 bg-blue-100 hover:bg-blue-200 rounded-sm text-xs font-medium flex items-center gap-2 transition-colors">
+                        <button @click="open = !open" class="px-3 py-1.5 bg-[#dee4e7] hover:bg-[#c1ecfd] border-[#babfc1] rounded-sm text-xs font-medium flex items-center gap-2 transition-colors">
                             <span>
                                 @if($periode === 'minggu') Minggu
                                 @elseif($periode === 'bulan') Bulan
@@ -187,9 +187,9 @@
                         </button>
 
                         <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20 overflow-hidden">
-                            <a href="{{ route('admin.dashboard', ['periode' => 'minggu']) }}" class="block px-4 py-2 text-xs hover:bg-gray-100 {{ $periode === 'minggu' ? 'text-blue-500 font-semibold bg-blue-50' : 'text-gray-700' }}">Minggu</a>
-                            <a href="{{ route('admin.dashboard', ['periode' => 'bulan']) }}" class="block px-4 py-2 text-xs hover:bg-gray-100 {{ $periode === 'bulan' ? 'text-blue-500 font-semibold bg-blue-50' : 'text-gray-700' }}">Bulan</a>
-                            <a href="{{ route('admin.dashboard', ['periode' => 'semester']) }}" class="block px-4 py-2 text-xs hover:bg-gray-100 {{ $periode === 'semester' ? 'text-blue-500 font-semibold bg-blue-50' : 'text-gray-700' }}">Semester</a>
+                            <a href="{{ route('admin.dashboard', ['periode' => 'minggu']) }}" class="block px-4 py-2 text-xs hover:bg-gray-100 {{ $periode === 'minggu' ? 'text-[#1180ab] font-semibold bg-blue-50' : 'text-gray-700' }}">Minggu</a>
+                            <a href="{{ route('admin.dashboard', ['periode' => 'bulan']) }}" class="block px-4 py-2 text-xs hover:bg-gray-100 {{ $periode === 'bulan' ? 'text-[#1180ab] font-semibold bg-blue-50' : 'text-gray-700' }}">Bulan</a>
+                            <a href="{{ route('admin.dashboard', ['periode' => 'semester']) }}" class="block px-4 py-2 text-xs hover:bg-gray-100 {{ $periode === 'semester' ? 'text-[#1180ab] font-semibold bg-blue-50' : 'text-gray-700' }}">Semester</a>
                         </div>
                     </div>
                 </div>
@@ -223,7 +223,7 @@
                             <div class="flex-grow">
                                 <span class="text-gray-700 font-medium block">{{ $ruangan['nama'] }}</span>
                                 <div class="w-full bg-blue-200 rounded-full h-1.5 mt-1">
-                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: {{ min(($ruangan['jumlah'] / 20) * 100, 100) }}%"></div>
+                                    <div class="bg-[#1180ab] h-1.5 rounded-full" style="width: {{ min(($ruangan['jumlah'] / 20) * 100, 100) }}%"></div>
                                 </div>
                             </div>
                         </div>
@@ -285,7 +285,7 @@
                                 {{ $index + 1 }}
                             </span>
                             @if($index === 0)
-                            <div class="absolute -top-1 -right-1 bg-blue-400 text-white rounded-full p-0.5 shadow-sm border border-white">
+                            <div class="absolute -top-1 -right-1 bg-[#1180ab] text-white rounded-full p-0.5 shadow-sm border border-white">
                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                                 </svg>
@@ -297,7 +297,7 @@
                             <p class="text-xs text-gray-500">{{ $peminjam['jumlah'] }} kali meminjam</p>
                         </div>
                     </div>
-                    <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-semibold text-xs border border-blue-100">
+                    <span class="bg-blue-50 text-[#1180ab] px-3 py-1 rounded-full font-semibold text-xs border border-blue-100">
                         {{ $peminjam['jumlah'] }}x
                     </span>
                 </div>
@@ -341,8 +341,8 @@
             datasetsConfig = [{
                 data: [totalRuangan, totalProyektor],
                 backgroundColor: [
-                    'rgba(59, 130, 246, 0.8)', // Blue
-                    'rgba(168, 85, 247, 0.8)'  // green
+                    'rgba(17, 128, 171, 0.8)', // Blue
+                    'rgba(34, 197, 94, 0.8)'  // green
                 ],
                 borderColor: '#ffffff',
                 borderWidth: 2
@@ -352,8 +352,8 @@
                 {
                     label: 'Ruangan',
                     data: dataRuangan,
-                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                    borderColor: 'rgba(59, 130, 246, 1)',
+                    backgroundColor: 'rgba(17, 128, 171, 0.5)',
+                    borderColor: 'rgba(17, 128, 171, 1)',
                     borderWidth: 2,
                     tension: 0.3,
                     fill: type === 'line'
@@ -361,8 +361,8 @@
                 {
                     label: 'Proyektor',
                     data: dataProyektor,
-                    backgroundColor: 'rgba(168, 85, 247, 0.5)',
-                    borderColor: 'rgba(168, 85, 247, 1)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.5)',
+                    borderColor: 'rgba(34, 197, 94, 1)',
                     borderWidth: 2,
                     tension: 0.3,
                     fill: type === 'line'

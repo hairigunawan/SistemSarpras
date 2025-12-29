@@ -20,7 +20,7 @@
             <div class="relative z-20" @click.outside="openDropdown = false">
                 <button
                     @click="openDropdown = !openDropdown"
-                    class="flex items-center justify-between w-40 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                    class="flex items-center justify-between w-40 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-1 transition-all"
                 >
                     <span x-text="formatLabel(periode)"></span>
                     <svg class="w-4 h-4 ml-2 text-gray-400 transition-transform duration-200" :class="openDropdown ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -40,10 +40,10 @@
                     style="display: none;"
                 >
                     <div class="p-1">
-                        <button @click="setPeriode('perbulan')" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 rounded hover:bg-blue-50 hover:text-blue-600 transition-colors" :class="periode === 'perbulan' ? 'bg-blue-50 text-blue-700' : ''">
+                        <button @click="setPeriode('perbulan')" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 rounded hover:bg-blue-50 hover:text-[#1180ab] transition-colors" :class="periode === 'perbulan' ? 'bg-blue-50 text-[#0f7299]' : ''">
                             Perbulan
                         </button>
-                        <button @click="setPeriode('persemester')" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 rounded hover:bg-blue-50 hover:text-blue-600 transition-colors" :class="periode === 'persemester' ? 'bg-blue-50 text-blue-700' : ''">
+                        <button @click="setPeriode('persemester')" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 rounded hover:bg-blue-50 hover:text-[#1180ab] transition-colors" :class="periode === 'persemester' ? 'bg-blue-50 text-[#0f7299]' : ''">
                             Persemester
                         </button>
                     </div>
@@ -68,7 +68,7 @@
     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div class="relative p-6 overflow-hidden bg-white border border-gray-100 shadow-xs rounded group hover:shadow-sm transition-shadow">
             <div class="flex items-center gap-4">
-                <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                <div class="p-3 bg-blue-50 text-[#1180ab] rounded-xl">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
                 </div>
                 <div>
@@ -80,7 +80,7 @@
 
         <div class="relative p-6 overflow-hidden bg-white border border-gray-100 shadow-xs rounded group hover:shadow-sm transition-shadow">
             <div class="flex items-center gap-4">
-                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                <div class="p-3 bg-blue-50 text-[#1180ab] rounded-xl">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></svg>
                 </div>
                 <div>
@@ -92,7 +92,7 @@
 
         <div class="relative p-6 overflow-hidden bg-white border border-gray-100 shadow-xs rounded group hover:shadow-sm transition-shadow">
             <div class="flex items-center gap-4">
-                <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                <div class="p-3 bg-blue-50 text-[#1180ab] rounded-xl">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></svg>
                 </div>
                 <div>
@@ -114,11 +114,11 @@
                     @forelse($peminjamTeratas as $index => $peminjam)
                     <div class="flex items-center justify-between group">
                         <div class="flex items-center gap-4">
-                            <span class="flex items-center justify-center w-8 h-8 text-xs font-bold {{ $index < 3 ? 'text-blue-600 bg-blue-100' : 'text-gray-500 bg-gray-100' }} rounded-full">
+                            <span class="flex items-center justify-center w-8 h-8 text-xs font-bold {{ $index < 3 ? 'text-[#1180ab] bg-blue-100' : 'text-gray-500 bg-gray-100' }} rounded-full">
                                 {{ $index + 1 }}
                             </span>
                             <div>
-                                <p class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{{ $peminjam['nama'] }}</p>
+                                <p class="text-sm font-semibold text-gray-900 group-hover:text-[#1180ab] transition-colors">{{ $peminjam['nama'] }}</p>
                                 <p class="text-xs text-gray-500">{{ $peminjam['email'] }}</p>
                             </div>
                         </div>

@@ -88,14 +88,14 @@
                     @if($r->gambar)
                         <img src="{{ asset('storage/' . $r->gambar) }}" alt="{{ $r->nama_ruangan }}" class="my-2 h-32 w-auto">
                     @endif
-                    <input type="file" name="gambar" id="gambar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-6 file:rounded-xl file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <input type="file" name="gambar" id="gambar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-6 file:rounded-xl file:border-0 file:font-semibold file:bg-blue-50 file:text-[#1180ab] hover:file:bg-blue-100">
                 </div>
                 <small class="text-gray-500">Kosongkan jika tidak ingin mengubah gambar.</small>
                 @error('gambar') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
             <div class="text-right">
-                <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-sm text-sm font-normal hover:bg-blue-600 transition-colors">
+                <button type="submit" class="bg-[#1180ab] text-white px-6 py-2 rounded-sm text-sm font-normal hover:bg-[#0d7198] transition-colors">
                     Update
                 </button>
             </div>

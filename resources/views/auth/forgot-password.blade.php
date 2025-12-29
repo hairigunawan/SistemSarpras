@@ -25,7 +25,7 @@
         <div class="text-red-600">{{ $message }}</div>
         @enderror
 
-        <button class="bg-blue-600 text-white px-4 py-2 rounded mt-4 w-full">
+        <button class="bg-[#1180ab] text-white px-4 py-2 rounded mt-4 w-full">
             Kirim Kode OTP
         </button>
     </form>

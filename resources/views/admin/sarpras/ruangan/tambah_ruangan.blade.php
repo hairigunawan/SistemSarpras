@@ -101,7 +101,7 @@
 
                             <!-- Upload Button -->
                             <div class="flex text-sm text-gray-600">
-                                <label for="gambar" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500">
+                                <label for="gambar" class="relative cursor-pointer bg-white rounded-md font-medium text-[#1180ab] hover:text-[#0f7299]">
                                     <span>Upload file</span>
                                     <input id="gambar" name="gambar" type="file" class="sr-only"
                                         accept=".jpeg,.png,.jpg,.webp"
@@ -120,7 +120,7 @@
                 </div>
 
                 <div class="text-right">
-                    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-sm text-sm font-normal hover:bg-blue-600 transition-colors">
+                    <button type="submit" class="bg-[#1180ab] text-white px-6 py-2 rounded-sm text-sm font-normal hover:bg-[#0d7198] transition-colors">
                         Simpan
                     </button>
                 </div>

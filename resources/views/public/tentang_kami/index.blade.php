@@ -145,7 +145,7 @@
         <!-- Section 3: Fitur Utama (Dark Mode Block) -->
         <div class="bg-gray-700 py-24 sm:py-32 relative overflow-hidden">
             <!-- Decorative background blur -->
-            <div class="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/50 rounded-full blur-3xl opacity-50"></div>
+            <div class="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#1180ab]/50 rounded-full blur-3xl opacity-50"></div>
 
             <div class="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
                 <div class="mx-auto max-w-2xl lg:mx-0">

@@ -90,11 +90,13 @@ class AdminController extends Controller
                 $ruanganCount = Peminjaman::whereNotNull('id_ruangan')
                     ->whereDate('tanggal_pinjam', $date)
                     ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
+                    ->whereIn('status_peminjaman', ['Disetujui', 'Selesai', 'Ditolak'])
                     ->count();
 
                 $proyektorCount = Peminjaman::whereNotNull('id_proyektor')
                     ->whereDate('tanggal_pinjam', $date)
                     ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
+                    ->whereIn('status_peminjaman', ['Disetujui', 'Selesai', 'Ditolak'])
                     ->count();
 
                 $chartData[] = [
@@ -120,10 +122,12 @@ class AdminController extends Controller
 
                 $ruanganCount = Peminjaman::whereNotNull('id_ruangan')
                     ->whereBetween('tanggal_pinjam', [$weekStart, $weekEnd])
+                    ->whereIn('status_peminjaman', ['Disetujui', 'Selesai', 'Ditolak'])
                     ->count();
 
                 $proyektorCount = Peminjaman::whereNotNull('id_proyektor')
                     ->whereBetween('tanggal_pinjam', [$weekStart, $weekEnd])
+                    ->whereIn('status_peminjaman', ['Disetujui', 'Selesai', 'Ditolak'])
                     ->count();
 
                 $chartData[] = [
@@ -149,10 +153,12 @@ class AdminController extends Controller
 
                 $ruanganCount = Peminjaman::whereNotNull('id_ruangan')
                     ->whereBetween('tanggal_pinjam', [$monthStart, $monthEnd])
+                    ->whereIn('status_peminjaman', ['Disetujui', 'Selesai', 'Ditolak'])
                     ->count();
 
                 $proyektorCount = Peminjaman::whereNotNull('id_proyektor')
                     ->whereBetween('tanggal_pinjam', [$monthStart, $monthEnd])
+                    ->whereIn('status_peminjaman', ['Disetujui', 'Selesai', 'Ditolak'])
                     ->count();
 
                 $chartData[] = [
@@ -179,6 +185,7 @@ class AdminController extends Controller
         $ruanganPopuler = Peminjaman::whereNotNull('id_ruangan')
             ->select('id_ruangan', DB::raw('count(*) as total'))
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->whereIn('status_peminjaman', ['Disetujui', 'Selesai', 'Ditolak'])
             ->groupBy('id_ruangan')
             ->orderByDesc('total')
             ->take(3)
@@ -196,6 +203,7 @@ class AdminController extends Controller
         $proyektorPopuler = Peminjaman::whereNotNull('id_proyektor')
             ->select('id_proyektor', DB::raw('count(*) as total'))
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->whereIn('status_peminjaman', ['Disetujui', 'Selesai', 'Ditolak'])
             ->groupBy('id_proyektor')
             ->orderByDesc('total')
             ->take(3)
@@ -226,6 +234,7 @@ class AdminController extends Controller
 
         return Peminjaman::select('id_akun', DB::raw('count(*) as total'))
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->whereIn('status_peminjaman', ['Disetujui', 'Selesai', 'Ditolak'])
             ->groupBy('id_akun')
             ->orderByDesc('total')
             ->take(3)

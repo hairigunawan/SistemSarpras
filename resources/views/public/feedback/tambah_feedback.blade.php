@@ -9,7 +9,7 @@
         
         @if ($ruangan)
             <div class="mb-6 p-4 bg-blue-50 rounded-lg">
-                <h3 class="text-lg font-semibold text-blue-800 mb-2">Detail Ruangan</h3>
+                <h3 class="text-lg font-semibold text-[#1180ab] mb-2">Detail Ruangan</h3>
                 <div class="flex items-center gap-4">
                     <img src="{{ asset('storage/' . $ruangan->gambar) }}" alt="{{ $ruangan->nama_ruangan }}" 
                          class="w-24 h-24 rounded-lg object-cover">
@@ -50,7 +50,7 @@
                     id="isi_feedback" 
                     name="isi_feedback" 
                     rows="6" 
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0d7198] focus:border-transparent"
                     placeholder="Berikan feedback Anda tentang sumber daya yang dipinjam..."
                     required>{{ old('isi_feedback') }}</textarea>
                 @error('isi_feedback')
@@ -65,7 +65,7 @@
                     Batal
                 </a>
                 <button type="submit" 
-                        class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
+                        class="px-6 py-2 bg-[#1180ab] text-white rounded-md hover:bg-[#0d7198] transition duration-200">
                     Kirim Feedback
                 </button>
             </div>

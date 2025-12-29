@@ -17,7 +17,7 @@
 
             <!-- Section 1: Informasi Mata Kuliah -->
             <div class="space-y-4">
-                <h3 class="text-sm font-semibold text-blue-600 uppercase tracking-wide border-b border-blue-100 pb-2 mb-4">Informasi Mata Kuliah</h3>
+                <h3 class="text-sm font-semibold text-[#1180ab] uppercase tracking-wide border-b border-blue-100 pb-2 mb-4">Informasi Mata Kuliah</h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Kode MK -->
@@ -60,7 +60,7 @@
 
             <!-- Section 2: Detail Peserta -->
             <div class="space-y-4">
-                <h3 class="text-sm font-semibold text-blue-600 uppercase tracking-wide border-b border-blue-100 pb-2 mb-4">Detail Peserta & Kelas</h3>
+                <h3 class="text-sm font-semibold text-[#1180ab] uppercase tracking-wide border-b border-blue-100 pb-2 mb-4">Detail Peserta & Kelas</h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Kelas Mahasiswa -->
@@ -100,7 +100,7 @@
 
             <!-- Section 3: Waktu & Lokasi -->
             <div class="space-y-4">
-                <h3 class="text-sm font-semibold text-blue-600 uppercase tracking-wide border-b border-blue-100 pb-2 mb-4">Waktu & Lokasi</h3>
+                <h3 class="text-sm font-semibold text-[#1180ab] uppercase tracking-wide border-b border-blue-100 pb-2 mb-4">Waktu & Lokasi</h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Hari & Ruangan -->
@@ -164,7 +164,7 @@
                     Batal
                 </a>
                 <button type="submit"
-                        class="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm shadow-blue-200 transition">
+                        class="px-6 py-2.5 text-sm font-medium text-white bg-[#1180ab] rounded-lg hover:bg-[#0d7198] focus:outline-none focus:ring-1 focus:ring-[#0d7198] shadow-sm shadow-blue-200 transition">
                     Simpan Jadwal
                 </button>
             </div>

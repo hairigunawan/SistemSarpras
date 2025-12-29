@@ -25,12 +25,12 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-blue-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">No</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Nama Peminjam</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Sarana/Prasarana</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Tanggal Peminjaman</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Jam</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-[#1180ab] uppercase tracking-wider">No</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-[#1180ab] uppercase tracking-wider">Nama Peminjam</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-[#1180ab] uppercase tracking-wider">Sarana/Prasarana</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-[#1180ab] uppercase tracking-wider">Tanggal Peminjaman</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-[#1180ab] uppercase tracking-wider">Jam</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-[#1180ab] uppercase tracking-wider">Status</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
@@ -77,7 +77,7 @@
                     Ditolak
                   </span>
                 @elseif($item->status_peminjaman == 'Selesai')
-                  <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+                  <span class="bg-blue-100 text-[#1180ab] text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
                     Selesai
                   </span>
                 @else
@@ -111,7 +111,7 @@
                     <h2 class="text-xl font-semibold text-gray-800">Jadwal Ruangan Terpakai</h2>
 
                     @if(isset($p) && count($p) > 0)
-                        <span class="bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[10px] font-medium px-5 py-1 rounded-xl">
+                        <span class="bg-gradient-to-r from-[#1180ab] to-[#1180ab] text-white text-[10px] font-medium px-5 py-1 rounded-xl">
                             {{ count($p) }} Ruangan Terpakai
                         </span>
                     @endif

@@ -12,7 +12,7 @@
             <p class="text-sm text-gray-500 mt-1">Atur bobot dan jenis kriteria penilaian sistem.</p>
         </div>
         <a href="{{ route('admin.kriteria.create') }}"
-           class="inline-flex items-center px-4 py-2 bg-blue-600 text-xs uppercase tracking-widest hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+           class="inline-flex items-center px-4 py-2 bg-[#1180ab] text-xs uppercase tracking-widest hover:bg-[#0d7198] text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
@@ -88,7 +88,7 @@
                             <td class="px-2 py-4">
                                 <div class="flex items-center justify-center gap-2">
                                     <a href="{{ route('admin.kriteria.show', $kriteria) }}"
-                                       class="p-2 text-gray-500 text-sm uppercase hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                       class="p-2 text-gray-500 text-sm uppercase hover:text-[#0f7299] hover:bg-blue-50 rounded-lg transition"
                                        title="Lihat Detail">Detail
                                     </a>
 
@@ -176,7 +176,7 @@
                             Hapus
                         </button>
                     </form>
-                    <button type="button" @click="showDeleteModal = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    <button type="button" @click="showDeleteModal = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-[#0d7198] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                         Batal
                     </button>
                 </div>

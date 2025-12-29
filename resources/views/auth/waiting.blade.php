@@ -40,7 +40,7 @@
 
         <div class="space-y-3">
             <a href="{{ route('verification.form') }}"
-               class="w-full flex items-center justify-center bg-blue-600 py-3 rounded-lg text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition active:scale-[0.98]">
+               class="w-full flex items-center justify-center bg-[#1180ab] py-3 rounded-lg text-sm font-semibold text-white shadow-sm hover:bg-[#0d7198] transition active:scale-[0.98]">
                 Masukkan Kode Verifikasi
             </a>
 
@@ -60,7 +60,7 @@
         <div class="mt-10 text-center">
             <p class="text-sm text-gray-500">
                 Salah memasukkan email?
-                <a href="{{ route('login') }}" class="font-semibold text-blue-600 hover:text-blue-500 transition">
+                <a href="{{ route('login') }}" class="font-semibold text-[#1180ab] hover:text-[#0f7299] transition">
                     Kembali
                 </a>
             </p>

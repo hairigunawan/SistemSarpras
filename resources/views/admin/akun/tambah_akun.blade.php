@@ -43,7 +43,7 @@
                             <div class="relative rounded-md shadow-sm">
                                 <input type="text" name="nama" id="nama"
                                     value="{{ old('nama') }}"
-                                    class="pl-3 block w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 border
+                                    class="pl-3 block w-full rounded-md border-gray-300 focus:ring-[#0d7198] focus:border-blue-500 sm:text-sm py-2.5 border
                                     @error('nama') border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500 @enderror"
                                     placeholder="Masukkan nama lengkap">
                             </div>
@@ -57,7 +57,7 @@
                             <div class="relative rounded-md shadow-sm">
                                 <input type="email" name="email" id="email"
                                     value="{{ old('email') }}"
-                                    class="pl-3 block w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 border
+                                    class="pl-3 block w-full rounded-md border-gray-300 focus:ring-[#0d7198] focus:border-blue-500 sm:text-sm py-2.5 border
                                     @error('email') border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500 @enderror"
                                     placeholder="contoh@email.com">
                             </div>
@@ -70,7 +70,7 @@
                             <label for="role_id" class="block text-sm font-medium text-gray-700 mb-1">Role Pengguna</label>
                             <div class="relative">
                                 <select name="role_id" id="role_id"
-                                    class="pl-3 block w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 border bg-white">
+                                    class="pl-3 block w-full rounded-md border-gray-300 focus:ring-[#0d7198] focus:border-blue-500 sm:text-sm py-2.5 border bg-white">
                                     <option value="" disabled selected>-- Pilih Role --</option>
                                     @foreach($roles ?? [] as $r)
                                         <option value="{{ $r->id_role }}" {{ old('role_id') == $r->id_role ? 'selected' : '' }}>
@@ -89,7 +89,7 @@
                             <div class="relative rounded-md shadow-sm">
                                 <input type="text" name="nomor_telepon" id="nomor_telepon"
                                     value="{{ old('nomor_telepon') }}"
-                                    class="pl-3 block w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 border
+                                    class="pl-3 block w-full rounded-md border-gray-300 focus:ring-[#0d7198] focus:border-blue-500 sm:text-sm py-2.5 border
                                     @error('nomor_telepon') border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500 @enderror"
                                     placeholder="Contoh: 081234567890">
                             </div>
@@ -106,7 +106,7 @@
                                     <input :type="showPassword ? 'text' : 'password'"
                                         name="password"
                                         id="password"
-                                        class="pl-3 pr-10 block w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 border
+                                        class="pl-3 pr-10 block w-full rounded-md border-gray-300 focus:ring-[#0d7198] focus:border-blue-500 sm:text-sm py-2.5 border
                                         @error('password') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
 
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -132,7 +132,7 @@
                                     <input :type="showConfirm ? 'text' : 'password'"
                                         name="password_confirmation"
                                         id="password_confirmation"
-                                        class="pl-3 pr-10 block w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 border">
+                                        class="pl-3 pr-10 block w-full rounded-md border-gray-300 focus:ring-[#0d7198] focus:border-blue-500 sm:text-sm py-2.5 border">
 
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                                         <button type="button" @click="showConfirm = !showConfirm" class="text-gray-400 hover:text-gray-600 focus:outline-none">
@@ -153,11 +153,11 @@
 
                     <div class="mt-8 pt-5 border-t border-gray-200 flex items-center justify-end space-x-3">
                         <a href="{{ route('admin.akun.index') }}"
-                           class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                           class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0d7198]">
                             Batal
                         </a>
                         <button type="submit"
-                            class="inline-flex justify-center px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                            class="inline-flex justify-center px-6 py-2 text-sm font-medium text-white bg-[#1180ab] border border-transparent rounded-md shadow-sm hover:bg-[#0d7198] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0d7198] transition-colors duration-200">
                             Simpan Akun
                         </button>
                     </div>

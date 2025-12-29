@@ -83,8 +83,8 @@
                             </div>
                         @endif
 
-                        <div class="absolute top-2 right-2">
-                            <span class="px-2 py-1 text-[10px] font-bold uppercase rounded shadow-sm {{ $item->type === 'ruangan' ? 'bg-blue-500 text-white' : 'bg-purple-500 text-white' }}">
+                        <div class="absolute top-0.5 right-1">
+                            <span class="px-2 py-1 text-[10px] font-mormal uppercase rounded shadow-sm {{ $item->type === 'ruangan' ? 'bg-[#1180ab] text-white' : 'bg-green-500 text-white' }}">
                                 {{ $item->type }}
                             </span>
                         </div>
@@ -146,7 +146,7 @@
 
         <div class="flex flex-col gap-3">
             <a href="{{ route('sarpras.ruangan.tambah_ruangan') }}"
-                class="bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition text-xs uppercase tracking-widest border border-blue-300">
+                class="bg-[#0e6a8f] hover:bg-[#0f7299] text-white py-2 rounded-lg transition text-xs uppercase tracking-widest border border-blue-300">
                 Tambah Ruangan
             </a>
             <a href="{{ route('sarpras.proyektor.tambah_proyektor') }}"

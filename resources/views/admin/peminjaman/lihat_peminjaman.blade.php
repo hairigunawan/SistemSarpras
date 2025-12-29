@@ -109,7 +109,7 @@
                     <span class="px-3 py-1 rounded-full text-sm font-medium
                         @if($mainPeminjaman->status_peminjaman == 'Menunggu') bg-yellow-100 text-yellow-800
                         @elseif($mainPeminjaman->status_peminjaman == 'Disetujui') bg-green-100 text-green-800
-                        @elseif($mainPeminjaman->status_peminjaman == 'Selesai') bg-blue-100 text-blue-800
+                        @elseif($mainPeminjaman->status_peminjaman == 'Selesai') bg-[#1180ab] text-[#1180ab]
                         @elseif($mainPeminjaman->status_peminjaman == 'Ditolak') bg-red-100 text-red-800
                         @else bg-gray-100 text-gray-800 @endif">
                         {{ $mainPeminjaman->status_peminjaman == 'Menunggu' ? 'Menunggu Konfirmasi' : $mainPeminjaman->status_peminjaman }}
@@ -150,7 +150,7 @@
                             @csrf
                             @method('PATCH')
                             <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyelesaikan peminjaman ini?')"
-                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 ">
+                                class="inline-flex items-center px-4 py-2 bg-[#1180ab] border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-[#1180ab] active:bg-[#1180ab] ">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 Selesaikan
                             </button>
@@ -290,7 +290,7 @@
                         @enderror
                     </div>
                     <div class="flex justify-end">
-                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900">
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-[#1180ab] border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-[#1180ab] active:bg-[#1180ab]">
                             Simpan Catatan
                         </button>
                     </div>
@@ -330,7 +330,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                         {{ $candidate->nama_peminjam ?? $candidate->user->name }}
                                         @if($candidate->id_peminjaman == $mainPeminjaman->id_peminjaman)
-                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">Sedang Dilihat</span>
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#1180ab] text-[#1180ab]">Sedang Dilihat</span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -349,7 +349,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         @if($candidate->id_peminjaman != $mainPeminjaman->id_peminjaman)
-                                            <a href="{{ route('admin.peminjaman.lihat_peminjaman', $candidate->id_peminjaman) }}" class="text-blue-600 hover:text-blue-900">Lihat Detail</a>
+                                            <a href="{{ route('admin.peminjaman.lihat_peminjaman', $candidate->id_peminjaman) }}" class="text-[#1180ab] hover:text-[#1180ab]">Lihat Detail</a>
                                         @endif
                                     </td>
                                 </tr>
@@ -397,7 +397,7 @@
                     <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
                         Tolak Sekarang
                     </button>
-                    <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1180ab] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                         Batal
                     </button>
                 </div>

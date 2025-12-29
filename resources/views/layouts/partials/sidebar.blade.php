@@ -106,19 +106,19 @@
                     
                     <li>
                         <a href="{{ route('admin.prioritas.ruangan') }}"
-                            class="{{ request()->routeIs('admin.prioritas.ruangan') ? 'block text-sm bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
+                            class="{{ request()->routeIs('admin.prioritas.ruangan') ? 'block text-sm bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-[#0f7299] hover:bg-gray-100 p-1.5' }}">
                             Ruangan
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('admin.prioritas.proyektor') }}"
-                            class="{{ request()->routeIs('admin.prioritas.proyektor') ? 'block p-1.5 text-sm bg-[#1180ab] bg-opacity-10 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
+                            class="{{ request()->routeIs('admin.prioritas.proyektor') ? 'block p-1.5 text-sm bg-[#1180ab] bg-opacity-10 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-[#0f7299] hover:bg-gray-100 p-1.5' }}">
                             Proyektor
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('admin.kriteria.index') }}"
-                            class="{{ request()->routeIs('admin.kriteria*') ? 'block text-sm bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-1.5' }}">
+                            class="{{ request()->routeIs('admin.kriteria*') ? 'block text-sm bg-[#1180ab] bg-opacity-10 p-1.5 text-[#127ea9] rounded' : 'block text-sm text-gray-600 hover:text-[#0f7299] hover:bg-gray-100 p-1.5' }}">
                             Kriteria
                         </a>
                     </li>

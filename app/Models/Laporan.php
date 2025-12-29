@@ -124,13 +124,9 @@ class Laporan extends Model
         if ($sarprasTerpopuler->isNotEmpty()) {
             $hasRuangan = $sarprasTerpopuler->take(3)->contains('type', 'ruangan');
 
-            // Jika 3 teratas tidak ada ruangan, tapi ada data ruangan
             if (!$hasRuangan && $ruanganPopuler->isNotEmpty()) {
-                // Ambil 2 teratas (yang pasti proyektor karena sorting)
                 $topTwo = $sarprasTerpopuler->take(2);
-                // Ambil ruangan teratas
                 $topRuangan = $ruanganPopuler->first();
-                // Gabungkan
                 $sarprasTerpopuler = $topTwo->push($topRuangan);
             } else {
                 $sarprasTerpopuler = $sarprasTerpopuler->take(3);
@@ -224,6 +220,7 @@ class Laporan extends Model
 
         $peminjamTeratas = Peminjaman::select('id_akun', DB::raw('count(*) as total'))
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->whereIn('status_peminjaman', ['Disetujui', 'Selesai'])
             ->groupBy('id_akun')
             ->orderByDesc('total')
             ->take(3)
@@ -335,6 +332,7 @@ class Laporan extends Model
 
         $peminjamTeratas = Peminjaman::select('id_akun', DB::raw('count(*) as total'))
             ->whereBetween('tanggal_pinjam', [$startDate, $endDate])
+            ->whereIn('status_peminjaman', ['Disetujui', 'Selesai'])
             ->groupBy('id_akun')
             ->orderByDesc('total')
             ->take(3)

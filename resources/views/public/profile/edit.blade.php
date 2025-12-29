@@ -7,7 +7,7 @@
         <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
             
             <div class="bg-slate-900 h-32 w-full relative">
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 opacity-90"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-[#1180ab] to-indigo-700 opacity-90"></div>
                 <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 20px 20px;"></div>
             </div>
             
@@ -109,7 +109,7 @@
                                    name="nomor_telepon" 
                                    value="{{ old('nomor_telepon', $user->nomor_telepon) }}" 
                                    placeholder="08xxxxxxxxxx"
-                                   class="w-full pl-10 py-2.5 border rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('nomor_telepon') border-red-300 focus:ring-red-200 @else border-slate-300 @enderror"
+                                   class="w-full pl-10 py-2.5 border rounded-lg focus:ring-1 focus:ring-[#0d7198] focus:border-blue-500 transition-colors @error('nomor_telepon') border-red-300 focus:ring-red-200 @else border-slate-300 @enderror"
                                    required
                                    oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length > 1 && !this.value.startsWith('08')) this.value='08';">
                         </div>
@@ -129,7 +129,7 @@
                             Batal
                         </a>
                         <button type="submit" 
-                                class="w-full sm:w-auto flex-1 px-6 py-2.5 bg-blue-600 border border-transparent rounded-lg text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all flex justify-center items-center"
+                                class="w-full sm:w-auto flex-1 px-6 py-2.5 bg-[#1180ab] border border-transparent rounded-lg text-white font-medium hover:bg-[#0d7198] focus:outline-none focus:ring-1 focus:ring-[#0d7198] transition-all flex justify-center items-center"
                                 :disabled="submitting"
                                 :class="{ 'opacity-75 cursor-wait': submitting }">
                             

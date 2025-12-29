@@ -34,20 +34,20 @@
                 <div class="mb-4">
                     <label class="font-medium text-gray-700 text-sm">Email</label>
                     <input type="email" name="email" value="{{ old('email') ?? $user->email ?? request('email') }}"
-                        class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-1 focus:ring-blue-400 outline-none"
+                        class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-1 focus:ring-[#0d7198] outline-none"
                         placeholder="email yang anda gunakan" required>
                 </div>
 
                 <div class="mb-6">
                     <label class="font-medium text-gray-700 text-sm">Kode Verifikasi</label>
                     <input type="text" name="verification_code" maxlength="6"
-                        class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-1 focus:ring-blue-400 outline-none text-center text-2xl tracking-widest"
+                        class="w-full border rounded-xl px-4 py-3 mt-1 text-sm shadow-sm focus:ring-1 focus:ring-[#0d7198] outline-none text-center text-2xl tracking-widest"
                         placeholder="123456" required>
                     <p class="text-xs text-gray-500 mt-2">Kode 6 digit yang telah dikirim ke email Anda</p>
                 </div>
 
                 <button type="submit"
-                        class="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl shadow-md hover:bg-blue-700 transition mb-4">
+                        class="w-full bg-[#1180ab] text-white font-semibold py-3 rounded-xl shadow-md hover:bg-[#0d7198] transition mb-4">
                     Verifikasi Email
                 </button>
 
@@ -55,7 +55,7 @@
                     <p class="text-sm text-gray-600">
                         Tidak menerima kode?
                         <button type="button" onclick="resendCode()"
-                                class="text-blue-600 font-semibold hover:underline">
+                                class="text-[#1180ab] font-semibold hover:underline">
                             Kirim Ulang
                         </button>
                     </p>

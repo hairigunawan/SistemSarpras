@@ -10,6 +10,12 @@
                 <h1 class="text-2xl font-bold text-gray-900">Data Peminjaman</h1>
                 <p class="text-sm text-gray-500">Kelola daftar pengajuan peminjaman sarana & prasarana.</p>
             </div>
+            <div>
+                <a href="{{ route('public.peminjaman.create', ['id'=>1]) }}" class="inline-flex text-sm items-center px-4 py-2 bg-[#1180ab] border border-transparent rounded-[5px] font-medium text-white hover:bg-[#0d6f95] focus:outline-none focus:ring-1 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    Tambah Peminjaman
+                </a>
+            </div>
         </div>
 
         @if (session('success'))
@@ -69,7 +75,7 @@
                 @foreach($tabs as $key => $label)
                     <a href="{{ route('admin.peminjaman.index', ['status' => $key]) }}"
                        class="{{ $currentStatus == $key
-                            ? 'border-blue-500 text-blue-600'
+                            ? 'border-[#1180ab] text-[#1180ab]'
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}
                             whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
                         {{ $label }}
@@ -88,7 +94,7 @@
                         </svg>
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}"
-                        class="block w-full sm:w-80 pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm shadow-sm"
+                        class="block w-full sm:w-80 pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-[#1180ab] focus:border-[#1180ab] sm:text-sm shadow-sm"
                         placeholder="Cari nama peminjam">
                 </div>
             </form>
@@ -154,14 +160,14 @@
                                         @if($item->status_peminjaman == 'Menunggu') bg-yellow-100 text-yellow-800
                                         @elseif($item->status_peminjaman == 'Disetujui') bg-green-100 text-green-800
                                         @elseif($item->status_peminjaman == 'Ditolak') bg-red-100 text-red-800
-                                        @elseif($item->status_peminjaman == 'Selesai') bg-blue-100 text-blue-800
+                                        @elseif($item->status_peminjaman == 'Selesai') bg-[#17ade865] text-[#1180ab]
                                         @else bg-gray-100 text-gray-800 @endif">
                                         {{ $item->status_peminjaman }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-5 whitespace-nowrap text-center text-sm font-medium flex items-center justify-center">
                                     <a href="{{ route('admin.peminjaman.lihat_peminjaman', $item->id_peminjaman) }}"
-                                       class="text-blue-600 hover:text-[#127ea9] bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors">
+                                       class="text-[#1180ab] hover:text-[#127ea9] bg-[#1180ab]hover:bg-[#1180ab] px-3 py-1.5 rounded-md transition-colors">
                                         Detail
                                     </a>
                                 </td>

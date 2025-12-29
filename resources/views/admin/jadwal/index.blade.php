@@ -13,7 +13,7 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.jadwal.template') }}" class="flex items-center gap-2 text-xs rounded-sm text-blue-600 hover:text-blue-700 px-3 py-2 border border-gray-300">
+            <a href="{{ route('admin.jadwal.template') }}" class="flex items-center gap-2 text-xs rounded-sm text-[#1180ab] hover:text-[#0f7299] px-3 py-2 border border-gray-300">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                 </svg>
@@ -26,7 +26,7 @@
                 </svg>
                 <span x-text="showImport ? 'Tutup Import' : 'Import Excel'"></span>
             </button>
-            <a href="{{ route('admin.jadwal.create') }}" class="flex items-center gap-2 px-4 py-2 text-xs font-medium text-white transition bg-blue-600 rounded-sm shadow-sm hover:bg-blue-700 shadow-blue-200">
+            <a href="{{ route('admin.jadwal.create') }}" class="flex items-center gap-2 px-4 py-2 text-xs font-normal text-white transition bg-[#0f7299] rounded-sm hover:bg-[#0b5f80] shadow-blue-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -42,13 +42,13 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 -translate-y-2"
-         class="p-5 bg-white border border-blue-100 rounded-xl shadow-sm ring-1 ring-blue-500/10">
+         class="p-5 bg-white border border-blue-100 rounded-xl shadow-sm ring-1 ring-[#0d7198]/10">
         <form action="{{ route('admin.jadwal.import.store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4 sm:flex-row sm:items-end">
             @csrf
             <div class="flex-1 w-full">
                 <label class="block mb-2 text-sm font-medium text-gray-700">Upload File Excel (.xlsx/.xls)</label>
                 <input type="file" name="file" accept=".xls,.xlsx" required
-                    class="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    class="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1180ab] hover:file:bg-blue-100">
             </div>
             <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition shadow-sm">
                 Proses Import
@@ -124,7 +124,7 @@
                             <td class="px-6 py-4 text-center">
                                 <div class="flex items-center justify-center gap-2">
                                     <!-- Edit -->
-                                    <a href="{{ route('admin.jadwal.edit', $jadwal->id_jadwal) }}" class="p-2 text-xs text-blue-600 transition bg-blue-50 rounded hover:bg-blue-100 hover:text-blue-700" title="Edit Jadwal">Edit
+                                    <a href="{{ route('admin.jadwal.edit', $jadwal->id_jadwal) }}" class="p-2 text-xs text-[#1180ab] transition bg-blue-50 rounded hover:bg-blue-100 hover:text-[#0f7299]" title="Edit Jadwal">Edit
                                     </a>
 
                                     <!-- Delete -->

@@ -25,7 +25,7 @@
             @forelse($ruangan as $index => $r)
             <div class="group relative bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-300 transition-all duration-200">
                 {{-- Aksen warna di kiri --}}
-                <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#1180ab] rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                 <div class="grid grid-cols-12 gap-4 items-center">
                     {{-- No --}}
@@ -34,7 +34,7 @@
                     {{-- Nama & Jenis --}}
                     <div class="col-span-5">
                         <div class="font-semibold text-gray-900">{{ $r->nama_peminjam }}</div>
-                        <div class="text-xs text-blue-600 bg-blue-50 inline-block px-2 py-0.5 rounded mt-1">
+                        <div class="text-xs text-[#1180ab] bg-blue-50 inline-block px-2 py-0.5 rounded mt-1">
                             {{ $r->jenis }}
                         </div>
                     </div>
