@@ -210,3 +210,22 @@ Route::post('/verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name
 // FORM RESET PASSWORD
 Route::get('/reset-password', [ForgotPasswordController::class, 'showResetForm'])->name('password.resetForm');
 Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.resetPassword');
+
+Route::get('/debug-upload', function () { return view('debug_upload'); });
+
+Route::post('/debug-upload', function (Illuminate\Http\Request $request) {
+    try {
+        $request->validate(['foto' => 'required|image|max:2048']);
+        $supabase = new App\Services\SupabaseService();
+        $file = $request->file('foto');
+        $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+        $path = 'debug/' . $fileName;
+        $url = $supabase->upload($file, $path);
+        
+        // Flash to session for blade view
+        return back()->with('success', true)->with('url', $url);
+        
+    } catch (\Throwable $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+});
