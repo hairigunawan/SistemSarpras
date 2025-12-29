@@ -24,7 +24,7 @@ return new class extends Migration
             $table->time('jam_mulai');
             $table->time('jam_selesai');
             $table->enum('status_peminjaman', ['Menunggu', 'Disetujui', 'Ditolak', 'Selesai'])->default('Menunggu');
-            $table->enum('jenis_kegiatan', ['Seminar PKL', 'Seminar Tugas Akhir', 'Kelas Materi', 'Kelas Praktikum', 'Rapat Organisasi, Lainnya'])->nullable();
+            $table->enum('jenis_kegiatan', ['Seminar PKL', 'Seminar Tugas Akhir', 'Kelas Materi', 'Kelas Praktikum', 'Rapat Organisasi', 'Lainnya'])->nullable();
             $table->text('alasan_penolakan')->nullable();
             $table->timestamps();
         });
