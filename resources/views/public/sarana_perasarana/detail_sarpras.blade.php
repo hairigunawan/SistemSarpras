@@ -22,7 +22,7 @@
                     {{-- Gambar --}}
                     <div class="aspect-w-4 aspect-h-3 bg-gray-200 relative h-64">
                         @if($sarpras->gambar)
-                            <img src="{{ str_starts_with($sarpras->gambar, 'http') ? $sarpras->gambar : asset('storage/' . str_replace('public/', '', $sarpras->gambar)) }}"
+                            <img src="{{ asset('storage/' . str_replace('public/', '', $sarpras->gambar)) }}"
                                  alt="{{ $sarpras->nama_ruangan ?? $sarpras->nama_proyektor }}"
                                  class="w-full h-full object-cover">
                         @else

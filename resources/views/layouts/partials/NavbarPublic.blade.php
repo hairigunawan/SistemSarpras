@@ -6,13 +6,13 @@
                 <a href="{{ route('public.beranda.index') }}" class="flex items-center gap-2.5">
                     <div class="flex gap-3">
                         <img
-                            src="{{ config('app.logo_ti_url') }}"
+                            src="{{ asset('storage/images/TI.png') }}"
                             alt="Logo TI"
                             class="w-8 h-8 sm:w-10 sm:h-10 object-contain"
                         >
 
                         <img
-                            src="{{ config('app.logo_politala_url') }}"
+                            src="{{ asset('storage/images/politala.png') }}"
                             alt="Logo Politala"
                             class="w-8 h-8 sm:w-10 sm:h-10 object-contain"
                         >

@@ -204,16 +204,13 @@ class Proyektor extends Model
 
     private static function uploadImage($file)
     {
-        $supabase = new \App\Services\SupabaseService();
-        $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
-        return $supabase->upload($file, 'proyektor/' . $fileName);
+        return $file->store('proyektor', 'public');
     }
 
     private function removeImage()
     {
-        if ($this->gambar) {
-            $supabase = new \App\Services\SupabaseService();
-            $supabase->delete($this->gambar);
+        if ($this->gambar && Storage::disk('public')->exists($this->gambar)) {
+            Storage::disk('public')->delete($this->gambar);
         }
     }
 }

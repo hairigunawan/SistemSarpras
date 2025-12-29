@@ -3,8 +3,8 @@
             <div>
                 <div class="flex items-center gap-2 mb-10">
             <div class="flex items-center gap-2">
-                <img src="{{ config('app.logo_ti_url') }}" alt="Logo TI" class="object-contain w-8 h-8">
-                <img src="{{ config('app.logo_politala_url') }}" alt="Logo Politala" class="object-contain w-8 h-8">
+                <img src="{{ asset('storage/images/TI.png') }}" alt="Logo TI" class="object-contain w-8 h-8">
+                <img src="{{ asset('storage/images/politala.png') }}" alt="Logo Politala" class="object-contain w-8 h-8">
             </div>
             <h1 class="text-xl font-bold text-gray-800">SIMPERSITE.</h1>
         </div>

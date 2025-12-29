@@ -64,7 +64,7 @@
                 <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
                     <div class="w-full aspect-[4/3] overflow-hidden bg-gray-100 relative">
                         @if($item->gambar)
-                            <img src="{{ str_starts_with($item->gambar, 'http') ? $item->gambar : asset('storage/' . $item->gambar) }}"
+                            <img src="{{ asset('storage/' . $item->gambar) }}"
                                 alt="{{ $item->nama }}"
                                 class="w-full h-full object-cover">
                         @else
