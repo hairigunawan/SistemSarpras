@@ -42,7 +42,7 @@
                     </div>
 
                     <div class="rounded-2xl p-6 border flex items-center gap-5
-                            {{ $kriteria->tipe === 'benefit' ? 'bg-emerald-200 text-white shadow-emerald-200' : 'bg-amber-200 text-white shadow-amber-200' }}">
+                            {{ $kriteria->tipe === 'benefit' ? 'bg-white text-gray-600 shadow-emerald-200' : 'bg-white text-gray-600 shadow-amber-200' }}">
                             @if($kriteria->tipe === 'benefit')
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                             @else
