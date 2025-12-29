@@ -144,7 +144,7 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
         Route::resource('jadwal', JadwalController::class)->except(['show'])->names('admin.jadwal');
         Route::post('/jadwal/import', [JadwalController::class, 'importStore'])
             ->name('admin.jadwal.import.store');
-        Route::get('/jadwal/export', [JadwalController::class, 'export'])->name('admin.jadwal.export');
+        Route::get('/jadwal/template', [JadwalController::class, 'downloadTemplate'])->name('admin.jadwal.template');
     });
 
     Route::prefix('admin')->group(function () {

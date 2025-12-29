@@ -6,7 +6,7 @@
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                         <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight"><?php echo e($kriteria->nama_kriteria); ?></h1>
-                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider mb-2 
+                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider mb-2
                             <?php echo e($kriteria->tipe === 'benefit' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'); ?>">
                             <?php echo e($kriteria->tipe); ?>
 
@@ -19,7 +19,7 @@
                             </a>
                         </div>
                         <div class="justify-between items-center">
-                            <a href="<?php echo e(route('admin.kriteria.edit', $kriteria)); ?>" 
+                            <a href="<?php echo e(route('admin.kriteria.edit', $kriteria)); ?>"
                             class="flex px-6 py-2 text-xs font-semibold border border-yellow-300 rounded-lg text-yellow-600 hover:text-yellow-700 transition-colors uppercase tracking-wider">
                                 Edit
                             </a>
@@ -40,10 +40,9 @@
                         </div>
                     </div>
 
-                    <div class="rounded-2xl p-6 border flex items-center gap-5 
-                        <?php echo e($kriteria->tipe === 'benefit' ? 'bg-emerald-50/50 border-emerald-100' : 'bg-amber-50/50 border-amber-100'); ?>">
-                        <div class="h-14 w-14 rounded-xl flex items-center justify-center shadow-lg 
-                            <?php echo e($kriteria->tipe === 'benefit' ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-amber-500 text-white shadow-amber-200'); ?>">
+                    <div class="rounded-2xl p-6 border flex items-center gap-5
+                        <?php echo e($kriteria->tipe === 'benefit' ? '
+                            {{ $kriteria->tipe === 'benefit' ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-amber-500 text-white shadow-amber-200'); ?>">
                             <?php if($kriteria->tipe === 'benefit'): ?>
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                             <?php else: ?>
@@ -67,8 +66,8 @@
                         Analisis Penggunaan
                     </h3>
                     <p class="text-sm text-gray-600 leading-relaxed">
-                        Kriteria <span class="font-bold text-gray-900">"<?php echo e($kriteria->nama_kriteria); ?>"</span> akan berkontribusi sebesar <span class="font-bold text-gray-900"><?php echo e(number_format($kriteria->bobot * 100, 2)); ?>%</span> dalam perhitungan keputusan akhir. 
-                        Sistem akan mengolah data ini menggunakan normalisasi skala 
+                        Kriteria <span class="font-bold text-gray-900">"<?php echo e($kriteria->nama_kriteria); ?>"</span> akan berkontribusi sebesar <span class="font-bold text-gray-900"><?php echo e(number_format($kriteria->bobot * 100, 2)); ?>%</span> dalam perhitungan keputusan akhir.
+                        Sistem akan mengolah data ini menggunakan normalisasi skala
                         <span class="px-2 py-0.5 bg-white border border-gray-200 rounded-md text-gray-700 text-xs"><?php echo e($kriteria->tipe); ?></span>.
                     </p>
                 </div>
@@ -89,4 +88,5 @@
     </div>
 </div>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\SIMPERSITE\SistemSarpras\resources\views/admin/kriteria/show.blade.php ENDPATH**/ ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?> ?><?php /**PATH D:\SIMPERSITE\SistemSarpras\resources\views/admin/kriteria/show.blade.php ENDPATH**/ ?>

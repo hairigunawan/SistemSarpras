@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Jadwal;
 use App\Models\Ruangan;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\JadwalTemplateExport;
 
 class JadwalController extends Controller
 {
@@ -47,5 +49,10 @@ class JadwalController extends Controller
     public function importStore(Request $request)
     {
         return Jadwal::Import($request);
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new JadwalTemplateExport, 'template_jadwal.xlsx');
     }
 }

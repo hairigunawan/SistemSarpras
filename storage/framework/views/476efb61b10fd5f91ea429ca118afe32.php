@@ -11,15 +11,20 @@
         </div>
 
         <div class="flex items-center gap-3">
+            <a href="<?php echo e(route('admin.jadwal.template')); ?>" class="flex items-center gap-2 text-xs rounded-sm text-blue-600 hover:text-blue-700 px-3 py-2 border border-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                Unduh Template Excel</a>
             <button @click="showImport = !showImport"
                 :class="showImport ? 'bg-gray-200 text-gray-800' : 'bg-white text-gray-700 hover:bg-gray-50'"
-                class="flex items-center gap-2 px-4 py-2 text-sm font-medium transition border border-gray-300 rounded-lg shadow-sm">
+                class="flex items-center gap-2 px-4 py-2 text-xs font-medium transition border border-gray-300 rounded-sm shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
                 <span x-text="showImport ? 'Tutup Import' : 'Import Excel'"></span>
             </button>
-            <a href="<?php echo e(route('admin.jadwal.create')); ?>" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 shadow-blue-200">
+            <a href="<?php echo e(route('admin.jadwal.create')); ?>" class="flex items-center gap-2 px-4 py-2 text-xs font-medium text-white transition bg-blue-600 rounded-sm shadow-sm hover:bg-blue-700 shadow-blue-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -47,7 +52,9 @@
                 Proses Import
             </button>
         </form>
-        <p class="mt-2 text-[10px] uppercase tracking-wider text-gray-400 font-bold mt-0.5">*Pastikan format header file Excel sesuai dengan template sistem.</p>
+        <div class="flex items-center justify-between mt-2">
+            <p class="text-[10px] uppercase tracking-wider text-gray-400 font-bold">*Pastikan format header file Excel sesuai dengan template sistem.</p>
+        </div>
     </div>
 
     <!-- Tabel Jadwal -->

@@ -10,7 +10,6 @@
             <p class="text-slate-600">Kelola semua akun pengguna sistem dengan mudah</p>
         </div>
 
-        <!-- Alert Messages -->
         <?php if(session('success')): ?>
             <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg flex items-center gap-3">
                 <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -29,7 +28,6 @@
             </div>
         <?php endif; ?>
 
-        <!-- Filter & Action Bar -->
         <div class="mb-6 flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
             <form method="GET" action="<?php echo e(route('admin.akun.index')); ?>" class="flex-1 max-w-md">
                 <?php if(request('nama')): ?>
@@ -48,14 +46,14 @@
                         name="search"
                         value="<?php echo e(request('search')); ?>"
                         placeholder="Cari berdasarkan nama atau email..."
-                        class="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-300 rounded-lg
+                        class="w-full pl-10 pr-4 py-2 text-sm border border-slate-300 rounded-lg
                             focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent
                             transition-all duration-200">
                 </div>
             </form>
 
             <a href="<?php echo e(route('admin.akun.tambah_akun', ['id' => 'new'])); ?>"
-               class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700
+               class="inline-flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700
                    text-white font-medium text-xs uppercase rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
@@ -64,7 +62,6 @@
             </a>
         </div>
 
-        <!-- Table Section -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <?php if(count($u ?? []) > 0): ?>
                 <div class="overflow-x-auto">

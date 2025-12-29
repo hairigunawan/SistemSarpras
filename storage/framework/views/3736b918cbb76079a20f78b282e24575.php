@@ -61,20 +61,37 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 p-4">
             <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <div class="bg-white rounded-xl border border-gray-500 hover:shadow-sm transition overflow-hidden">
-                    <div class="w-full aspect-[4/3] overflow-hidden">
+                    <div class="w-full aspect-[4/3] overflow-hidden bg-gray-100 relative">
                         <?php if($item->gambar): ?>
-                            <img src="<?php echo e(asset('storage/' . str_replace('public/', '', $item->gambar))); ?>"
+                            <img src="<?php echo e(asset('storage/' . $item->gambar)); ?>"
                                 alt="<?php echo e($item->nama); ?>"
                                 class="w-full h-full object-cover">
                         <?php else: ?>
-                            <img src="https://via.placeholder.com/400x250?text=Tidak+Ada+Gambar"
-                                alt="Tidak Ada Gambar"
-                                class="w-full h-full object-cover">
+                            <div class="w-full h-full flex flex-col items-center justify-center text-gray-400 p-4">
+                                <?php if($item->type === 'ruangan'): ?>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    <span class="text-[10px] uppercase tracking-widest">Gambar Ruangan Belum Tersedia</span>
+                                <?php else: ?>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="text-[10px] uppercase tracking-widest">Gambar Proyektor Belum Tersedia</span>
+                                <?php endif; ?>
+                            </div>
                         <?php endif; ?>
+
+                        <div class="absolute top-2 right-2">
+                            <span class="px-2 py-1 text-[10px] font-bold uppercase rounded shadow-sm <?php echo e($item->type === 'ruangan' ? 'bg-blue-500 text-white' : 'bg-purple-500 text-white'); ?>">
+                                <?php echo e($item->type); ?>
+
+                            </span>
+                        </div>
                     </div>
 
                     <div class="p-3">
-                        <h2 class="text-gray-800 font-semibold"><?php echo e($item->nama); ?></h2>
+                        <h2 class="text-gray-800 font-semibold"><?php echo e(Str::limit($item->nama, 17)); ?></h2>
                         <p class="text-xs font-medium text-gray-500 mb-3">
                             <?php echo e($item->detail ?? '-'); ?>
 
@@ -110,12 +127,14 @@
                 </div>
             <?php endif; ?>
         </div>
-        <!-- Pagination Links -->
-        <div class="mt-8 flex justify-center items-center px-4 pb-4">
-            <?php echo e($items->appends(request()->query())->links('pagination.tailwind-custom')); ?>
+        <?php if(method_exists($items, 'links')): ?>
+            <div class="bg-white px-4 py-4 border-t border-gray-200 sm:px-6 flex items-center justify-between">
+                <div class="mt-8 flex justify-center items-center px-4 pb-4">
+                    <?php echo e($items->links()); ?>
 
-        </div>
-
+                    </div>
+                </div>
+            <?php endif; ?>
     </div>
 </div>
 

@@ -134,7 +134,7 @@
                         <div class="flex justify-between pt-4 border-t border-blue-100">
 
                             <a href="<?php echo e(route('sarpras.proyektor.edit_proyektor', $p->id_proyektor)); ?>"
-                               class="flex px-8 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+                               class="flex px-8 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-sm hover:bg-blue-50 transition-colors">
                                <svg class="-ml-1 mr-2 h-5 w-5 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
@@ -145,7 +145,7 @@
                             <button
                                 type="button"
                                 onclick="openModal('<?php echo e($p->id_proyektor); ?>')"
-                                class="inline-flex items-center gap-1 rounded-md border uppercase tracking-widest border-red-300 bg-white px-6 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 transition"
+                                class="inline-flex items-center gap-1 rounded-sm border  border-red-300 bg-white px-6 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 transition"
                             >
                                 <!-- Icon Trash -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"

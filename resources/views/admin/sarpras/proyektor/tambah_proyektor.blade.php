@@ -100,7 +100,7 @@
                 </div>
 
                 <div class="text-right">
-                    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg font-normal hover:bg-blue-600 transition-colors">
+                    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-sm text-sm font-normal hover:bg-blue-600 transition-colors">
                         Simpan
                     </button>
                 </div>

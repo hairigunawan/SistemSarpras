@@ -8,7 +8,7 @@
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                         <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">{{ $kriteria->nama_kriteria }}</h1>
-                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider mb-2 
+                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider mb-2
                             {{ $kriteria->tipe === 'benefit' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
                             {{ $kriteria->tipe }}
                         </span>
@@ -20,7 +20,7 @@
                             </a>
                         </div>
                         <div class="justify-between items-center">
-                            <a href="{{ route('admin.kriteria.edit', $kriteria) }}" 
+                            <a href="{{ route('admin.kriteria.edit', $kriteria) }}"
                             class="flex px-6 py-2 text-xs font-semibold border border-yellow-300 rounded-lg text-yellow-600 hover:text-yellow-700 transition-colors uppercase tracking-wider">
                                 Edit
                             </a>
@@ -41,10 +41,8 @@
                         </div>
                     </div>
 
-                    <div class="rounded-2xl p-6 border flex items-center gap-5 
-                        {{ $kriteria->tipe === 'benefit' ? 'bg-emerald-50/50 border-emerald-100' : 'bg-amber-50/50 border-amber-100' }}">
-                        <div class="h-14 w-14 rounded-xl flex items-center justify-center shadow-lg 
-                            {{ $kriteria->tipe === 'benefit' ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-amber-500 text-white shadow-amber-200' }}">
+                    <div class="rounded-2xl p-6 border flex items-center gap-5
+                            {{ $kriteria->tipe === 'benefit' ? 'bg-emerald-200 text-white shadow-emerald-200' : 'bg-amber-200 text-white shadow-amber-200' }}">
                             @if($kriteria->tipe === 'benefit')
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                             @else
@@ -67,8 +65,8 @@
                         Analisis Penggunaan
                     </h3>
                     <p class="text-sm text-gray-600 leading-relaxed">
-                        Kriteria <span class="font-bold text-gray-900">"{{ $kriteria->nama_kriteria }}"</span> akan berkontribusi sebesar <span class="font-bold text-gray-900">{{ number_format($kriteria->bobot * 100, 2) }}%</span> dalam perhitungan keputusan akhir. 
-                        Sistem akan mengolah data ini menggunakan normalisasi skala 
+                        Kriteria <span class="font-bold text-gray-900">"{{ $kriteria->nama_kriteria }}"</span> akan berkontribusi sebesar <span class="font-bold text-gray-900">{{ number_format($kriteria->bobot * 100, 2) }}%</span> dalam perhitungan keputusan akhir.
+                        Sistem akan mengolah data ini menggunakan normalisasi skala
                         <span class="px-2 py-0.5 bg-white border border-gray-200 rounded-md text-gray-700 text-xs">{{ $kriteria->tipe }}</span>.
                     </p>
                 </div>
