@@ -12,7 +12,7 @@
 
     <div class="relative flex flex-col justify-center items-center text-white p-10 md:p-12 bg-gradient-to-br from-[#1180ab] to-indigo-600">
 
-    <img src="{{ asset('storage/images/GKT.jpg') }}"
+    <img src="{{ url('public/images/GKT.jpg') }}"
         alt="Gedung Kampus"
         class="absolute inset-0 w-full h-full object-cover opacity-90">
 

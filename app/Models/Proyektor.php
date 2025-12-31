@@ -204,13 +204,13 @@ class Proyektor extends Model
 
     private static function uploadImage($file)
     {
-        return $file->store('proyektor', 'public');
+        return $file->store('proyektor', 's3');
     }
 
     private function removeImage()
     {
-        if ($this->gambar && Storage::disk('public')->exists($this->gambar)) {
-            Storage::disk('public')->delete($this->gambar);
+        if ($this->gambar && Storage::disk('s3')->exists($this->gambar)) {
+            Storage::disk('s3')->delete($this->gambar);
         }
     }
 }
