@@ -186,7 +186,7 @@ class PublicController extends Controller
 
             $search = $request->input('search');
             if ($search) {
-                $queryProyektor->where('nama_proyektor', 'like', "%{$search}%");
+                $queryProyektor->where('nama_proyektor', 'ilike', "%{$search}%");
             }
 
             $p = $queryProyektor->latest()->paginate(9);

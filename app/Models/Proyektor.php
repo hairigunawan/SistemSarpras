@@ -94,7 +94,7 @@ class Proyektor extends Model
         }
 
         if (isset($filters['search']) && $filters['search']) {
-            $query->where('nama_proyektor', 'like', '%' . $filters['search'] . '%');
+            $query->where('nama_proyektor', 'ilike', '%' . $filters['search'] . '%');
         }
 
         return $query;

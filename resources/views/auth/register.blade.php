@@ -12,7 +12,7 @@
 
         <div class="relative flex flex-col justify-center items-center text-white p-10 md:p-12 bg-gradient-to-br from-[#1180ab] to-indigo-600">
 
-        <img src="{{ url('public/images/gedung TI1.jpeg') }}"
+        <img src="{{ asset('img/gedung TI1.jpeg') }}"
             alt="Gedung Kampus"
             class="absolute inset-0 w-full h-full object-cover opacity-90">
 

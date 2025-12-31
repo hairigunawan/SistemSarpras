@@ -71,10 +71,10 @@ class Peminjaman extends Model
         if (isset($filters['search']) && $filters['search']) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
-                $q->whereHas('ruangan', fn($qr) => $qr->where('nama_ruangan', 'like', "%{$search}%"))
-                    ->orWhereHas('proyektor', fn($qp) => $qp->where('nama_proyektor', 'like', "%{$search}%"))
-                    ->orWhereHas('user', fn($qu) => $qu->where('nama', 'like', "%{$search}%"))
-                    ->orWhere('nama_peminjam', 'like', "%{$search}%");
+                $q->whereHas('ruangan', fn($qr) => $qr->where('nama_ruangan', 'ilike', "%{$search}%"))
+                    ->orWhereHas('proyektor', fn($qp) => $qp->where('nama_proyektor', 'ilike', "%{$search}%"))
+                    ->orWhereHas('user', fn($qu) => $qu->where('nama', 'ilike', "%{$search}%"))
+                    ->orWhere('nama_peminjam', 'ilike', "%{$search}%");
             });
         }
 

@@ -37,7 +37,7 @@ class SarprasController extends Controller
             );
 
         if ($search) {
-            $rQuery->where('ruangans.nama_ruangan', 'like', "%{$search}%");
+            $rQuery->where('ruangans.nama_ruangan', 'ilike', "%{$search}%");
         }
         if ($statusFilter) {
             $rQuery->where('statuses.nama_status', $statusFilter);
@@ -57,7 +57,7 @@ class SarprasController extends Controller
             );
 
         if ($search) {
-            $pQuery->where('proyektors.nama_proyektor', 'like', "%{$search}%");
+            $pQuery->where('proyektors.nama_proyektor', 'ilike', "%{$search}%");
         }
         if ($statusFilter) {
             $pQuery->where('statuses.nama_status', $statusFilter);

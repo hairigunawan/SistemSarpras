@@ -5,17 +5,16 @@
             <div class="flex-shrink-0 flex items-center gap-2">
                 <a href="{{ route('public.beranda.index') }}" class="flex items-center gap-2.5">
                     <div class="flex gap-3">
-                        <img
-                            src="{{ url('public/images/TI.png') }}"
-                            alt="Logo TI"
-                            class="w-8 h-8 sm:w-10 sm:h-10 object-contain"
-                        >
-
-                        <img
-                            src="{{ url('public/images/politala.png') }}"
-                            alt="Logo Politala"
-                            class="w-8 h-8 sm:w-10 sm:h-10 object-contain"
-                        >
+                <img
+                    src="{{ asset('img/TI.png') }}"
+                    alt="Logo TI"
+                    class="h-10 w-auto object-contain"
+                >
+                <img
+                    src="{{ asset('img/politala.png') }}"
+                    alt="Logo Politala"
+                    class="h-10 w-auto object-contain"
+                >
                     </div>
                     <svg
                         viewBox="0 0 330 70"

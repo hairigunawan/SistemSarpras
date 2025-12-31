@@ -9,7 +9,7 @@
     <div class="relative w-full h-[500px] md:h-[600px] overflow-hidden">
         <!-- Background Image with Parallax Effect -->
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105"
-             style="background-image: url('{{ asset('public/images/gedung TI1.jpeg') }}');">
+             style="background-image: url('{{ asset('img/gedung TI1.jpeg') }}');">
         </div>
 
         <!-- Gradient Overlay -->

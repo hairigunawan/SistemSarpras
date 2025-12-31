@@ -72,7 +72,7 @@ class Ruangan extends Model
         }
 
         if (isset($filters['search']) && $filters['search']) {
-            $query->where('nama_ruangan', 'like', '%' . $filters['search'] . '%');
+            $query->where('nama_ruangan', 'ilike', '%' . $filters['search'] . '%');
         }
 
         return $query;

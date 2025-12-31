@@ -67,19 +67,19 @@ class User extends Authenticatable
     {
         // Filter berdasarkan nama
         if (!empty($filters['nama'])) {
-            $query->where('nama', 'like', '%' . $filters['nama'] . '%');
+            $query->where('nama', 'ilike', '%' . $filters['nama'] . '%');
         }
 
         // Filter berdasarkan email
         if (!empty($filters['email'])) {
-            $query->where('email', 'like', '%' . $filters['email'] . '%');
+            $query->where('email', 'ilike', '%' . $filters['email'] . '%');
         }
 
         // Filter search (nama atau email)
         if (!empty($filters['search'])) {
             $query->where(function ($q) use ($filters) {
-                $q->where('nama', 'like', '%' . $filters['search'] . '%')
-                    ->orWhere('email', 'like', '%' . $filters['search'] . '%');
+                $q->where('nama', 'ilike', '%' . $filters['search'] . '%')
+                    ->orWhere('email', 'ilike', '%' . $filters['search'] . '%');
             });
         }
 
