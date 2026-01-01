@@ -30,8 +30,8 @@
 
         <div class="space-y-4 mb-6">
             @if (session('success'))
-            <div x-data="{ show: true }" 
-                x-init="setTimeout(() => show = false, 2000)" 
+            <div x-data="{ show: true }"
+                x-init="setTimeout(() => show = false, 2000)"
                 x-show="show"
                 x-transition:leave="transition ease-in duration-500"
                 x-transition:leave-start="opacity-100"
@@ -54,13 +54,13 @@
             </div>
             @endif
             @if (session('warning'))
-            <div x-data="{ show: true }" 
-                x-init="setTimeout(() => show = false, 2000)" 
-                x-show="show" 
+            <div x-data="{ show: true }"
+                x-init="setTimeout(() => show = false, 2000)"
+                x-show="show"
                 x-transition:leave="transition ease-in duration-500"
                 x-transition:leave-start="opacity-100"
                 x-transition:leave-end="opacity-0"
-                class="mb-6 flex items-center p-4 text-red-700 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-xl shadow-sm transition-all" 
+                class="mb-6 flex items-center p-4 text-red-700 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-xl shadow-sm transition-all"
                 role="alert">
                     <div class="flex items-center justify-center h-10 w-10 rounded-xl bg-amber-100 text-amber-600">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -123,15 +123,33 @@
                 <div class="flex flex-wrap items-center gap-2">
                     @if ($mainPeminjaman->status_peminjaman == 'Menunggu')
                         @if($mainPeminjaman->tanggal_pinjam == now()->toDateString())
-                            <form action="{{ route('peminjaman.approve', $mainPeminjaman->id_peminjaman) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyetujui peminjaman ini?')"
-                                    class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    Setujui
-                                </button>
-                            </form>
+                            <div x-data="{ open: false }">
+                            <button type="button" @click="open = true"
+                                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold text-xs uppercase">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Setujui
+                            </button>
+                            <div x-show="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" x-cloak>
+                                <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+                                    <h2 class="text-lg font-bold text-gray-900">Konfirmasi Persetujuan</h2>
+                                    <p class="mt-2 text-sm text-gray-600">Apakah Anda yakin ingin menyetujui peminjaman ini?</p>
+
+                                    <div class="mt-6 flex justify-end space-x-3">
+                                        <button @click="open = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+                                            Batal
+                                        </button>
+
+                                        <form action="{{ route('peminjaman.approve', $mainPeminjaman->id_peminjaman) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700">
+                                                Ya, Setujui
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @else
                             <button type="button" onclick="showErrorMessage('Peminjaman hanya dapat disetujui pada hari peminjaman yang dijadwalkan.')"
                                 class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase">
@@ -157,7 +175,6 @@
                         </form>
                     @endif
 
-                    <!-- WA Button -->
                     <a href="https://wa.me/{{ $mainPeminjaman->user->nomor_telepon ?? '-' }}" target="_blank"
                        class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none">
                         <svg class="w-4 h-4 mr-2 text-green-600" fill="currentColor" viewBox="0 0 24 24">
@@ -168,7 +185,6 @@
                 </div>
             </div>
 
-            <!-- Informasi Peminjaman -->
             <div class="border-b border-gray-200 px-4 py-5 sm:p-0">
                 <dl class="sm:divide-y sm:divide-gray-200">
 
