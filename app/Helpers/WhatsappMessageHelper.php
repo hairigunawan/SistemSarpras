@@ -39,30 +39,37 @@ _Mohon tidak membalas pesan ini._";
         $greeting = self::getGreeting($name);
         $footer = self::getFooter();
 
-        $sarpras = $peminjaman->nama_sarpras;
         $tanggal = \Carbon\Carbon::parse($peminjaman->tanggal_pinjam)->translatedFormat('l, d F Y');
         $jam = "{$peminjaman->jam_mulai} - {$peminjaman->jam_selesai}";
         $kegiatan = $peminjaman->jenis_kegiatan;
 
+        // Cek jika peminjaman melibatkan Ruangan DAN Proyektor
+        if ($peminjaman->ruangan && $peminjaman->proyektor) {
+            $fasilitas = $peminjaman->ruangan->nama_ruangan . " dan " . $peminjaman->proyektor->nama_proyektor;
+        } else {
+            // Jika hanya satu (Ruangan saja atau Proyektor saja)
+            $fasilitas = $peminjaman->nama_sarpras;
+        }
+
         return "$greeting
 
 " .
-               "Kami informasikan bahwa pengajuan peminjaman fasilitas Anda telah *DISETUJUI* ✅.
+            "Kami informasikan bahwa pengajuan peminjaman fasilitas Anda telah *DISETUJUI* ✅.
 
 " .
-               "*Detail Peminjaman:*
+            "*Detail Peminjaman:*
 " .
-               "Fasilitas: $sarpras
+            "Fasilitas: $fasilitas
 " .
-               "Tanggal: $tanggal
+            "Tanggal: $tanggal
 " .
-               "Waktu: $jam WITA
+            "Waktu: $jam WITA
 " .
-               "Kegiatan: $kegiatan
+            "Kegiatan: $kegiatan
 
 " .
-               "Harap hadir tepat waktu dan menjaga kebersihan fasilitas yang digunakan." .
-               $footer;
+            "Harap hadir tepat waktu dan menjaga kebersihan fasilitas yang digunakan." .
+            $footer;
     }
 
     public static function rejected($peminjaman, $alasan)

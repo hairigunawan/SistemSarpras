@@ -109,7 +109,7 @@
                     <span class="px-3 py-1 rounded-full text-sm font-medium
                         @if($mainPeminjaman->status_peminjaman == 'Menunggu') bg-yellow-100 text-yellow-800
                         @elseif($mainPeminjaman->status_peminjaman == 'Disetujui') bg-green-100 text-green-800
-                        @elseif($mainPeminjaman->status_peminjaman == 'Selesai') bg-[#1180ab] text-[#1180ab]
+                        @elseif($mainPeminjaman->status_peminjaman == 'Selesai') bg-blue-100 text-[#1180ab]
                         @elseif($mainPeminjaman->status_peminjaman == 'Ditolak') bg-red-100 text-red-800
                         @else bg-gray-100 text-gray-800 @endif">
                         {{ $mainPeminjaman->status_peminjaman == 'Menunggu' ? 'Menunggu Konfirmasi' : $mainPeminjaman->status_peminjaman }}

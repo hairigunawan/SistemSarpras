@@ -41,9 +41,13 @@ class Kriteria extends Model
         $alternatif = [];
 
         if ($kriterias->isNotEmpty()) {
-            $ahpService = new SimpleAHPService();
-            $ahpResult = $ahpService->calculateAHP($kriterias);
+            // Ambil data perbandingan yang tersimpan
+            $comparisons = DB::table('kriteria_comparisons')->get();
 
+            $ahpService = new SimpleAHPService();
+            $ahpResult = $ahpService->calculateAHP($kriterias, $comparisons);
+
+            // SAW tetap menggunakan bobot yang tersimpan di database (yang sudah diupdate oleh proses AHP)
             $manualBobot = $kriterias->pluck('bobot', 'id')->toArray();
 
             $sawService = new SimpleSAWService();

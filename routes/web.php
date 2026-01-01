@@ -131,6 +131,11 @@ Route::middleware(['auth', 'role:Admin', CountPeminjamanHariIni::class])->group(
         // Kriteria
         Route::prefix('kriteria')->name('admin.kriteria.')->group(function () {
             Route::get('/', [KriteriaController::class, 'index'])->name('index');
+            
+            // Perbandingan (Ditempatkan sebelum parameter dinamis)
+            Route::get('/perbandingan', [KriteriaController::class, 'perbandingan'])->name('perbandingan');
+            Route::post('/perbandingan', [KriteriaController::class, 'simpanPerbandingan'])->name('simpanPerbandingan');
+
             Route::get('/create', [KriteriaController::class, 'create'])->name('create');
             Route::post('/', [KriteriaController::class, 'store'])->name('store');
             Route::get('/{kriteria}', [KriteriaController::class, 'show'])->name('show');
