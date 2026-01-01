@@ -3,11 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Peminjaman;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Services\SimpleAHPService;
-use App\Services\SimpleSAWService;
 
 class Kriteria extends Model
 {
@@ -27,50 +23,7 @@ class Kriteria extends Model
     public function HalamanUtama(){
         $kriterias = Kriteria::orderBy('created_at', 'desc')->get();
 
-        $peminjamans = Peminjaman::with(['proyektor', 'user'])
-            ->whereIn('status_peminjaman', ['Menunggu', 'Disetujui'])
-            ->orderBy('tanggal_pinjam', 'asc')
-            ->orderBy('jam_mulai', 'asc')
-            ->get();
-
-        $pairwiseMatrix = [];
-        $normalizedMatrix = [];
-        $bobotAkhir = [];
-        $cr = 0;
-        $hasil = [];
-        $alternatif = [];
-
-        if ($kriterias->isNotEmpty()) {
-            // Ambil data perbandingan yang tersimpan
-            $comparisons = DB::table('kriteria_comparisons')->get();
-
-            $ahpService = new SimpleAHPService();
-            $ahpResult = $ahpService->calculateAHP($kriterias, $comparisons);
-
-            // SAW tetap menggunakan bobot yang tersimpan di database (yang sudah diupdate oleh proses AHP)
-            $manualBobot = $kriterias->pluck('bobot', 'id')->toArray();
-
-            $sawService = new SimpleSAWService();
-            $sawResult = $sawService->calculateSAW($peminjamans, $kriterias, $manualBobot);
-
-            $pairwiseMatrix = $ahpResult['pairwiseMatrix'];
-            $normalizedMatrix = $ahpResult['normalizedMatrix'];
-            $bobotAkhir = $ahpResult['bobotAkhir'];
-            $cr = $ahpResult['cr'];
-            $hasil = $sawResult['hasil'];
-            $alternatif = $sawResult['alternatif'];
-        }
-
-        return view('admin.kriteria.index', compact(
-            'kriterias',
-            'peminjamans',
-            'pairwiseMatrix',
-            'normalizedMatrix',
-            'bobotAkhir',
-            'cr',
-            'hasil',
-            'alternatif'
-        ));
+        return view('admin.kriteria.index', compact('kriterias'));
     }
 
     public static function Submit(Request $request){

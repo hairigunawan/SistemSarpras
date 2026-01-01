@@ -82,16 +82,54 @@
                 @error('id_status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
-            <div>
-                <label for="gambar" class="block text-sm font-medium text-gray-700">Ubah Gambar</label>
-                <div class="rounded border border-gray-500 border-dashed p-2">
-                    @if($r->gambar)
-                        <img src="{{ Storage::url($r->gambar) }}" alt="{{ $r->nama_ruangan }}" class="my-2 h-32 w-auto">
-                    @endif
-                    <input type="file" name="gambar" id="gambar" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-6 file:rounded-xl file:border-0 file:font-semibold file:bg-blue-50 file:text-[#1180ab] hover:file:bg-blue-100">
+            <div x-data="{ photoName: null, photoPreview: null }">
+                <label for="gambar" class="block text-sm font-medium text-gray-700 mb-2">Ubah Gambar</label>
+                
+                <!-- Input File Tersembunyi -->
+                <input type="file" name="gambar" id="gambar" class="hidden"
+                       x-ref="photo"
+                       x-on:change="
+                            photoName = $refs.photo.files[0].name;
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                photoPreview = e.target.result;
+                            };
+                            reader.readAsDataURL($refs.photo.files[0]);
+                       ">
+
+                <div class="flex items-start gap-4">
+                    <!-- Gambar Saat Ini -->
+                    <div x-show="!photoPreview" class="relative">
+                        @if($r->gambar)
+                            <img src="{{ Storage::url($r->gambar) }}" alt="{{ $r->nama_ruangan }}" class="h-32 w-auto object-cover rounded-md border border-gray-200 shadow-sm">
+                            <p class="text-xs text-gray-500 mt-1 text-center">Gambar Saat Ini</p>
+                        @else
+                            <div class="h-32 w-32 bg-gray-100 flex items-center justify-center rounded-md border border-gray-200 text-gray-400">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1 text-center">Tidak ada gambar</p>
+                        @endif
+                    </div>
+
+                    <!-- Preview Gambar Baru -->
+                    <div x-show="photoPreview" style="display: none;" class="relative">
+                        <img :src="photoPreview" class="h-32 w-auto object-cover rounded-md border border-green-300 shadow-sm ring-2 ring-green-100">
+                        <p class="text-xs text-green-600 mt-1 text-center font-medium">Preview Baru</p>
+                    </div>
                 </div>
-                <small class="text-gray-500">Kosongkan jika tidak ingin mengubah gambar.</small>
-                @error('gambar') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                <!-- Tombol Pilih File -->
+                <div class="mt-3">
+                    <button type="button" x-on:click.prevent="$refs.photo.click()" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1180ab] transition ease-in-out duration-150">
+                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        Pilih Gambar Baru
+                    </button>
+                    <div x-show="photoName" class="mt-2 text-sm text-gray-500">
+                        File terpilih: <span x-text="photoName" class="font-medium text-gray-800"></span>
+                    </div>
+                </div>
+                
+                @error('gambar') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
             </div>
 
             <div class="text-right">

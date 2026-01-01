@@ -286,6 +286,7 @@
                                     @endforeach
                                     <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600 bg-gray-100">Total</th>
                                     <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600 bg-gray-100">Rank</th>
+                                    <th class="border-r border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-600 bg-gray-100">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-100">
@@ -323,6 +324,25 @@
                                             <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-200 text-gray-600 text-sm">
                                                 {{ $h['ranking'] }}
                                             </span>
+                                        @endif
+                                    </td>
+
+                                    <td class="border-r border-gray-200 px-4 py-3 text-center">
+                                        @if ($h['ranking'] == 1 && isset($h['id']))
+                                            <form action="{{ route('peminjaman.approve', $h['id']) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" 
+                                                        onclick="return confirm('Apakah Anda yakin ingin menyetujui peminjaman prioritas ini?')"
+                                                        class="inline-flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded shadow-sm transition-colors">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    Setujui
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="text-xs text-gray-400">-</span>
                                         @endif
                                     </td>
                                 </tr>

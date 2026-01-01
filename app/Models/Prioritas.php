@@ -264,6 +264,7 @@ class Prioritas extends Model
 
         foreach ($data as $p) {
             $alt = [
+                'id'   => $p->id,
                 'nama' => $p->nama_peminjam ?? 'Tidak Diketahui',
             ];
 
@@ -307,7 +308,8 @@ class Prioritas extends Model
             }
 
             $hasil[] = [
-                'nama' => $alt['nama'],
+                'id'    => $alt['id'],
+                'nama'  => $alt['nama'],
                 'nilai' => round($total, 4),
             ];
         }
@@ -321,57 +323,80 @@ class Prioritas extends Model
     // === 6️⃣ KONVERSI NILAI SKALA ===
     private function nilaiSkala($p, $key)
     {
+        // Standarisasi key jika perlu
+        if (str_contains($key, 'durasi') || str_contains($key, 'waktu') || str_contains($key, 'lama')) $key = 'durasi';
+        if (str_contains($key, 'peserta') || str_contains($key, 'orang')) $key = 'jumlah_peserta';
+        
         switch ($key) {
             case 'jenis_kegiatan':
+            case 'kegiatan':
                 $jenis = strtolower($p->jenis_kegiatan ?? '');
+                // Semakin penting/akademik nilainya semakin tinggi (benefit)
                 if (str_contains($jenis, 'seminar pkl')) return 5;
-                if (str_contains($jenis, 'seminar tugas akhir')) return 5;
+                if (str_contains($jenis, 'sidang')) return 5;
+                if (str_contains($jenis, 'tugas akhir')) return 5;
+                if (str_contains($jenis, 'ujian')) return 5;
                 if (str_contains($jenis, 'bimbingan')) return 4;
+                if (str_contains($jenis, 'kuliah')) return 4;
                 if (str_contains($jenis, 'praktikum')) return 3;
-                if (str_contains($jenis, 'materi')) return 3;
+                if (str_contains($jenis, 'workshop')) return 3;
+                if (str_contains($jenis, 'rapat')) return 2;
+                if (str_contains($jenis, 'materi')) return 2;
                 return 1;
 
             case 'jumlah_peserta':
-                $j = $p->jumlah_peserta ?? 0;
+                $j = (int) ($p->jumlah_peserta ?? 0);
                 if ($j > 100) return 5;
                 if ($j > 50) return 4;
-                if ($j > 25) return 3;
+                if ($j > 30) return 3;
                 if ($j > 10) return 2;
                 return 1;
 
             case 'durasi':
                 $durasiJam = 0;
                 if ($p->jam_mulai && $p->jam_selesai) {
-                    $durasiJam = max(1, (strtotime($p->jam_selesai) - strtotime($p->jam_mulai)) / 3600);
+                    $durasiJam = max(0.5, (strtotime($p->jam_selesai) - strtotime($p->jam_mulai)) / 3600);
                 }
-                if ($durasiJam <= 2) return 5;
-                if ($durasiJam <= 4) return 4;
-                if ($durasiJam <= 6) return 3;
-                if ($durasiJam <= 8) return 2;
-                return 1;
+                // Jika cost: semakin lama semakin 'buruk'. Jika benefit: semakin lama semakin 'baik' (terpakai optimal).
+                // Kita kembalikan raw value saja agar SAW (min/max) yang handle sesuai tipe kriteria (cost/benefit).
+                return $durasiJam;
 
             case 'pengajuan':
+            case 'tanggal_pengajuan':
                 $tanggalPinjam = strtotime($p->tanggal_pinjam);
                 $tanggalPengajuan = strtotime($p->created_at);
-                $selisihHari = max(1, ($tanggalPinjam - $tanggalPengajuan) / (3600 * 24));
+                $selisihHari = max(0, ($tanggalPinjam - $tanggalPengajuan) / (3600 * 24));
 
-                if ($selisihHari >= 10) return 5;
-                if ($selisihHari >= 7) return 4;
-                if ($selisihHari >= 4) return 3;
-                if ($selisihHari >= 2) return 2;
+                // Semakin jauh hari booking, semakin baik (benefit)? Atau semakin mendesak semakin prioritas?
+                // Biasanya booking jauh-jauh hari lebih diprioritaskan (first come first serve logic in disguise).
+                return $selisihHari;
+
+            case 'urgensi':
+            case 'mendesak':
+                // Logika custom: misal dilihat dari H- berapa pinjamnya
+                $tanggalPinjam = strtotime($p->tanggal_pinjam);
+                $today = time();
+                $diff = ($tanggalPinjam - $today) / (3600 * 24);
+                
+                // Jika booking < 1 hari (sangat mendesak) -> Nilai Tinggi
+                if ($diff <= 1) return 5;
+                if ($diff <= 3) return 4;
+                if ($diff <= 7) return 3;
+                if ($diff <= 14) return 2;
                 return 1;
 
             case 'proyektor':
+            case 'alat':
                 return $p->id_proyektor ? 5 : 1;
 
             default:
                 // Fallback: cek jika ada kolom yang cocok di model Peminjaman
                 if (isset($p->$key)) {
                     $val = $p->$key;
-                    if (is_numeric($val)) return $val > 0 ? 5 : 1;
+                    if (is_numeric($val)) return (float) $val;
                     if (!empty($val)) return 5;
                 }
-                return 3;
+                return 1; // Default nilai terendah
         }
     }
 
@@ -385,9 +410,11 @@ class Prioritas extends Model
 
         if (strpos($s_single, 'kegiatan') !== false) return 'jenis_kegiatan';
         if (strpos($s_single, 'jumlah peserta') !== false || (strpos($s_single, 'jumlah') !== false && strpos($s_single, 'peserta') !== false)) return 'jumlah_peserta';
-        if (strpos($s_single, 'durasi') !== false) return 'durasi';
-        if (strpos($s_single, 'pengajuan') !== false || strpos($s_single, 'ajuan') !== false || strpos($s_single, 'tanggal') !== false) return 'pengajuan';
+        if (strpos($s_single, 'orang') !== false) return 'jumlah_peserta';
+        if (strpos($s_single, 'durasi') !== false || strpos($s_single, 'waktu') !== false || strpos($s_single, 'lama') !== false) return 'durasi';
+        if (strpos($s_single, 'pengajuan') !== false || strpos($s_single, 'ajuan') !== false || strpos($s_single, 'booking') !== false) return 'pengajuan';
         if (strpos($s_single, 'proyektor') !== false) return 'proyektor';
+        if (strpos($s_single, 'mendesak') !== false || strpos($s_single, 'penting') !== false || strpos($s_single, 'urgensi') !== false) return 'urgensi';
 
         return str_replace(' ', '_', $s_single);
     }
