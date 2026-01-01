@@ -51,14 +51,34 @@
                     Verifikasi Email
                 </button>
 
-                <div class="text-center">
+                <div class="text-center" x-data="{ openError: false }">
                     <p class="text-sm text-gray-600">
                         Tidak menerima kode?
-                        <button type="button" onclick="resendCode()"
-                                class="text-[#1180ab] font-semibold hover:underline">
+                        <button type="button" @click="
+                            let emailVal = document.querySelector('input[name=\'email\']').value;
+                            if (!emailVal) {
+                                openError = true;
+                            } else {
+                                let hiddenInput = document.querySelector('#resendForm input[name=\'email\']');
+                                if(hiddenInput) hiddenInput.value = emailVal;
+                                document.getElementById('resendForm').submit();
+                            }
+                        " class="text-[#1180ab] font-semibold hover:underline">
                             Kirim Ulang
                         </button>
                     </p>
+
+                    <div x-show="openError" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" x-cloak>
+                        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-left">
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Email Diperlukan</h3>
+                            <p class="text-sm text-gray-600">Silakan masukkan email terlebih dahulu.</p>
+                            <div class="mt-4 flex justify-end">
+                                <button @click="openError = false" class="px-4 py-2 text-sm font-medium text-white bg-[#1180ab] rounded-md hover:bg-[#0f7299]">
+                                    Oke
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
 
@@ -74,16 +94,6 @@
     </p>
 
     <script>
-        function resendCode() {
-            const email = document.querySelector('input[name="email"]').value;
-            if (!email) {
-                alert('Silakan masukkan email terlebih dahulu');
-                return;
-            }
-
-            document.getElementById('resendForm').submit();
-        }
-
         // Hanya izinkan angka dalam input kode verifikasi
         document.querySelector('input[name="verification_code"]').addEventListener('input', function(e) {
             this.value = this.value.replace(/[^0-9]/g, '');

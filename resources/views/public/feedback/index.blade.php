@@ -89,15 +89,33 @@
                         </p>
 
                         @if (Auth::id() == $feedback->peminjaman->id_akun)
-                            <form action="{{ route('public.feedback.destroy', $feedback) }}" method="POST" class="mt-3">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                        onclick="return confirm('Apakah Anda yakin ingin menghapus feedback ini?')"
+                            <div x-data="{ open: false }" class="mt-3">
+                                <button type="button" @click="open = true"
                                         class="text-red-600 hover:text-red-800 text-sm font-medium flex items-center gap-1 transition">
                                     <i class="fa-solid fa-trash"></i> Hapus Feedback
                                 </button>
-                            </form>
+
+                                <div x-show="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" x-cloak>
+                                    <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+                                        <h2 class="text-lg font-bold text-gray-900">Konfirmasi Hapus</h2>
+                                        <p class="mt-2 text-sm text-gray-600">Apakah Anda yakin ingin menghapus feedback ini?</p>
+
+                                        <div class="mt-6 flex justify-end space-x-3">
+                                            <button @click="open = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+                                                Batal
+                                            </button>
+
+                                            <form action="{{ route('public.feedback.destroy', $feedback) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
+                                                    Ya, Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </div>
                 @endforeach

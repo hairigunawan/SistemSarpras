@@ -21,7 +21,7 @@ class WhatsappMessageHelper
             $greeting = 'Selamat Malam';
         }
 
-        return "Yth. Bpk/Ibu *" . Str::title($name) . "*,
+        return "Yth.  *" . Str::title($name) . "*,
 $greeting.";
     }
 
@@ -29,7 +29,7 @@ $greeting.";
     {
         return "
 
-_Pesan ini dikirim otomatis oleh Sistem Informasi Sarana & Prasarana (SIMSARPRAS)._
+_Pesan ini dikirim otomatis oleh Sistem Peminjaman Sarana & Prasarana berbasi website (SIMPERSITE)._
 _Mohon tidak membalas pesan ini._";
     }
 
@@ -52,13 +52,13 @@ _Mohon tidak membalas pesan ini._";
 " .
                "*Detail Peminjaman:*
 " .
-               "🏢 Fasilitas: $sarpras
+               "Fasilitas: $sarpras
 " .
-               "📅 Tanggal: $tanggal
+               "Tanggal: $tanggal
 " .
-               "⏰ Waktu: $jam WIB
+               "Waktu: $jam WITA
 " .
-               "📝 Kegiatan: $kegiatan
+               "Kegiatan: $kegiatan
 
 " .
                "Harap hadir tepat waktu dan menjaga kebersihan fasilitas yang digunakan." .
@@ -82,9 +82,9 @@ _Mohon tidak membalas pesan ini._";
 " .
                "*Detail Pengajuan:*
 " .
-               "🏢 Fasilitas: $sarpras
+               "Fasilitas: $sarpras
 " .
-               "📅 Tanggal: $tanggal
+               "Tanggal: $tanggal
 
 " .
                "*Alasan Penolakan:*

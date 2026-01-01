@@ -21,9 +21,6 @@ class ProcessWhatsappMessage implements ShouldQueue
      */
     public $tries = 5;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(string $target, string $message)
     {
         $this->target = $target;
@@ -50,18 +47,15 @@ class ProcessWhatsappMessage implements ShouldQueue
 
             if (isset($response['status']) && $response['status'] === false) {
                  Log::warning("ProcessWhatsappMessage: Fonnte API returned false status", [
-                     'target' => $this->target, // careful with PII, maybe mask here too if strict
+                     'target' => $this->target,
                      'response' => $response
                  ]);
-                 // Consider if we want to throw exception to retry or just accept failure.
-                 // Usually external API logic errors (invalid number) won't be fixed by retry.
-                 // So we might NOT throw here.
             }
         } catch (\Exception $e) {
             Log::error("ProcessWhatsappMessage: Job Failed", [
                 'error' => $e->getMessage()
             ]);
-            throw $e; // Ensure retry
+            throw $e;
         }
     }
 }

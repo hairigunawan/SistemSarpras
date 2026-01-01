@@ -14,7 +14,7 @@ class WhatsappService
     protected int $timeout;
     protected int $retries;
     protected string $authPrefix;
-    
+
     public function __construct()
     {
         $this->token = config('services.fonnte.token') ?? config('services.whatsapp.token', '');

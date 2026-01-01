@@ -44,10 +44,28 @@
                 Masukkan Kode Verifikasi
             </a>
 
-            <button onclick="resendCode()"
-                    class="w-full flex items-center justify-center bg-white border border-gray-200 py-3 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition active:scale-[0.98]">
-                Kirim Ulang Kode
-            </button>
+            <div x-data="{ open: false }">
+                <button type="button" @click="open = true"
+                        class="w-full flex items-center justify-center bg-white border border-gray-200 py-3 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition active:scale-[0.98]">
+                    Kirim Ulang Kode
+                </button>
+
+                <div x-show="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" x-cloak>
+                    <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-left">
+                        <h2 class="text-lg font-bold text-gray-900">Konfirmasi Kirim Ulang</h2>
+                        <p class="mt-2 text-sm text-gray-600">Apakah Anda yakin ingin mengirim ulang kode verifikasi ke <span class="font-semibold">{{ $user->email }}</span>?</p>
+
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button @click="open = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+                                Batal
+                            </button>
+                            <button @click="document.getElementById('resendForm').submit()" class="px-4 py-2 text-sm font-medium text-white bg-[#1180ab] rounded-md hover:bg-[#0f7299]">
+                                Ya, Kirim Ulang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         @if(request()->has('email') && request('email') !== $user->email)
@@ -73,11 +91,6 @@
     </form>
 
     <script>
-        function resendCode() {
-            if (confirm('Kirim ulang kode ke {{ $user->email }}?')) {
-                document.getElementById('resendForm').submit();
-            }
-        }
         setTimeout(() => { window.location.reload(); }, 60000);
     </script>
 </body>
