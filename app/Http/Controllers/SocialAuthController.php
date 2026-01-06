@@ -60,9 +60,15 @@ class SocialAuthController extends Controller
                 );
             }
 
-            $existingUser = User::where('email', $email)->first();
+            // Cari user, termasuk yang sudah di-soft delete
+            $existingUser = User::withTrashed()->where('email', $email)->first();
 
             if ($existingUser) {
+                // Jika user ditemukan dalam status terhapus (soft deleted), pulihkan (restore)
+                if ($existingUser->trashed()) {
+                    $existingUser->restore();
+                }
+
                 if (
                     $existingUser->userRole &&
                     $existingUser->userRole->nama_role === 'Admin'

@@ -8,21 +8,21 @@ use Illuminate\Support\Str;
 
 class FonnteService
 {
-    protected $token;
-    protected $apiUrl;
-    protected $country;
-    protected $timeout;
-    protected $retries;
-    protected $authPrefix;
+    protected string $token;
+    protected string $apiUrl;
+    protected string $country;
+    protected int $timeout;
+    protected int $retries;
+    protected string $authPrefix;
 
     public function __construct()
     {
-        $this->token = config('services.fonnte.token');
-        $this->apiUrl = config('services.fonnte.api_url');
-        $this->country = config('services.fonnte.country', '62');
-        $this->timeout = config('services.fonnte.timeout', 30);
-        $this->retries = config('services.fonnte.retries', 3);
-        $this->authPrefix = config('services.fonnte.auth_prefix', '');
+        $this->token = (string) config('services.fonnte.token');
+        $this->apiUrl = (string) config('services.fonnte.api_url');
+        $this->country = (string) config('services.fonnte.country', '62');
+        $this->timeout = (int) config('services.fonnte.timeout', 30);
+        $this->retries = (int) config('services.fonnte.retries', 3);
+        $this->authPrefix = (string) config('services.fonnte.auth_prefix', '');
     }
 
     /**
@@ -37,7 +37,7 @@ class FonnteService
     {
         $correlationId = (string) Str::uuid();
         $sanitizedTarget = $this->sanitizeNumber($target);
-        
+
         // Observability: Log attempt (Masked)
         Log::info("FonnteService: Sending message [{$correlationId}]", [
             'target_hash' => hash('sha256', $sanitizedTarget),
@@ -45,6 +45,7 @@ class FonnteService
         ]);
 
         try {
+            /** @var \Illuminate\Http\Client\Response $response */
             $response = Http::withHeaders([
                 'Authorization' => $this->authPrefix . $this->token,
             ])
@@ -62,16 +63,16 @@ class FonnteService
             ->post($this->apiUrl, array_merge([
                 'target' => $sanitizedTarget,
                 'message' => $message,
-                'countryCode' => $this->country, 
+                'countryCode' => $this->country,
             ], $options));
 
             Log::info("FonnteService: Success [{$correlationId}]", [
                 'response' => $response->json(),
             ]);
-            return $response->json();
+
+            return (array) $response->json();
 
         } catch (\Illuminate\Http\Client\RequestException $e) {
-            // 4xx: Client Error (e.g. Invalid Number) -> Return response (Job won't retry)
             if ($e->response->clientError()) {
                 Log::warning("FonnteService: Client Error [{$correlationId}]", [
                     'status' => $e->response->status(),
@@ -79,7 +80,7 @@ class FonnteService
                 ]);
                 return $e->response->json();
             }
-            
+
             // 5xx: Server Error -> Throw (Job will retry)
             Log::error("FonnteService: Server Error [{$correlationId}]", [
                 'status' => $e->response->status(),
@@ -99,7 +100,7 @@ class FonnteService
      * Sanitize phone number to required format.
      * e.g. 0812... -> 62812...
      *      +62812... -> 62812...
-     * 
+     *
      * @param string $number
      * @return string
      */
@@ -122,7 +123,7 @@ class FonnteService
         if (str_starts_with($number, $this->country)) {
             return $number;
         }
-        
+
         // Handle cases like '812...' where 0 is missing but intended as local
         if (str_starts_with($number, '8') && strlen($number) >= 10) {
              return $this->country . $number;

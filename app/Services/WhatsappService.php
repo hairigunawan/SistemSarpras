@@ -81,6 +81,9 @@ class WhatsappService
 
         $authHeader = $this->authPrefix !== '' ? $this->authPrefix . ' ' . $this->token : $this->token;
 
+        /** @var \Illuminate\Http\Client\Response $response */
+        $response = null;
+
         try {
             $response = Http::withHeaders([
                 'Authorization' => $authHeader,
@@ -99,7 +102,7 @@ class WhatsappService
         }
 
         $statusCode = $response->status();
-        $data = $response->json();
+        $data = (array) $response->json();
 
         $ok = ($statusCode >= 200 && $statusCode < 300) && (isset($data['status']) ? $data['status'] === true : true);
 
