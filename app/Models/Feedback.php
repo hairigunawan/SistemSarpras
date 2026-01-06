@@ -42,7 +42,7 @@ class Feedback extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_akun', 'id_akun');
+        return $this->belongsTo(User::class, 'id_akun', 'id_akun')->withTrashed();
     }
 
     public static function HalamanUtama(Request $request)

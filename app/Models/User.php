@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,7 +15,7 @@ use App\Models\Role;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     protected $primaryKey = 'id_akun';
 
@@ -112,6 +113,7 @@ class User extends Authenticatable
         Auth::login($u);
 
         if ($u->userRole->nama_role === 'Admin') {
+            Auth::logoutOtherDevices($request->password);
             return redirect()->route('admin.dashboard.index');
         } else {
             return redirect()->route('public.beranda.index.auth');
