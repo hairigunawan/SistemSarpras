@@ -152,14 +152,14 @@
                         </div>
                         @else
                             <div class="flex flex-col items-center">
+                                <span class="text-[10px] text-red-500 mt-1 max-w-[150px] text-center leading-tight">
+                                    Hanya dapat disetujui pada hari H ({{ \Carbon\Carbon::parse($mainPeminjaman->tanggal_pinjam)->format('d M Y') }})
+                                </span>
                                 <button type="button" disabled
                                     class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-500 uppercase cursor-not-allowed">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                     Setujui
                                 </button>
-                                <span class="text-[10px] text-red-500 mt-1 max-w-[150px] text-center leading-tight">
-                                    Hanya dapat disetujui pada hari H ({{ \Carbon\Carbon::parse($mainPeminjaman->tanggal_pinjam)->format('d M Y') }})
-                                </span>
                             </div>
                         @endif
 
