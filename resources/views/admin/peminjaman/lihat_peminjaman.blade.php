@@ -151,7 +151,7 @@
                             </div>
                         </div>
                         @else
-                            <div class="flex flex-col items-center">
+                            <div class="flex items-center">
                                 <span class="text-[10px] text-red-500 mt-1 max-w-[150px] text-center leading-tight">
                                     Hanya dapat disetujui pada hari H ({{ \Carbon\Carbon::parse($mainPeminjaman->tanggal_pinjam)->format('d M Y') }})
                                 </span>
