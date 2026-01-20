@@ -33,6 +33,7 @@ class User extends Authenticatable
         'token',
         'avatar',
         'refresh_token',
+        'last_login_at',
     ];
 
     protected function casts(): array
@@ -41,6 +42,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_verified' => 'boolean',
+            'last_login_at' => 'datetime',
         ];
     }
 
