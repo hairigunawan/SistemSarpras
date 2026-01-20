@@ -23,11 +23,14 @@ class Prioritas extends Model
 
         $kriteria = [];
         foreach ($dbKriteria as $k) {
-            $key = $this->normalizeKriteriaKey($k->nama_kriteria);
+            // Gunakan ID unik sebagai key agar tidak ada kriteria yang tertimpa
+            $key = 'criteria_' . $k->id;
             $kriteria[$key] = [
                 'id' => $k->id,
                 'nama_asli' => $k->nama_kriteria,
-                'tipe' => strtolower(trim($k->tipe))
+                'tipe' => strtolower(trim($k->tipe)),
+                // Simpan logic perhitungan (mapping ke kolom/logika) terpisah
+                'normalized_key' => $this->normalizeKriteriaKey($k->nama_kriteria)
             ];
         }
 
@@ -50,7 +53,12 @@ class Prioritas extends Model
 
         $kriteriaOrdered = [];
         foreach ($orderedKeys as $key) {
-            $kriteriaOrdered[$key] = $kriteria[$key] ?? ['id' => null, 'nama_asli' => ucfirst(str_replace('_', ' ', $key)), 'tipe' => 'benefit'];
+            $kriteriaOrdered[$key] = $kriteria[$key] ?? [
+                'id' => null, 
+                'nama_asli' => ucfirst(str_replace(['criteria_', '_'], ['Criteria ', ' '], $key)), 
+                'tipe' => 'benefit',
+                'normalized_key' => $key
+            ];
         }
 
         foreach ($orderedKeys as $idx => $key) {
@@ -81,11 +89,12 @@ class Prioritas extends Model
 
         $kriteria = [];
         foreach ($dbKriteria as $k) {
-            $key = $this->normalizeKriteriaKey($k->nama_kriteria);
+            $key = 'criteria_' . $k->id;
             $kriteria[$key] = [
                 'id' => $k->id,
                 'nama_asli' => $k->nama_kriteria,
-                'tipe' => strtolower(trim($k->tipe))
+                'tipe' => strtolower(trim($k->tipe)),
+                'normalized_key' => $this->normalizeKriteriaKey($k->nama_kriteria)
             ];
         }
 
@@ -108,7 +117,12 @@ class Prioritas extends Model
 
         $kriteriaOrdered = [];
         foreach ($orderedKeys as $key) {
-            $kriteriaOrdered[$key] = $kriteria[$key] ?? ['id' => null, 'nama_asli' => ucfirst(str_replace('_', ' ', $key)), 'tipe' => 'benefit'];
+            $kriteriaOrdered[$key] = $kriteria[$key] ?? [
+                'id' => null, 
+                'nama_asli' => ucfirst(str_replace(['criteria_', '_'], ['Criteria ', ' '], $key)), 
+                'tipe' => 'benefit',
+                'normalized_key' => $key
+            ];
         }
 
         foreach ($orderedKeys as $idx => $key) {
@@ -269,7 +283,9 @@ class Prioritas extends Model
             ];
 
             foreach ($kriteria as $key => $v) {
-                $alt[$key] = $this->nilaiSkala($p, $key);
+                // Gunakan logic yang sesuai (normalized_key) untuk menghitung nilai skala
+                $logicKey = $v['normalized_key'] ?? $key;
+                $alt[$key] = $this->nilaiSkala($p, $logicKey);
             }
 
             $alternatif[] = $alt;
