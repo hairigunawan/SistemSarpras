@@ -224,8 +224,6 @@ class PublicController extends Controller
                     ->paginate(10);
             } elseif ($type === 'proyektor') {
                 $sarpras = Proyektor::with('status')->findOrFail($id);
-                $this->checkProyektorStatus($id);
-                $sarpras = Proyektor::with('status')->findOrFail($id);
                 $mainPeminjaman = Peminjaman::where('id_proyektor', $id)
                     ->whereIn('status_peminjaman', ['Menunggu', 'Dipinjam'])
                     ->latest()
