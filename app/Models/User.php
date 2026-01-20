@@ -268,7 +268,7 @@ class User extends Authenticatable
             return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
-        $akun->delete();
+        $akun->forceDelete();
 
         return redirect()->route('admin.akun.index')
             ->with('success', 'Akun berhasil dihapus.');
