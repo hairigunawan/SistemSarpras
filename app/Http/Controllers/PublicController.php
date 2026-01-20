@@ -242,9 +242,16 @@ class PublicController extends Controller
             return view('public.sarana_perasarana.detail_sarpras', compact('sarpras', 'type', 'mainPeminjaman', 'resourceStatus', 'feedbacks'));
         }
 
-        $ruangans = Ruangan::with(['status', 'lokasi'])->get();
-        $proyektors = Proyektor::with('status')->get();
-        return view('public.sarana_perasarana.halamansarpras', compact('ruangans', 'proyektors'));
+        $r = Ruangan::with(['status', 'lokasi'])->latest()->paginate(15);
+        $p = Proyektor::with('status')->latest()->paginate(15);
+        
+        // Default filter values for the view
+        $jenisSarprasFilter = 'all';
+        $lokasiRuanganFilter = 'all';
+        $lokasis = Lokasi::orderBy('nama_lokasi', 'asc')->get()->unique('nama_lokasi');
+        $statuses = Status::all();
+
+        return view('public.sarana_perasarana.halamansarpras', compact('r', 'p', 'jenisSarprasFilter', 'lokasiRuanganFilter', 'lokasis', 'statuses'));
     }
 
     public function destroyPeminjaman(Peminjaman $peminjaman)
