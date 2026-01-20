@@ -123,6 +123,7 @@ class Ruangan extends Model
                 'kapasitas.min'         => 'Kapasitas minimal 1 orang.',
                 'id_status.required'    => 'Status ruangan wajib dipilih.',
                 'id_status.exists'      => 'Status yang dipilih tidak valid.',
+                'kode_ruangan.required' => 'Kode ruangan wajib diisi.',
                 'kode_ruangan.unique'   => 'Kode ruangan sudah digunakan.',
                 'lokasi_id.required'    => 'Lokasi ruangan wajib dipilih.',
                 'lokasi_id.exists'      => 'Lokasi yang dipilih tidak valid.',
@@ -137,7 +138,7 @@ class Ruangan extends Model
                 'kapasitas'    => 'required|integer|min:1',
                 'id_status'    => 'required|exists:statuses,id_status',
                 'kode_ruangan' => [
-                    'nullable',
+                    'required',
                     'string',
                     'max:50',
                     Rule::unique('ruangans', 'kode_ruangan'),
@@ -221,6 +222,7 @@ class Ruangan extends Model
                 'kapasitas.min'         => 'Kapasitas minimal 1 orang.',
                 'id_status.required'    => 'Status ruangan wajib dipilih.',
                 'id_status.exists'      => 'Status yang dipilih tidak valid.',
+                'kode_ruangan.required' => 'Kode ruangan wajib diisi.',
                 'kode_ruangan.unique'   => 'Kode ruangan sudah digunakan.',
                 'lokasi_id.required'    => 'Lokasi ruangan wajib dipilih.',
                 'lokasi_id.exists'      => 'Lokasi yang dipilih tidak valid.',
@@ -235,7 +237,7 @@ class Ruangan extends Model
                 'kapasitas'      => 'required|integer|min:1',
                 'id_status'      => 'required|exists:statuses,id_status',
                 'kode_ruangan'   => [
-                    'nullable',
+                    'required',
                     'string',
                     'max:50',
                     Rule::unique('ruangans', 'kode_ruangan')
