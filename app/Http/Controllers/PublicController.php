@@ -170,7 +170,7 @@ class PublicController extends Controller
                 });
             }
 
-            $r = $queryRuangan->latest()->paginate(9);
+            $r = $queryRuangan->latest()->paginate(15);
         }
 
         if ($jenisSarprasFilter === 'all' || $jenisSarprasFilter === 'proyektor') {
@@ -189,7 +189,7 @@ class PublicController extends Controller
                 $queryProyektor->where('nama_proyektor', 'ilike', "%{$search}%");
             }
 
-            $p = $queryProyektor->latest()->paginate(9);
+            $p = $queryProyektor->latest()->paginate(15);
         }
 
         $lokasis = Lokasi::orderBy('nama_lokasi', 'asc')->get()->unique('nama_lokasi');

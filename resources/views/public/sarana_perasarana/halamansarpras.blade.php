@@ -228,6 +228,20 @@
                 @endforeach
 
             </div>
+
+            <div class="mt-8">
+                @if(method_exists($r, 'links'))
+                    <div class="mb-4">
+                        {{ $r->appends(request()->query())->links() }}
+                    </div>
+                @endif
+                
+                @if(method_exists($p, 'links'))
+                    <div>
+                        {{ $p->appends(request()->query())->links() }}
+                    </div>
+                @endif
+            </div>
         @endif
     </div>
 </div>
