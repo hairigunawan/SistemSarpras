@@ -39,7 +39,7 @@
 
             <div>
                 <label for="nama_ruangan" class="block text-sm font-medium text-gray-700">Nama Ruangan</label>
-                <input type="text" name="nama_ruangan" id="nama_ruangan" value="{{ old('nama_ruangan', $r->nama_ruangan) }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                <input type="text" name="nama_ruangan" id="nama_ruangan" value="{{ old('nama_ruangan', $r->nama_ruangan) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 @error('nama_ruangan') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 

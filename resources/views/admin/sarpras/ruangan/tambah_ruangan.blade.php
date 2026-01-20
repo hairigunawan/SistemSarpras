@@ -24,7 +24,7 @@
                 <!-- Nama Ruangan -->
                 <div>
                     <label for="nama_ruangan" class="block text-sm font-medium text-gray-700">Nama Ruangan</label>
-                    <input type="text" text="lowercase first-letter:uppercase" name="nama_ruangan" id="nama_ruangan" placeholder="Lab C" value="{{ old('nama_ruangan') }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" onblur="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)">
+                    <input type="text" text="lowercase first-letter:uppercase" name="nama_ruangan" id="nama_ruangan" placeholder="Lab C" value="{{ old('nama_ruangan') }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" onblur="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)">
                     @error('nama_ruangan') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 

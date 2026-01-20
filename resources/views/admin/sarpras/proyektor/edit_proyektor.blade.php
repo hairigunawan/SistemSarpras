@@ -39,13 +39,13 @@
 
             <div>
                 <label for="nama_proyektor" class="block text-sm font-medium text-gray-700">Nama Proyektor</label>
-                <input type="text" name="nama_proyektor" id="nama_proyektor" value="{{ old('nama_proyektor', $p->nama_proyektor) }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                <input type="text" name="nama_proyektor" id="nama_proyektor" value="{{ old('nama_proyektor', $p->nama_proyektor) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 @error('nama_proyektor') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label for="merk" class="block text-sm font-medium text-gray-700">Merk Proyektor</label>
-                <input type="text" name="merk" id="merk" value="{{ old('merk', $p->merk) }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                <input type="text" name="merk" id="merk" value="{{ old('merk', $p->merk) }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 @error('merk') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 

@@ -213,6 +213,22 @@ class Ruangan extends Model
             // Cari ruangan, kalau tidak ada akan throw ModelNotFoundException
             $r = self::findOrFail($id);
 
+            $messages = [
+                'nama_ruangan.required' => 'Nama ruangan wajib diisi.',
+                'nama_ruangan.max'      => 'Nama ruangan maksimal 255 karakter.',
+                'kapasitas.required'    => 'Kapasitas ruangan wajib diisi.',
+                'kapasitas.integer'     => 'Kapasitas harus berupa angka.',
+                'kapasitas.min'         => 'Kapasitas minimal 1 orang.',
+                'id_status.required'    => 'Status ruangan wajib dipilih.',
+                'id_status.exists'      => 'Status yang dipilih tidak valid.',
+                'kode_ruangan.unique'   => 'Kode ruangan sudah digunakan.',
+                'lokasi_id.required'    => 'Lokasi ruangan wajib dipilih.',
+                'lokasi_id.exists'      => 'Lokasi yang dipilih tidak valid.',
+                'gambar.image'          => 'File harus berupa gambar.',
+                'gambar.mimes'          => 'Format gambar harus jpeg, png, jpg, atau webp.',
+                'gambar.max'            => 'Ukuran gambar maksimal 2MB.',
+            ];
+
             // Validasi input
             $validated = $request->validate([
                 'nama_ruangan'   => 'required|string|max:255',
@@ -227,7 +243,7 @@ class Ruangan extends Model
                 ],
                 'lokasi_id'      => 'required|exists:lokasis,id_lokasi',
                 'gambar'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            ]);
+            ], $messages);
 
             // Jalankan fungsi update dari model
             $r->updateRuangan($validated, $request->file('gambar'));

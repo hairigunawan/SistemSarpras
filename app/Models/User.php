@@ -210,13 +210,26 @@ class User extends Authenticatable
     }
     public static function EditAkun(Request $request, User $akun)
     {
+        $messages = [
+            'nama.required'          => 'Nama wajib diisi.',
+            'nama.max'               => 'Nama maksimal 255 karakter.',
+            'email.required'         => 'Email wajib diisi.',
+            'email.email'            => 'Format email tidak valid.',
+            'email.unique'           => 'Email sudah terdaftar.',
+            'nomor_telepon.required' => 'Nomor telepon wajib diisi.',
+            'password.min'           => 'Password minimal 8 karakter.',
+            'password.confirmed'     => 'Konfirmasi password tidak cocok.',
+            'role_id.required'       => 'Role wajib dipilih.',
+            'role_id.exists'         => 'Role yang dipilih tidak valid.',
+        ];
+
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($akun->id_akun, 'id_akun')],
             'role_id' => 'required|exists:roles,id_role',
             'nomor_telepon' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:8|confirmed',
-        ]);
+        ], $messages);
 
         $akun->nama = $request->nama;
         $akun->email = $request->email;
@@ -242,13 +255,27 @@ class User extends Authenticatable
 
     public static function storeAkun(Request $request)
     {
+        $messages = [
+            'nama.required'          => 'Nama wajib diisi.',
+            'nama.max'               => 'Nama maksimal 255 karakter.',
+            'email.required'         => 'Email wajib diisi.',
+            'email.email'            => 'Format email tidak valid.',
+            'email.unique'           => 'Email sudah terdaftar.',
+            'nomor_telepon.required' => 'Nomor telepon wajib diisi.',
+            'password.required'      => 'Password wajib diisi.',
+            'password.min'           => 'Password minimal 8 karakter.',
+            'password.confirmed'     => 'Konfirmasi password tidak cocok.',
+            'role_id.required'       => 'Role wajib dipilih.',
+            'role_id.exists'         => 'Role yang dipilih tidak valid.',
+        ];
+
         $validatedData = $request->validate([
             'nama'          => 'required|string|max:255',
             'email'         => 'required|string|email|max:255|unique:users',
             'nomor_telepon' => 'nullable|string|max:20',
             'password'      => 'required|string|min:8|confirmed',
             'role_id'       => 'required|exists:roles,id_role',
-        ]);
+        ], $messages);
 
         $u = User::create([
             'nama' => $validatedData['nama'],

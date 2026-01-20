@@ -23,13 +23,13 @@
 
                 <div>
                     <label for="nama_proyektor" class="block text-sm font-medium text-gray-700">Nama Proyektor</label>
-                    <input type="text" name="nama_proyektor" id="nama_proyektor" placeholder="Epson EB-2255" value="{{ old('nama_proyektor') }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" onblur="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)">
+                    <input type="text" name="nama_proyektor" id="nama_proyektor" placeholder="Epson EB-2255" value="{{ old('nama_proyektor') }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" onblur="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)">
                     @error('nama_proyektor') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label for="merk" class="block text-sm font-medium text-gray-700">Merk Proyektor</label>
-                    <input type="text" name="merk" placeholder="Epson" id="merk" value="{{ old('merk') }}" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" oninput="this.value = this.value.toUpperCase().trimStart()">
+                    <input type="text" name="merk" placeholder="Epson" id="merk" value="{{ old('merk') }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" oninput="this.value = this.value.toUpperCase().trimStart()">
                     @error('merk') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 
