@@ -106,35 +106,34 @@ class AdminController extends Controller
                 ];
             }
         } else if ($periode === 'bulan') {
-            // Data per minggu dalam bulan (max 5 minggu)
-            $weeks = 5;
-            for ($i = 0; $i < $weeks; $i++) {
-                $weekStart = $startDate->copy()->addWeeks($i);
-                $weekEnd = $weekStart->copy()->endOfWeek();
+            // Data per minggu dalam bulan
+            $currentDate = $startDate->copy();
+            $weekNumber = 1;
 
-                if ($weekStart > $endDate) {
-                    break;
-                }
+            while ($currentDate <= $endDate) {
+                $weekEnd = $currentDate->copy()->endOfWeek();
 
                 if ($weekEnd > $endDate) {
                     $weekEnd = $endDate;
                 }
 
                 $ruanganCount = Peminjaman::whereNotNull('id_ruangan')
-                    ->whereBetween('tanggal_pinjam', [$weekStart, $weekEnd])
+                    ->whereBetween('tanggal_pinjam', [$currentDate, $weekEnd])
                     ->whereIn('status_peminjaman', ['Disetujui', 'Selesai', 'Ditolak'])
                     ->count();
 
                 $proyektorCount = Peminjaman::whereNotNull('id_proyektor')
-                    ->whereBetween('tanggal_pinjam', [$weekStart, $weekEnd])
+                    ->whereBetween('tanggal_pinjam', [$currentDate, $weekEnd])
                     ->whereIn('status_peminjaman', ['Disetujui', 'Selesai', 'Ditolak'])
                     ->count();
 
                 $chartData[] = [
-                    'label' => 'Minggu ' . ($i + 1),
+                    'label' => 'Minggu ' . $weekNumber++,
                     'ruangan' => $ruanganCount,
                     'proyektor' => $proyektorCount,
                 ];
+
+                $currentDate = $weekEnd->copy()->addDay();
             }
         } else if ($periode === 'semester') {
             // Data per bulan dalam semester (6 bulan)

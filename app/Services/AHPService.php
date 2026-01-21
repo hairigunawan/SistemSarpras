@@ -159,7 +159,6 @@ class AHPService
             }
             $lambdaMax += $sum / ($this->eigenVector[$i] * $n);
         }
-        $lambdaMax /= $n;
         
         // Calculate consistency index
         $ci = ($lambdaMax - $n) / ($n - 1);

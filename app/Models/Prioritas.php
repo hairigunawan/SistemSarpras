@@ -29,6 +29,7 @@ class Prioritas extends Model
                 'id' => $k->id,
                 'nama_asli' => $k->nama_kriteria,
                 'tipe' => strtolower(trim($k->tipe)),
+                'bobot' => (float) $k->bobot,
                 // Simpan logic perhitungan (mapping ke kolom/logika) terpisah
                 'normalized_key' => $this->normalizeKriteriaKey($k->nama_kriteria)
             ];
@@ -94,6 +95,7 @@ class Prioritas extends Model
                 'id' => $k->id,
                 'nama_asli' => $k->nama_kriteria,
                 'tipe' => strtolower(trim($k->tipe)),
+                'bobot' => (float) $k->bobot,
                 'normalized_key' => $this->normalizeKriteriaKey($k->nama_kriteria)
             ];
         }
@@ -196,29 +198,68 @@ class Prioritas extends Model
             ];
         }
 
-        // build priorityRank using original order (lower index = more important)
-        $priorityRank = [];
-        foreach ($keys as $index => $k) {
-            $priorityRank[$k] = $index;
+        // Check if we have valid weights in kriteria
+        $hasWeights = true;
+        $totalBobot = 0;
+        foreach ($keys as $k) {
+            $w = $kriteria[$k]['bobot'] ?? 0;
+            if ($w <= 0) {
+                // Allow 0 if it's just not set, but if all are 0 then we can't use it.
+                // But generally AHP weights must be positive.
+            }
+            $totalBobot += $w;
         }
+        
+        // If total weight is effectively 0, we can't use weights.
+        if ($totalBobot < 0.0001) $hasWeights = false;
 
-        // === build pairwise matrix (rows = keys order, cols = keys order)
         $matrix = array_fill(0, $n, array_fill(0, $n, 1.0));
-        for ($i = 0; $i < $n; $i++) {
-            for ($j = 0; $j < $n; $j++) {
-                if ($i === $j) {
-                    $matrix[$i][$j] = 1.0;
-                    continue;
-                }
-                // diff in rank
-                $diff = abs($priorityRank[$keys[$i]] - $priorityRank[$keys[$j]]);
-                $ratio = 1 + $diff; // difference 0 ->1, diff1->2, diff2->3, etc
 
-                // If row i is higher priority (smaller rank number) than col j => row vs col = ratio (big)
-                if ($priorityRank[$keys[$i]] < $priorityRank[$keys[$j]]) {
-                    $matrix[$i][$j] = $ratio;
-                } else {
-                    $matrix[$i][$j] = 1 / $ratio;
+        if ($hasWeights) {
+            // === Strategy A: Use explicit weights ===
+            // Normalize weights first to ensure sum = 1 (just in case)
+            $weights = [];
+            foreach ($keys as $k) {
+                $weights[] = ($kriteria[$k]['bobot'] ?? 0) / $totalBobot;
+            }
+
+            for ($i = 0; $i < $n; $i++) {
+                for ($j = 0; $j < $n; $j++) {
+                    if ($i === $j) {
+                        $matrix[$i][$j] = 1.0;
+                    } else {
+                        // Ratio of weights
+                        // Avoid division by zero
+                        $wi = max($weights[$i], 1e-9);
+                        $wj = max($weights[$j], 1e-9);
+                        $matrix[$i][$j] = $wi / $wj;
+                    }
+                }
+            }
+        } else {
+            // === Strategy B: Fallback to Rank-Based ===
+            // build priorityRank using original order (lower index = more important)
+            $priorityRank = [];
+            foreach ($keys as $index => $k) {
+                $priorityRank[$k] = $index;
+            }
+
+            for ($i = 0; $i < $n; $i++) {
+                for ($j = 0; $j < $n; $j++) {
+                    if ($i === $j) {
+                        $matrix[$i][$j] = 1.0;
+                        continue;
+                    }
+                    // diff in rank
+                    $diff = abs($priorityRank[$keys[$i]] - $priorityRank[$keys[$j]]);
+                    $ratio = 1 + $diff; // difference 0 ->1, diff1->2, diff2->3, etc
+
+                    // If row i is higher priority (smaller rank number) than col j => row vs col = ratio (big)
+                    if ($priorityRank[$keys[$i]] < $priorityRank[$keys[$j]]) {
+                        $matrix[$i][$j] = $ratio;
+                    } else {
+                        $matrix[$i][$j] = 1 / $ratio;
+                    }
                 }
             }
         }
