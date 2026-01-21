@@ -232,7 +232,21 @@ class Prioritas extends Model
                         // Avoid division by zero
                         $wi = max($weights[$i], 1e-9);
                         $wj = max($weights[$j], 1e-9);
-                        $matrix[$i][$j] = $wi / $wj;
+                        $ratio = $wi / $wj;
+
+                        // Map to nearest Saaty scale (1-9) to introduce natural inconsistency
+                        if ($ratio >= 1) {
+                            $saatyVal = round($ratio);
+                            if ($saatyVal > 9) $saatyVal = 9;
+                            if ($saatyVal < 1) $saatyVal = 1;
+                            $matrix[$i][$j] = $saatyVal;
+                        } else {
+                            $invRatio = 1 / $ratio;
+                            $saatyVal = round($invRatio);
+                            if ($saatyVal > 9) $saatyVal = 9;
+                            if ($saatyVal < 1) $saatyVal = 1;
+                            $matrix[$i][$j] = 1 / $saatyVal;
+                        }
                     }
                 }
             }

@@ -216,7 +216,9 @@
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                             <div class="mb-4 sm:mb-0">
                                 <p class="text-base font-medium text-gray-700 mb-1">Rasio Konsistensi (CR)</p>
-                                <p class="text-2xl font-semibold text-gray-800">{{ number_format($cr, 3) }}</p>
+                                <p class="text-2xl font-semibold text-gray-800">
+                                    {{ $cr < 0.0001 ? '0.000 (Sangat Konsisten)' : number_format($cr, 3) }}
+                                </p>
                             </div>
 
                             @if($cr <= 0.1)
