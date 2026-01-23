@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\QueryException;
 use App\Models\Role;
 
 class User extends Authenticatable
@@ -295,7 +296,18 @@ class User extends Authenticatable
             return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
-        $akun->forceDelete();
+        if ($akun->peminjamans()->exists()) {
+            return back()->with('error', 'Akun tidak dapat dihapus karena memiliki riwayat peminjaman.');
+        }
+
+        try {
+            $akun->forceDelete();
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Akun tidak dapat dihapus karena masih terhubung dengan data lain.');
+            }
+            throw $e;
+        }
 
         return redirect()->route('admin.akun.index')
             ->with('success', 'Akun berhasil dihapus.');
